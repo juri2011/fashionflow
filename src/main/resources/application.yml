@@ -1,0 +1,58 @@
+server:
+  port: 80
+
+spring:
+  application:
+    name: shop
+
+  security:
+    user:
+      name: test@test.com
+      password: 12345
+
+  devtools:
+    restart:
+      enabled: true
+
+  livereload:
+    enabled: true
+
+  thymeleaf:
+    cache: false
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/webdb
+    username: dbuser
+    password: 12345
+
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+
+  servlet:
+    multipart:
+      maxFileSize: 20MB
+      maxRequestSize: 100MB
+
+itemImgLocation: D:/shop/item
+
+uploadPath: file:///D:/shop/
+
+logging:
+  level:
+    org:
+      hibernate:
+        type:
+          descriptor:
+            sql: trace
+
+
+
+

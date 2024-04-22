@@ -1,0 +1,17 @@
+use webdb;
+
+select * from item;
+
+drop table if exists item;
+
+create table item (
+	item_id bigint not null auto_increment,
+   	item_nm varchar(50) not null,
+	price integer not null,
+	stock_number integer not null,
+	item_detail longtext not null,
+	item_sell_status enum ('SELL','SOLD_OUT'),
+	reg_time datetime(6),
+	update_time datetime(6),
+	primary key (item_id)
+) engine=InnoDB;

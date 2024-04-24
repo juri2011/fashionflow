@@ -1,14 +1,14 @@
 server:
-  port: 80
+  port: 8094
 
 spring:
   application:
-    name: shop
+    name: fasionflow
 
-  security:
-    user:
-      name: test@test.com
-      password: 12345
+#  security:
+#    user:
+#      name: test@test.com
+#      password: 12345
 
   devtools:
     restart:
@@ -22,8 +22,8 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/webdb
-    username: dbuser
+    url: jdbc:mysql://localhost:3306/fashiondb
+    username: ff
     password: 12345
 
   jpa:
@@ -41,9 +41,9 @@ spring:
       maxFileSize: 20MB
       maxRequestSize: 100MB
 
-itemImgLocation: D:/shop/item
+#itemImgLocation: D:/shop/item
 
-uploadPath: file:///D:/shop/
+#uploadPath: file:///D:/shop/
 
 logging:
   level:

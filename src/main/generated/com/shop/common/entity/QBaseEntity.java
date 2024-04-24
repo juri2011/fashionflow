@@ -1,4 +1,4 @@
-package com.shop.common.entity;
+package com.fashionflow.common.entity;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 

@@ -1,4 +1,4 @@
-package com.shop.common.entity;
+package com.fashionflow.common.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

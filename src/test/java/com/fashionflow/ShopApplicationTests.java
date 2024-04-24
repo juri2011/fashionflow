@@ -1,4 +1,4 @@
-package com.shop;
+package com.fashionflow;
 
 import org.springframework.boot.test.context.SpringBootTest;
 

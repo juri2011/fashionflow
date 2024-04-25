@@ -40,6 +40,7 @@ public class Item {
     private LocalDateTime regdate; //등록일
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="category_id")
     private Category category; //카테고리
 
     @Enumerated(EnumType.STRING)

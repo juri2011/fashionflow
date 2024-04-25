@@ -15,8 +15,7 @@ public class ReportMemberTag {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="report_id")
-    @Column(nullable = false)
+    @JoinColumn(name="report_id", nullable = false)
     private ReportMember reportMember;
 
     @Enumerated(EnumType.STRING)

@@ -1,7 +1,6 @@
 package com.fashionflow.entity;
 
 import com.fashionflow.constant.ReportTagItem;
-import com.fashionflow.constant.ReportTagMember;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,8 +15,7 @@ public class ReportItemTag {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="report_id")
-    @Column(nullable = false)
+    @JoinColumn(name="report_id", nullable = false)
     private ReportMember reportMember;
 
     @Enumerated(EnumType.STRING)

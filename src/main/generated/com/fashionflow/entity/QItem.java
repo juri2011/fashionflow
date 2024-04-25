@@ -32,7 +32,7 @@ public class QItem extends EntityPathBase<Item> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final StringPath item_name = createString("item_name");
+    public final StringPath itemName = createString("itemName");
 
     public final EnumPath<com.fashionflow.constant.ItemStatus> itemStatus = createEnum("itemStatus", com.fashionflow.constant.ItemStatus.class);
 

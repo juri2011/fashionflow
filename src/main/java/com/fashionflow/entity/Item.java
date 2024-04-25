@@ -21,7 +21,7 @@ public class Item {
     private Long id; //상품번호
 
     @Column(nullable = false)
-    private String item_name; //상품이름
+    private String itemName; //상품이름
 
     @Lob
     @Column(nullable = false)

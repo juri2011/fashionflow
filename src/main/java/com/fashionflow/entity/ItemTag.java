@@ -20,7 +20,7 @@ public class ItemTag {
     private Long id;
 
     @Column(nullable = false)
-    private ItemTagName item_tag_name;
+    private ItemTagName itemTagName;
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="item_id")

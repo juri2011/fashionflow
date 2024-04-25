@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout1}">
+
+<!-- 사용자 CSS 추가 -->
+<th:block layout:fragment="css">
+    <style>
+        .error {
+            color: #bd2130;
+        }
+    </style>
+</th:block>
+
+<div layout:fragment="content">
+
+    <form role="form" method="post" action="/members/register" enctype="multipart/form-data">
+        <div class="form-group mb-3">
+            <label th:for="name">이름</label>
+            <input type="text" name="name" class="form-control" placeholder="이름을 입력해주세요">
+        </div>
+        <div class="form-group mb-3">
+            <label th:for="email">이메일주소</label>
+            <input type="email" name="email" class="form-control" placeholder="이메일을 입력해주세요">
+        </div>
+        <div class="form-group mb-3">
+            <label th:for="password">비밀번호</label>
+            <input type="password" name="password" id="password" class="form-control" placeholder="비밀번호 입력">
+        </div>
+        <div class="form-group mb-3">
+            <label th:for="confirmPassword">비밀번호 재입력</label>
+            <input type="password" name="confirmPassword" id="confirmPassword" class="form-control" placeholder="비밀번호 다시 입력">
+        </div>
+        <div class="form-group mb-3">
+            <label th:for="nickname">닉네임</label>
+            <input type="text" name="nickname" class="form-control" placeholder="닉네임을 입력해주세요">
+        </div>
+        <div class="form-group mb-3">
+            <label th:for="phone">전화번호</label>
+            <input type="text" name="phone" class="form-control" placeholder="전화번호를 입력해주세요">
+        </div>
+        <div class="form-group mb-3">
+            <label th:for="birth">생년월일</label>
+            <input type="date" name="birth" class="form-control">
+        </div>
+        <div class="form-group mb-3">
+            <label th:for="gender">성별</label>
+            <select name="gender" class="form-control">
+                <option value="male">남성</option>
+                <option value="female">여성</option>
+                <option value="other">기타</option>
+            </select>
+        </div>
+        <div class="form-group mb-3">
+            <label th:for="address">주소</label>
+            <input type="text" name="address" class="form-control" placeholder="주소를 입력해주세요">
+        </div>
+        <div class="form-group mb-3">
+            <label th:for="profilePicture">프로필 사진</label>
+            <input type="file" name="profilePicture" class="form-control-file">
+        </div>
+        <div class="mb-3">
+            <p th:if="${registerErrorMsg}" class="error" th:text="${registerErrorMsg}"></p>
+            <button class="btn btn-primary">회원가입</button>
+            <button type="button" class="btn btn-primary" onClick="location.href='/members/login'">로그인</button>
+        </div>
+    </form>
+
+</div>
+
+</html>

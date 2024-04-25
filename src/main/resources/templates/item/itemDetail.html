@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <h1>상품 데이터 출력 예제</h1>
+    <div>
+        상품명 : <span th:text="${item.itemName}"></span>
+    </div>
+    <div>
+        상세설명 : <span th:text="${item.content}"></span>
+    </div>
+    <div>
+        가격 : <span th:text="${item.price}"></span>
+    </div>
+    <div>
+        배송비 : <span th:text="${item.delivery}"></span>
+    </div>
+    <div>
+        주소 : <span th:text="${item.address}"></span>
+    </div>
+    <div>
+        등록일 : <span th:text="${item.regdate}"></span>
+    </div>
+    <div>
+        상품상태 : <span th:text="${item.itemStatus}"></span>
+    </div>
+    <div>
+        판매상태 : <span th:text="${item.sellStatus}"></span>
+    </div>
+
+</body>
+</html>

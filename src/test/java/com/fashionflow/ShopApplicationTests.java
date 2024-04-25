@@ -1,11 +1,14 @@
 package com.fashionflow;
 
 import com.fashionflow.constant.Gender;
+import com.fashionflow.constant.ItemStatus;
+import com.fashionflow.constant.SellStatus;
 import com.fashionflow.entity.Category;
 import com.fashionflow.entity.Item;
 import com.fashionflow.entity.Member;
 import com.fashionflow.entity.QCategory;
 import com.fashionflow.repository.CategoryRepository;
+import com.fashionflow.repository.ItemRepository;
 import com.fashionflow.repository.MemberRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import groovy.util.logging.Slf4j;
@@ -30,6 +33,9 @@ class ShopApplicationTests {
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private ItemRepository itemRepository;
 
     @Autowired
     EntityManager em;
@@ -65,32 +71,27 @@ class ShopApplicationTests {
         return member;
     }
 
-    /*
+
     public Item createItem(){
         
         //데이터 한 개 정상출력되는지 확인하기 위해 더미데이터 한 개 생성
 
-        Category category = categoryRepository.findByCode("WOMEN_OUTER");
-
+        Category category = findCategory();
         Item item = Item.builder()
-                .itemName()
-                .content()
-                .price()
-                .delivery()
-                .address()
-                .regdate()
-                .category()
-                .itemStatus()
-                .sellStatus()
+                .itemName("알토 봄 청자켓 연청 데님자켓")
+                .content("사이즈 프리사이즈 44~55 여유있게 입는 자켓핏 아니고 정사이즈로 입는 핏이에요 66은 x 정핏에 허리까지 오는 기장감이 날씬해보이고 다리 길어보여요 이쁜 연청이라 얼굴 화사해요~^^ 일반4천 반값2천택배")
+                .price(7000)
+                .delivery(4000)
+                .address("경기도 용인시 기흥구")
+                .regdate(LocalDateTime.now())
+                .category(category)
+                .itemStatus(ItemStatus.NO_SIGNS_OF_USE)
+                .sellStatus(SellStatus.SELLING)
                 .build();
         return item;
 
     }
-
-     */
-
-    @Test
-    public void findCategoryTest(){
+    public Category findCategory(){
         /*
 
         @Transactional 어노테이션 사용 시 작동됨
@@ -110,8 +111,19 @@ class ShopApplicationTests {
         System.out.println("======================="+category);
         assertNotNull(category);
 
+        return category;
     }
 
+    @Test
+    public void findItemTest(){
+        Item item = createItem();
+
+        Item savedItem = itemRepository.save(item);
+
+        System.out.println("========================== 검색결과: "+savedItem);
+
+        assertEquals(item.getId(), savedItem.getId());
+    }
     @Test
     public void findMemberTest(){
 

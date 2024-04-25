@@ -23,8 +23,7 @@ public class Item {
     @Column(nullable = false)
     private String itemName; //상품이름
 
-    @Lob
-    @Column(nullable = false)
+    @Column(columnDefinition = "longtext", nullable = false)
     private String content; //상세설명
 
     @Column(nullable = false)

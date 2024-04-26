@@ -44,12 +44,21 @@ public class MemberController {
             return modelAndView;
         }
 
-        // 유효성 검사 성공 시 회원 등록 처리
-        memberService.registerMember(memberFormDTO);
+        try {
+            // 유효성 검사 성공 시 회원 등록 처리
+            memberService.registerMember(memberFormDTO);
 
-        // 회원가입 성공 시 메인 페이지로 리다이렉트
-        modelAndView.setViewName("redirect:/");
+            // 회원가입 성공 시 메인 페이지로 리다이렉트
+            modelAndView.setViewName("redirect:/");
+        } catch (IllegalStateException e) {
+            // 중복 회원 예외 처리
+            modelAndView.addObject("error", e.getMessage());
+            modelAndView.setViewName("members/memberRegister");
+        }
+
         return modelAndView;
     }
-    
+
+
+
 }

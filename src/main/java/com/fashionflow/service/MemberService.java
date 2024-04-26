@@ -26,6 +26,8 @@ public class MemberService implements UserDetailsService {
     //회원 등록 메소드
     public void registerMember(MemberFormDTO memberFormDTO, PasswordEncoder passwordEncoder) {
 
+
+
         //Bcrypt 인코드
         String encodedPassword = passwordEncoder.encode(memberFormDTO.getPwd());
 
@@ -65,6 +67,7 @@ public class MemberService implements UserDetailsService {
             }
         }
     }
+
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {

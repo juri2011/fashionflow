@@ -28,6 +28,9 @@ public class MemberFormDTO {
     @Length(min=6, max=20, message = "비밀번호는 6자리 이상 20자리 이하로 입력하세요.")
     private String pwd; // 비밀번호
 
+    @NotBlank(message = "비밀번호를 재입력해주세요.")
+    private String confirmPwd;
+
     @NotBlank(message = "별명을 입력해주세요.")
     private String nickname; // 별명
 

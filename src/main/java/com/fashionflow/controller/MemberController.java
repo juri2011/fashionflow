@@ -46,6 +46,11 @@ public class MemberController {
 
         ModelAndView modelAndView = new ModelAndView();
 
+        // 비밀번호와 비밀번호 확인이 일치하는지 확인
+        if (!memberFormDTO.getPwd().equals(memberFormDTO.getConfirmPwd())) {
+            //에러 메세지 바인딩 시키는 메소드
+            bindingResult.rejectValue("confirmPwd", "error.memberFormDTO", "비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+        }
 
         // 유효성 검사 실패 시 회원가입 페이지로 다시 이동
         if (bindingResult.hasErrors()) {

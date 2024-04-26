@@ -36,7 +36,8 @@ public class MemberController {
     
     //회원가입 페이지 이동
     @GetMapping("members/register")
-    public String registerPage() {
+    public String registerPage(Model model) {
+        model.addAttribute("memberFormDTO", new MemberFormDTO());
         return "members/memberRegister";
     }
 
@@ -55,6 +56,8 @@ public class MemberController {
         // 유효성 검사 실패 시 회원가입 페이지로 다시 이동
         if (bindingResult.hasErrors()) {
             modelAndView.addObject("errors", bindingResult.getAllErrors());
+            // 실패한 경우 ModelAndView에 기존에 입력한 정보 추가하여 전달
+            modelAndView.addObject("memberFormDTO", memberFormDTO);
             modelAndView.setViewName("members/memberRegister");
             return modelAndView;
         }
@@ -67,6 +70,8 @@ public class MemberController {
             // 회원가입 성공 시 메인 페이지로 리다이렉트
             modelAndView.setViewName("redirect:/");
         } catch (IllegalStateException e) {
+            // 실패한 경우 ModelAndView에 기존에 입력한 정보 추가하여 전달
+            modelAndView.addObject("memberFormDTO", memberFormDTO);
             // 중복 회원 예외 처리
             modelAndView.addObject("error", e.getMessage());
             modelAndView.setViewName("members/memberRegister");

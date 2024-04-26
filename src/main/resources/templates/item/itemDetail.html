@@ -35,5 +35,10 @@
         태그 : <span th:text="${itemTag.itemTagName}"></span>
     </div>
 
+    <div>
+        카테고리 :
+        <span th:if="${parentCategory != null}" th:text="${parentCategory.name}+'&gt'"></span><span th:text="${category.name}"></span>
+    </div>
+
 </body>
 </html>

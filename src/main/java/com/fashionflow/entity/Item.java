@@ -42,6 +42,10 @@ public class Item {
     @JoinColumn(name="category_id")
     private Category category; //카테고리
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="member_id")
+    private Member member;
+
     @Enumerated(EnumType.STRING)
     private ItemStatus itemStatus; //상품 상태
 

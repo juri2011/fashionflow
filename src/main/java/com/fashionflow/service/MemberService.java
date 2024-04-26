@@ -18,7 +18,8 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public void register(MemberFormDTO memberFormDTO) {
+    public void registerMember(MemberFormDTO memberFormDTO) {
+
         Member member = Member.builder()
                 .name(memberFormDTO.getName())
                 .email(memberFormDTO.getEmail())
@@ -34,5 +35,9 @@ public class MemberService {
                 .build();
 
         memberRepository.save(member);
+    }
+
+    private void check(MemberFormDTO memberFormDTO){
+
     }
 }

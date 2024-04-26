@@ -66,9 +66,11 @@
             </div>
         </div>
         <div class="mb-3">
-            <p th:if="${registerErrorMsg}" class="error" th:text="${registerErrorMsg}"></p>
+            <!-- 전역 오류 메시지 출력 -->
+            <p th:if="${errors}" class="error" th:each="error : ${errors}" th:text="${error.defaultMessage}"></p>
             <button type="submit" class="btn btn-primary">회원가입</button>
-            <button type="button" class="btn btn-primary" onclick="location.href='/members/login'">로그인</button>
+            <!-- csrf 토큰 임시 해제 -->
+            <!-- <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"> -->
         </div>
     </form>
 

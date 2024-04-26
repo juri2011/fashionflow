@@ -23,5 +23,5 @@ public class MemberFormDTO {
     private String userAddr; // 주소
     private String userDaddr; // 상세주소
     private String userStnum; // 지번
-    private LocalDate regdate; // 가입일
+    private LocalDateTime regdate; // 가입일
 }

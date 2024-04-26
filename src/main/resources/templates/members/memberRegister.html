@@ -17,11 +17,11 @@
     <form role="form" method="post" action="/members/register">
         <div class="form-group mb-3">
             <label for="name">이름</label>
-            <input type="text" name="name" class="form-control" placeholder="이름을 입력해주세요">
+            <input type="text" name="name" id="name" class="form-control" placeholder="이름을 입력해주세요">
         </div>
         <div class="form-group mb-3">
             <label for="email">이메일주소</label>
-            <input type="email" name="email" class="form-control" placeholder="이메일을 입력해주세요">
+            <input type="email" name="email" id="email" class="form-control" placeholder="이메일을 입력해주세요">
         </div>
         <div class="form-group mb-3">
             <label for="pwd">비밀번호</label>
@@ -33,36 +33,36 @@
         </div>
         <div class="form-group mb-3">
             <label for="nickname">닉네임</label>
-            <input type="text" name="nickname" class="form-control" placeholder="닉네임을 입력해주세요">
+            <input type="text" name="nickname" id="nickname" class="form-control" placeholder="닉네임을 입력해주세요">
         </div>
         <div class="form-group mb-3">
             <label for="phone">전화번호</label>
-            <input type="text" name="phone" class="form-control" placeholder="전화번호를 입력해주세요">
+            <input type="text" name="phone" id="phone" class="form-control" placeholder="전화번호를 입력해주세요">
         </div>
         <div class="form-group mb-3">
             <label for="birth">생년월일</label>
-            <input type="date" name="birth" class="form-control">
+            <input type="date" name="birth" id="birth" class="form-control">
         </div>
         <div class="form-group mb-3">
             <label for="gender">성별</label>
-            <select name="gender" class="form-control">
-                <option value="male">남성</option>
-                <option value="female">여성</option>
-                <option value="other">기타</option>
+            <select name="gender" id="gender" class="form-control">
+                <option value="m">남성</option>
+                <option value="f">여성</option>
+                <option value="secret">기타</option>
             </select>
         </div>
         <div class="form-row">
             <div class="form-group col-md-6 mb-3">
                 <label for="userAddr">주소</label>
-                <input type="text" name="userAddr" class="form-control" placeholder="주소를 입력해주세요">
+                <input type="text" name="userAddr" id="userAddr" class="form-control" placeholder="주소를 입력해주세요">
             </div>
             <div class="form-group col-md-3 mb-3">
                 <label for="userDaddr">상세주소</label>
-                <input type="text" name="userDaddr" class="form-control" placeholder="상세주소를 입력해주세요">
+                <input type="text" name="userDaddr" id="userDaddr" class="form-control" placeholder="상세주소를 입력해주세요">
             </div>
             <div class="form-group col-md-3 mb-3">
                 <label for="userStnum">지번</label>
-                <input type="text" name="userStnum" class="form-control" placeholder="지번을 입력해주세요">
+                <input type="text" name="userStnum" id="userStnum" class="form-control" placeholder="지번을 입력해주세요">
             </div>
         </div>
         <div class="mb-3">

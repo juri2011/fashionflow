@@ -4,6 +4,7 @@ import com.fashionflow.constant.Gender;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -36,7 +37,7 @@ public class Member {
     private String phone; //전화번호
 
     @Column(nullable = false)
-    private LocalDateTime birth; //생일
+    private LocalDate birth; //생일
     
     //enum
     @Column(nullable = false)

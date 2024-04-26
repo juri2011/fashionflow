@@ -73,8 +73,14 @@ class ItemTagTest {
         /* 생성한 태그 데이터를 실제 DB에 저장 */
         List<ItemTag> savedItemTagList = itemTagRepository.saveAll(itemTagList);
 
-        savedItemTagList.forEach(savedItemTag -> System.out.println("=========================" + savedItemTag));
+        //savedItemTagList.forEach(savedItemTag -> System.out.println("=========================" + savedItemTag));
+    }
 
+    @Test
+    public void findItemTagByItemIdTest(){
+        List<ItemTag> itemTagList = itemTagRepository.findByItemId(1L); //상품번호 1번의 태그 검색
+
+        itemTagList.forEach(itemTag -> System.out.println("======================================검색결과 : "+itemTag));
     }
 
 }

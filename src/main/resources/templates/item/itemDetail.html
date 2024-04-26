@@ -31,5 +31,9 @@
         판매상태 : <span th:text="${item.sellStatus}"></span>
     </div>
 
+    <div th:each="itemTag, status: ${itemTagList}">
+        태그 : <span th:text="${itemTag.itemTagName}"></span>
+    </div>
+
 </body>
 </html>

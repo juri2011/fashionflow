@@ -1,6 +1,7 @@
 package com.fashionflow.entity;
 
 import com.fashionflow.constant.Gender;
+import com.fashionflow.constant.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,7 +31,7 @@ public class Member {
     @Column(nullable = false)
     private String pwd; //비밀번호
 
-    @Column(nullable = false, length=100)
+    @Column(nullable = false, length=100, unique = true)
     private String nickname; //별명
 
     @Column(nullable = false, unique = true, length = 100)
@@ -59,11 +60,10 @@ public class Member {
     @Column(nullable = false)
     private LocalDateTime regdate; //가입일
 
-    /*
-    시큐리티 - 사용자 등급
+    //시큐리티 - 사용자 등급
     @Enumerated(EnumType.STRING)
-    private Role role;
-    */
+    @Builder.Default
+    private Role role = Role.USER; // 기본값 USER
 
 
 }

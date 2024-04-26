@@ -22,17 +22,35 @@
         주소 : <span th:text="${item.address}"></span>
     </div>
     <div>
-        등록일 : <span th:text="${item.regdate}"></span>
+        등록일 :
+        <span th:text="${#temporals.format(item.regdate, 'yyyy-MM-dd HH:mm:ss')}"></span>
     </div>
     <div>
-        상품상태 : <span th:text="${item.itemStatus}"></span>
+        상품상태 :
+        <span th:switch="${#strings.toString(item.itemStatus)}">
+            <span th:case="NEW">새상품</span>
+            <span th:case="NO_SIGNS_OF_USE">사용감 없음</span>
+            <span th:case="SOME_SIGNS_OF_USE">사용감 적음</span>
+            <span th:case="SIGNIFICANT_SIGNS_OF_USE">사용감 많음</span>
+            <span th:case="FAULTY">파손/고장</span>
+        </span>
+        <!--<span th:text="${item.itemStatus}"></span>-->
     </div>
-    <div>
-        판매상태 : <span th:text="${item.sellStatus}"></span>
+    <div th:switch="${#strings.toString(item.sellStatus)}">
+        판매상태 :
+        <span th:case="SELLING">판매중</span>
+        <span th:case="SUSPENDED">판매중단</span>
+        <span th:case="SOLD_OUT">판매완료</span>
     </div>
 
     <div th:each="itemTag, status: ${itemTagList}">
-        태그 : <span th:text="${itemTag.itemTagName}"></span>
+        태그 :
+        <span th:switch="${#strings.toString(itemTag.itemTagName)}">
+            <span th:case="DIRECT_TRADE">직거래</span>
+            <span th:case="DELIVERY_TRADE">택배거래</span>
+            <span th:case="SAME_DAY_DELIVERY">당일배송</span>
+            <span th:case="INTERNATIONAL_DELIVERY">해외배송</span>
+        </span>
     </div>
 
     <div>
@@ -49,7 +67,8 @@
         판매자 매너점수 : <span th:text="${member.mannerScore}"></span>
     </div>
     <div>
-        판매자 가입일 : <span th:text="${member.regdate}"></span>
+        판매자 가입일 :
+        <span th:text="${#temporals.format(member.regdate, 'yyyy-MM-dd')}"></span>
     </div>
     <div>
         판매자 프로필사진 :

@@ -2,11 +2,9 @@ package com.fashionflow.controller;
 
 import com.fashionflow.entity.Category;
 import com.fashionflow.entity.Item;
+import com.fashionflow.entity.ItemImg;
 import com.fashionflow.entity.ItemTag;
-import com.fashionflow.repository.CategoryRepository;
-import com.fashionflow.repository.ItemRepository;
-import com.fashionflow.repository.ItemTagRepository;
-import com.fashionflow.repository.MemberRepository;
+import com.fashionflow.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -27,6 +25,8 @@ public class ItemController {
     private final ItemTagRepository itemTagRepository;
 
     private final CategoryRepository categoryRepository;
+
+    private final ItemImgRepository itemImgRepository;
 
     //상품 리스트 출력
     @GetMapping("/item/{itemId}")
@@ -50,14 +50,19 @@ public class ItemController {
                     new EntityNotFoundException("카테고리가 존재하지 않습니다. id = " + item.getCategory().getId()));
         }
 
-        System.out.println("=============================== 하위카테고리 : "+category);
-        System.out.println("=============================== 상위카테고리 : "+parentCategory);
+        //System.out.println("=============================== 하위카테고리 : "+category);
+        //System.out.println("=============================== 상위카테고리 : "+parentCategory);
+
+        List<ItemImg> itemImgList = itemImgRepository.findByItemId(itemId);
+
+        itemImgList.forEach(itemImg -> System.out.println("======================== 파일명 : " + itemImg.getOriImgName()));
 
         //얘네 FormDto로 묶어서 전달하는게 좋을듯
         model.addAttribute("item", item); //상품 전달
         model.addAttribute("itemTagList", itemTagList); //상품 태그 전달
         model.addAttribute("category", category); //하위 카테고리
         model.addAttribute("parentCategory", parentCategory); //상위 카테고리
+        model.addAttribute("itemImgList", itemImgList); //상품 이미지 리스트
 
         return "item/itemDetail";
     }

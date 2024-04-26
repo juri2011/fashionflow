@@ -39,9 +39,11 @@
         카테고리 :
         <span th:if="${parentCategory != null}" th:text="${parentCategory.name}+'&gt'"></span><span th:text="${category.name}"></span>
     </div>
+    <!--<img src="/test_images/clothes1_1.png" alt="상품사진">-->
+    
 
-    <div>
-        이미지
+    <div th:each="itemImg, status: ${itemImgList}">
+        <img th:src="'/test_images/'+${itemImg.oriImgName}">
     </div>
 
 </body>

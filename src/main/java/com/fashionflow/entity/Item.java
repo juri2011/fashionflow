@@ -23,8 +23,7 @@ public class Item {
     @Column(nullable = false)
     private String itemName; //상품이름
 
-    @Lob
-    @Column(nullable = false)
+    @Column(columnDefinition = "longtext", nullable = false)
     private String content; //상세설명
 
     @Column(nullable = false)
@@ -42,6 +41,10 @@ public class Item {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="category_id")
     private Category category; //카테고리
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="member_id")
+    private Member member;
 
     @Enumerated(EnumType.STRING)
     private ItemStatus itemStatus; //상품 상태

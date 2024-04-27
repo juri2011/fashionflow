@@ -4,6 +4,8 @@ import com.fashionflow.entity.ItemBuy;
 import com.fashionflow.entity.ItemTag;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ItemTagRepository extends JpaRepository<ItemTag, Long> {
+import java.util.List;
 
+public interface ItemTagRepository extends JpaRepository<ItemTag, Long> {
+    public List<ItemTag> findByItemId(Long itemId);
 }

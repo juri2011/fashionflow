@@ -20,6 +20,7 @@ public class ItemTag {
     private Long id;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private ItemTagName itemTagName;
 
     @ManyToOne(fetch=FetchType.LAZY)

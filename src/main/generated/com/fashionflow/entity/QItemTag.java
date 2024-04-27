@@ -26,7 +26,7 @@ public class QItemTag extends EntityPathBase<ItemTag> {
 
     public final QItem item;
 
-    public final EnumPath<com.fashionflow.constant.ItemTagName> item_tag_name = createEnum("item_tag_name", com.fashionflow.constant.ItemTagName.class);
+    public final EnumPath<com.fashionflow.constant.ItemTagName> itemTagName = createEnum("itemTagName", com.fashionflow.constant.ItemTagName.class);
 
     public QItemTag(String variable) {
         this(ItemTag.class, forVariable(variable), INITS);

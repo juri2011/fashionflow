@@ -2,6 +2,9 @@ package com.fashionflow.controller;
 
 import com.fashionflow.entity.*;
 import com.fashionflow.repository.*;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
@@ -29,6 +32,8 @@ public class ItemController {
     private final MemberRepository memberRepository;
 
     private final ProfileImageRepository profileRepository;
+
+    private final EntityManager em;
 
     //상품 리스트 출력
     @GetMapping("/item/{itemId}")
@@ -76,6 +81,35 @@ public class ItemController {
         ProfileImage profileImage = profileRepository.findByMemberId(member.getId());
         System.out.println(profileImage);
 
+        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
+        QItem qItem = QItem.item;
+
+        /* 현재 상품을 제외한 상품 정보 가져오기 */
+        /*
+        List<Item> itemList = queryFactory.select(qItem)
+                .from(qItem)
+                .where(qItem.member.id.eq(member.getId()))
+                .where(qItem.id.ne(itemId))
+                .orderBy(qItem.id.desc())
+                .fetch();
+        
+        itemList.forEach(i -> System.out.println("======================== "+i));
+        */
+        /* 위의 상품 리스트의 대표사진 가져오기 */
+
+        /*
+            1. 현재 아이템 번호를 제외한 다른 아이템
+            2. 현재 멤버의 아이템 목록(이거는 qItemImg.item.member로 참조해야 할 듯 )
+        */
+        QItemImg qItemImg = QItemImg.itemImg;
+        /*
+        List<ItemImg> otherItemImgList = queryFactory.select(qItemImg)
+                .from(qItemImg)
+                .where(qItemImg.item.member.id.eq(member.getId()),qItemImg.id.ne(itemId))
+                .orderBy(qItemImg.id.desc())
+                .fetch();
+        */
+
         //얘네 FormDto로 묶어서 전달하는게 좋을듯
         model.addAttribute("item", item); //상품 전달
         model.addAttribute("itemTagList", itemTagList); //상품 태그 전달
@@ -84,6 +118,7 @@ public class ItemController {
         model.addAttribute("itemImgList", itemImgList); //상품 이미지 리스트
         model.addAttribute("member", member);//판매자 정보(주소나 비밀번호 등 민감한 정보가 들어가 있음)
         model.addAttribute("profileImage", profileImage);
+        //model.addAttribute("itemList", itemList); // 현재 상품을 제외한 다른 상품 리스트
 
         return "item/itemDetail";
     }

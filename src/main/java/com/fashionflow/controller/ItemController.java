@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -81,10 +82,10 @@ public class ItemController {
         ProfileImage profileImage = profileRepository.findByMemberId(member.getId());
         System.out.println(profileImage);
 
-        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
-        QItem qItem = QItem.item;
-
         /* 현재 상품을 제외한 상품 정보 가져오기 */
+        QItem qItem = QItem.item;
+        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
+
 
         List<Item> otherItemList = queryFactory.select(qItem)
                 .from(qItem)
@@ -92,23 +93,31 @@ public class ItemController {
                 .where(qItem.id.ne(itemId))
                 .orderBy(qItem.id.desc())
                 .fetch();
-        
-        otherItemList.forEach(i -> System.out.println("======================== "+i));
+
+        //otherItemList.forEach(i -> System.out.println("======================== "+i));
 
         /* 위의 상품 리스트의 대표사진 가져오기 */
-
-        /*
-            1. 현재 아이템 번호를 제외한 다른 아이템
-            2. 현재 멤버의 아이템 목록(이거는 qItemImg.item.member로 참조해야 할 듯 )
-        */
         QItemImg qItemImg = QItemImg.itemImg;
-        /*
         List<ItemImg> otherItemImgList = queryFactory.select(qItemImg)
                 .from(qItemImg)
-                .where(qItemImg.item.member.id.eq(member.getId()),qItemImg.id.ne(itemId))
-                .orderBy(qItemImg.id.desc())
+                .where(qItemImg.item.member.id.eq(member.getId()),
+                        qItemImg.item.id.ne(itemId),
+                        qItemImg.repimgYn.eq("Y"))
+                .orderBy(qItemImg.item.regdate.desc())
                 .fetch();
-        */
+
+        /*
+        BooleanBuilder booleanBuilder = new BooleanBuilder();
+        booleanBuilder.and(qItemImg.item.member.id.eq(member.getId()));
+        booleanBuilder.and(qItemImg.item.id.ne(itemId));
+        booleanBuilder.and(qItemImg.repimgYn.eq("Y"));
+        Iterable<ItemImg> otherItemImgIterable = itemImgRepository.findAll(booleanBuilder);
+        List<ItemImg> otherItemImgList = new ArrayList<>();
+        otherItemImgIterable.forEach(otherItemImgList::add);
+
+         */
+        otherItemImgList.forEach(otherItemImg -> System.out.println("====================="+otherItemImg));
+
 
         //얘네 FormDto로 묶어서 전달하는게 좋을듯
         model.addAttribute("item", item); //상품 전달
@@ -119,6 +128,7 @@ public class ItemController {
         model.addAttribute("member", member);//판매자 정보(주소나 비밀번호 등 민감한 정보가 들어가 있음)
         model.addAttribute("profileImage", profileImage);
         model.addAttribute("otherItemList", otherItemList); // 현재 상품을 제외한 다른 상품 리스트
+        model.addAttribute("otherItemImgList", otherItemImgList); //판매자 다른 상품 이미지 리스트
 
         return "item/itemDetail";
     }

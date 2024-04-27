@@ -88,17 +88,17 @@
     <hr/>
 
     <!-- 사용자가 판매중인 다른 상품 -->
-    <div th:each="otherItem, status: ${otherItemList}">
-        <!--<img th:src="'/test_images/'+${itemImg.oriImgName}" alt="사진">-->
+    <div th:each="otherItemImg, status: ${otherItemImgList}">
+        <img th:src="'/test_images/'+${otherItemImg.oriImgName}" alt="사진">
         <!--
             1. 상품 대표 사진
             2. 상품명
             3. 가격
             4. 올린 시간
         -->
-        <p th:text="${otherItem.itemName}"></p>
-        <p th:text="${otherItem.price}"></p>
-        <p th:text="${#temporals.format(otherItem.regdate, 'yyyy-MM-dd')}"></p>
+        <p th:text="${otherItemImg.item.itemName}"></p>
+        <p th:text="${otherItemImg.item.price}"></p>
+        <p th:text="${#temporals.format(otherItemImg.item.regdate, 'yyyy-MM-dd')}"></p>
         <hr>
     </div>
 

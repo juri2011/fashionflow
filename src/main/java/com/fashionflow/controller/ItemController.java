@@ -36,6 +36,10 @@ public class ItemController {
 
     private final EntityManager em;
 
+    private final ItemSellRepository itemSellRepository;
+
+    private final HeartRepository heartRepository;
+
     //상품 리스트 출력
     @GetMapping("/item/{itemId}")
     public String itemDetali(Model model, @PathVariable("itemId") Long itemId){
@@ -104,20 +108,17 @@ public class ItemController {
                         qItemImg.item.id.ne(itemId),
                         qItemImg.repimgYn.eq("Y"))
                 .orderBy(qItemImg.item.regdate.desc())
+                .limit(4)
                 .fetch();
+        //otherItemImgList.forEach(otherItemImg -> System.out.println("====================="+otherItemImg));
 
-        /*
-        BooleanBuilder booleanBuilder = new BooleanBuilder();
-        booleanBuilder.and(qItemImg.item.member.id.eq(member.getId()));
-        booleanBuilder.and(qItemImg.item.id.ne(itemId));
-        booleanBuilder.and(qItemImg.repimgYn.eq("Y"));
-        Iterable<ItemImg> otherItemImgIterable = itemImgRepository.findAll(booleanBuilder);
-        List<ItemImg> otherItemImgList = new ArrayList<>();
-        otherItemImgIterable.forEach(otherItemImgList::add);
+        /* 판매수 */
+        Long sellCount = itemSellRepository.countByMemberId(member.getId());
 
-         */
-        otherItemImgList.forEach(otherItemImg -> System.out.println("====================="+otherItemImg));
+        System.out.println(sellCount);
 
+        /* 찜한 갯수 */
+        Long heartCount = heartRepository.countByItemId(itemId);
 
         //얘네 FormDto로 묶어서 전달하는게 좋을듯
         model.addAttribute("item", item); //상품 전달
@@ -129,6 +130,8 @@ public class ItemController {
         model.addAttribute("profileImage", profileImage);
         model.addAttribute("otherItemList", otherItemList); // 현재 상품을 제외한 다른 상품 리스트
         model.addAttribute("otherItemImgList", otherItemImgList); //판매자 다른 상품 이미지 리스트
+        model.addAttribute("sellCount", sellCount);//판매수
+        model.addAttribute("heartCount", heartCount); //찜한 갯수
 
         return "item/itemDetail";
     }

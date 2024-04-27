@@ -6,6 +6,7 @@
 </head>
 <body>
     <h1>상품 데이터 출력 예제</h1>
+    <h2>상품 데이터</h2>
     <div>
         상품명 : <span th:text="${item.itemName}"></span>
     </div>
@@ -42,6 +43,10 @@
         <span th:case="SUSPENDED">판매중단</span>
         <span th:case="SOLD_OUT">판매완료</span>
     </div>
+    <div>
+        조회수 : <span th:text="${item.viewCount}"></span> <br>
+        찜한 횟수 : <span th:text="${heartCount}"></span>
+    </div>
 
     <div th:each="itemTag, status: ${itemTagList}">
         태그 :
@@ -60,6 +65,15 @@
     <!--<img src="/test_images/clothes1_1.png" alt="상품사진">-->
     <hr/>
 
+    <h2>판매 상품 이미지</h2>
+    <!-- 판매중인 상품 이미지 -->
+    <div th:each="itemImg, status: ${itemImgList}">
+        <img th:src="'/test_images/'+${itemImg.oriImgName}">
+    </div>
+
+    <hr>
+
+    <h2>판매자 정보</h2>
     <div>
         판매자 닉네임 : <span th:text="${member.nickname}"></span>
     </div>
@@ -79,34 +93,26 @@
         <!-- <p th:text="${profileImage.uploadPath}+${profileImage.filename}"></p> -->
         <img th:if="${profileImage}!=null" th:src="${profileImage.uploadPath}+${profileImage.filename}">
     </div>
-
-    <hr/>
-    <div th:each="itemImg, status: ${itemImgList}">
-        <img th:src="'/test_images/'+${itemImg.oriImgName}">
+    <div>
+        판매자 판매수 : <span th:text="${sellCount}"></span>
     </div>
-
+    <div>
+        판매자 소개 : <span th:text="${member.intro}"></span>
+    </div>
     <hr/>
 
+    <h2>판매중인 다른 상품</h2>
     <!-- 사용자가 판매중인 다른 상품 -->
     <div th:each="otherItemImg, status: ${otherItemImgList}">
         <img th:src="'/test_images/'+${otherItemImg.oriImgName}" alt="사진">
-        <!--
-            1. 상품 대표 사진
-            2. 상품명
-            3. 가격
-            4. 올린 시간
-        -->
         <p th:text="${otherItemImg.item.itemName}"></p>
         <p th:text="${otherItemImg.item.price}"></p>
         <p th:text="${#temporals.format(otherItemImg.item.regdate, 'yyyy-MM-dd')}"></p>
         <hr>
     </div>
 
-
-
     <!--
         더 추가해야 할 것
-        1. 판매수 (이거는 itemSell의 count로 갖고 와도 될 듯)
         2. 프로필사진(없으면 기본사진)
         3. 판매자 소개
         4. 판매자 다른 상품(판매자 아이디로 검색한 상품 리스트로 가져오기)

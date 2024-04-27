@@ -5,10 +5,10 @@ spring:
   application:
     name: fasionflow
 
-#  security:
-#    user:
-#      name: test@test.com
-#      password: 12345
+  #  security:
+  #    user:
+  #      name: test@test.com
+  #      password: 12345
 
   devtools:
     restart:
@@ -41,6 +41,26 @@ spring:
       maxFileSize: 20MB
       maxRequestSize: 100MB
 
+  # 메일 관련
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: fashionflow0416
+    password: ojfk desu wgui oxmj
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+    auth-code-expiration-millis: 1800000
+
+
+
 #itemImgLocation: D:/shop/item
 
 #uploadPath: file:///D:/shop/
@@ -52,7 +72,6 @@ logging:
         type:
           descriptor:
             sql: trace
-
 
 
 

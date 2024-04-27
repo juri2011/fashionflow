@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -43,7 +44,7 @@ class ShopApplicationTests {
     public Member createMember(){
 
         //LocalDateTime으로 변환하기 위해 임시로 생성한 생일 데이터
-        LocalDateTime birthday = LocalDateTime.of(1998, 11, 2,0,0);
+        LocalDate birthday = LocalDate.of(1998, 11, 2);
 
         /*
             여기서는 builder를 통해 임시로 테스트를 진행했지만

@@ -19,7 +19,7 @@ public class QMember extends EntityPathBase<Member> {
 
     public static final QMember member = new QMember("member1");
 
-    public final DateTimePath<java.time.LocalDateTime> birth = createDateTime("birth", java.time.LocalDateTime.class);
+    public final DatePath<java.time.LocalDate> birth = createDate("birth", java.time.LocalDate.class);
 
     public final StringPath email = createString("email");
 
@@ -38,6 +38,8 @@ public class QMember extends EntityPathBase<Member> {
     public final StringPath pwd = createString("pwd");
 
     public final DateTimePath<java.time.LocalDateTime> regdate = createDateTime("regdate", java.time.LocalDateTime.class);
+
+    public final EnumPath<com.fashionflow.constant.Role> role = createEnum("role", com.fashionflow.constant.Role.class);
 
     public final StringPath userAddr = createString("userAddr");
 

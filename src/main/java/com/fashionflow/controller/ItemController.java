@@ -85,16 +85,16 @@ public class ItemController {
         QItem qItem = QItem.item;
 
         /* 현재 상품을 제외한 상품 정보 가져오기 */
-        /*
-        List<Item> itemList = queryFactory.select(qItem)
+
+        List<Item> otherItemList = queryFactory.select(qItem)
                 .from(qItem)
                 .where(qItem.member.id.eq(member.getId()))
                 .where(qItem.id.ne(itemId))
                 .orderBy(qItem.id.desc())
                 .fetch();
         
-        itemList.forEach(i -> System.out.println("======================== "+i));
-        */
+        otherItemList.forEach(i -> System.out.println("======================== "+i));
+
         /* 위의 상품 리스트의 대표사진 가져오기 */
 
         /*
@@ -118,7 +118,7 @@ public class ItemController {
         model.addAttribute("itemImgList", itemImgList); //상품 이미지 리스트
         model.addAttribute("member", member);//판매자 정보(주소나 비밀번호 등 민감한 정보가 들어가 있음)
         model.addAttribute("profileImage", profileImage);
-        //model.addAttribute("itemList", itemList); // 현재 상품을 제외한 다른 상품 리스트
+        model.addAttribute("otherItemList", otherItemList); // 현재 상품을 제외한 다른 상품 리스트
 
         return "item/itemDetail";
     }

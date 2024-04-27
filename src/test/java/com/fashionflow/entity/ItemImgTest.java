@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,7 +27,6 @@ class ItemImgTest {
         itemImgList.forEach(itemImg -> System.out.println("=============================== 검색결과 : "+itemImg));
 
     }
-/*
     @Test
     public void findItemImgExceptOneTest(){
 
@@ -35,13 +35,16 @@ class ItemImgTest {
         BooleanBuilder booleanBuilder = new BooleanBuilder();
         booleanBuilder.and(qItemImg.item.member.id.eq(1L));
         booleanBuilder.and(qItemImg.item.id.ne(1L));
-        List<ItemImg> otherItemImgList = itemImgRepository.findAll(booleanBuilder);
 
+        Iterable<ItemImg> otherItemImgIterable = itemImgRepository.findAll(booleanBuilder);
+        List<ItemImg> otherItemImgList = new ArrayList<>();
+        otherItemImgIterable.forEach(otherItemImgList::add);
+
+        otherItemImgList.forEach(System.out::println);
+        /*
         for(ItemImg itemImg : otherItemImgList){
             System.out.println("===========================" + itemImg);
         }
-        //otherItemImgList.forEach(itemImg -> System.out.println("==================" + itemImg));
-
-    }
 */
+    }
 }

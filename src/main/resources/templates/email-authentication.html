@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>인증 페이지</title>
+</head>
+<body style="font-family: 'Arial', sans-serif; background-color: #2C3E50; color: white; text-align: center; margin: 0; padding: 0; height: 100%; width: 100%;">
+<table align="center" role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: auto; max-width: 600px; background-color: #AED6F1; border-radius: 5px;">
+    <tr>
+        <td style="padding: 40px; text-align: center;">
+            <div style="margin-bottom: 30px;">
+                <!-- 여기에 로고 이미지를 삽입하거나 로고 텍스트를 사용하세요 -->
+                YOUR LOGO
+            </div>
+            <h1 style="color: white; font-size: 24px; margin: 0 0 10px 0;">안녕하세요!</h1>
+            <p style="margin: 0 0 20px 0; color: white; line-height: 1.5; font-size: 16px; ">이메일 인증 코드 보내드립니다.</p>
+            <!-- Thymeleaf로 동적 값 바인딩 -->
+            <div style="background-color: #ffffff; color: black; padding: 10px 20px; display: inline-block; border-radius: 4px;" th:text="${authenticationCode}">
+                [인증 코드]
+            </div>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

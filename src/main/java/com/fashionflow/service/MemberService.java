@@ -1,3 +1,4 @@
+/*
 package com.fashionflow.service;
 
 import com.fashionflow.constant.Gender;
@@ -5,12 +6,14 @@ import com.fashionflow.dto.MemberFormDTO;
 import com.fashionflow.entity.Member;
 import com.fashionflow.repository.MemberRepository;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
+import lombok.RequiredArgsConstructor;*/
+/*
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;*//*
+
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -83,4 +86,4 @@ public class MemberService implements UserDetailsService {
                 .roles(member.getRole().toString())
                 .build();
     }
-}
+}*/

@@ -2,12 +2,10 @@ package com.fashionflow.controller;
 
 import com.fashionflow.dto.MemberFormDTO;
 import com.fashionflow.entity.Member;
-/*import com.fashionflow.service.MemberService;*/
+import com.fashionflow.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-/*
 import org.springframework.security.crypto.password.PasswordEncoder;
-*/
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -20,12 +18,8 @@ import org.springframework.web.servlet.ModelAndView;
 @RequiredArgsConstructor
 public class MemberController {
 
-/*
     private final MemberService memberService;
-*/
-/*
     private final PasswordEncoder passwordEncoder; // PasswordEncoder 주입
-*/
 
 
     //로그인 페이지 이동
@@ -71,9 +65,7 @@ public class MemberController {
         try {
 
             // 유효성 검사 성공 시 회원 등록 처리
-/*
             memberService.registerMember(memberFormDTO, passwordEncoder);
-*/
 
             // 회원가입 성공 시 메인 페이지로 리다이렉트
             modelAndView.setViewName("redirect:/");

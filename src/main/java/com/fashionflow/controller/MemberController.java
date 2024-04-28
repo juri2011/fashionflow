@@ -94,12 +94,23 @@ public class MemberController {
     }
 
     @PostMapping("/memberEdit")
-    public String memberEdit(MemberFormDTO memberFormDTO) {
+    public String memberEdit(MemberFormDTO memberFormDTO, Model model) {
 
 
 
-        memberService.updateMember(memberFormDTO, passwordEncoder);
+        try {
+            memberService.updateMember(memberFormDTO, passwordEncoder);
+            return "redirect:/";
+        } catch (IllegalArgumentException e) {
+            // 현재 멤버 정보를 가져와서 다시 모델에 추가
+            Member currentMember = memberService.findMemberByCurrentEmail();
+            model.addAttribute("currentMember", currentMember);
 
-        return "redirect:/";
+            model.addAttribute("errorMessage", e.getMessage());
+            return "members/memberEdit"; // 에러가 발생한 페이지로 리디렉션 또는 해당 페이지로 포워딩
+        }
+
+
+
     }
 }

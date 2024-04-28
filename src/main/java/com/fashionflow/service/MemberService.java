@@ -116,6 +116,13 @@ public class MemberService implements UserDetailsService {
         // 이메일로 사용자 조회
         Member currentMember = memberRepository.findByEmail(memberFormDTO.getEmail());
 
+        Member exsitingMember = memberRepository.findByNickname(memberFormDTO.getNickname());
+
+        if(exsitingMember != null && !exsitingMember.getId().equals(currentMember.getId())){
+
+            throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
+        }
+
 
         // 회원 정보 업데이트
         currentMember.setPwd(encodedPassword);

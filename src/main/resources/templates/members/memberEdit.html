@@ -21,6 +21,9 @@
 
 <div layout:fragment="content">
 
+    <div th:if="${errorMessage}" class="error-message">
+        <p th:text="${errorMessage}"></p>
+    </div>
 
     <form role="form" method="post" action="/members/memberEdit">
         <div class="form-group mb-3">

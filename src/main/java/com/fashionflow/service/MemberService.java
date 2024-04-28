@@ -6,6 +6,8 @@ import com.fashionflow.entity.Member;
 import com.fashionflow.repository.MemberRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -84,4 +86,26 @@ public class MemberService implements UserDetailsService {
                 .roles(member.getRole().toString())
                 .build();
     }
+
+    //현재 로그인된 사용자 security를 이용해 email 반환
+    public String currentMemberEmail() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            return authentication.getName(); // 사용자의 이메일 반환
+        }
+        return null;
+    }
+
+    // 반환된 email로 사용자의 정보 조회 메소드
+    public Member findMemberByCurrentEmail() {
+        String email = currentMemberEmail();
+        if (email != null) {
+            return memberRepository.findByEmail(email);
+        }
+        return null;
+    }
+
+
+
+
 }

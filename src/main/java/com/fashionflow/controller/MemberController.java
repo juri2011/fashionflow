@@ -83,9 +83,13 @@ public class MemberController {
     }
 
     @GetMapping("/memberEdit")
-    public String memberEditPage(){
-        return "members/memberEdit";
-    }
+    public String memberEditPage(Model model) {
+        Member currentMember = memberService.findMemberByCurrentEmail();
 
+        model.addAttribute("currentMember", currentMember);
+
+        return "members/memberEdit"; // 수정 페이지로 이동
+
+    }
 
 }

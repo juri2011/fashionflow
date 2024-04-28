@@ -3,6 +3,7 @@ package com.fashionflow.controller;
 import com.fashionflow.dto.ItemFormDTO;
 import com.fashionflow.entity.*;
 import com.fashionflow.repository.*;
+import com.fashionflow.service.HeartService;
 import com.fashionflow.service.ItemService;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -44,14 +45,18 @@ public class ItemController {
 
     private final ItemService itemService;
 
+    private final HeartService heartService;
+
     //상품 리스트 출력
     @GetMapping("/item/{itemId}")
     public String itemDetail(Model model, @PathVariable("itemId") Long itemId){
 
-        ItemFormDTO itemFormDTO = itemService.getItemDetail(itemId);
+        ItemFormDTO itemFormDTO = itemService.getItemDetail(itemId); //상품 상세정보(이미지, 태그, 카테고리 포함)
+        Long heartCount = heartService.countHeartById(itemId); //상품 찜한 갯수
         System.out.println("=====================" + itemFormDTO);
 
         model.addAttribute("itemFormDTO", itemFormDTO);
+        model.addAttribute("heartCount", heartCount);
         return "item/itemDetail";
     }
 

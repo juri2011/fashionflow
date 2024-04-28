@@ -94,10 +94,29 @@ public class MemberController {
     }
 
     @PostMapping("/memberEdit")
-    public String memberEdit(MemberFormDTO memberFormDTO, Model model) {
+    public String memberEdit(@Valid MemberFormDTO memberFormDTO, BindingResult bindingResult, Model model) {
 
+        // 유효성 검사 실패 시
+        if (bindingResult.hasErrors()) {
+            // 현재 멤버 정보를 가져와서 다시 모델에 추가
+            Member currentMember = memberService.findMemberByCurrentEmail();
+            model.addAttribute("currentMember", currentMember);
+            // 유효성 검사에 실패한 필드에 대한 오류 메시지를 추출하여 모델에 추가
+            model.addAttribute("errors", bindingResult.getAllErrors());
+            // 유효성 검사 실패에 따른 오류 메시지를 뷰로 전달
+            return "members/memberEdit"; // 에러가 발생한 페이지로 리디렉션 또는 해당 페이지로 포워딩
+        }
 
+        // 비밀번호와 비밀번호 확인 일치 여부 확인
+        if (!memberFormDTO.getPwd().equals(memberFormDTO.getConfirmPwd())) {
+            model.addAttribute("pwdErrorMessage", "비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+            // 현재 멤버 정보를 가져와서 다시 모델에 추가
+            Member currentMember = memberService.findMemberByCurrentEmail();
+            model.addAttribute("currentMember", currentMember);
+            return "members/memberEdit"; // 에러가 발생한 페이지로 리디렉션 또는 해당 페이지로 포워딩
+        }
 
+        // 닉네임 중복 검사
         try {
             memberService.updateMember(memberFormDTO, passwordEncoder);
             return "redirect:/";
@@ -106,11 +125,9 @@ public class MemberController {
             Member currentMember = memberService.findMemberByCurrentEmail();
             model.addAttribute("currentMember", currentMember);
 
-            model.addAttribute("errorMessage", e.getMessage());
+            model.addAttribute("duplicateErrorMessage", e.getMessage());
             return "members/memberEdit"; // 에러가 발생한 페이지로 리디렉션 또는 해당 페이지로 포워딩
         }
-
-
 
     }
 }

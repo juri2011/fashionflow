@@ -73,6 +73,7 @@ public class MemberService implements UserDetailsService {
     }
 
 
+    //사용자 인증처리
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Member member = memberRepository.findByEmail(email);

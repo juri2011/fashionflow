@@ -21,9 +21,24 @@
 
 <div layout:fragment="content">
 
-    <div th:if="${errorMessage}" class="error-message">
-        <p th:text="${errorMessage}"></p>
+    <!-- 닉네임 중복 -->
+    <div th:if="${duplicateErrorMessage}" class="error-message">
+        <p th:text="${duplicateErrorMessage}"></p>
     </div>
+    <!-- 비밀번호, 비밀번호 확인 불일치 -->
+    <div th:if="${pwdErrorMessage}" class="error-message">
+        <p th:text="${pwdErrorMessage}"></p>
+    </div>
+    <!-- 유효성 검사 결과를 출력하는 부분 -->
+    <div class="error-message" th:if="${errors}">
+        <p>다음 항목을 확인해주세요:</p>
+        <ul>
+            <li th:each="error : ${errors}">
+                <span th:text="${error.defaultMessage}"></span>
+            </li>
+        </ul>
+    </div>
+
 
     <form role="form" method="post" action="/members/memberEdit">
         <div class="form-group mb-3">

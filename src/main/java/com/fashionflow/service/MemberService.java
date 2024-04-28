@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -103,6 +104,23 @@ public class MemberService implements UserDetailsService {
             return memberRepository.findByEmail(email);
         }
         return null;
+    }
+
+
+    // 회원 정보 업데이트 메서드
+    public void updateMember(MemberFormDTO memberFormDTO) {
+        // 이메일로 사용자 조회
+        Member currentMember = memberRepository.findByEmail(memberFormDTO.getEmail());
+
+        // 회원 정보 업데이트
+        currentMember.setPwd(memberFormDTO.getPwd());
+        currentMember.setNickname(memberFormDTO.getNickname());
+        currentMember.setGender(memberFormDTO.getGender());
+        currentMember.setUserStnum(memberFormDTO.getUserStnum());
+        currentMember.setUserAddr(memberFormDTO.getUserAddr());
+        currentMember.setUserDaddr(memberFormDTO.getUserDaddr());
+
+        memberRepository.save(currentMember);
     }
 
 

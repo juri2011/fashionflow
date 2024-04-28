@@ -94,6 +94,9 @@
         </div>
         <div class="mb-3">
             <button type="submit" class="btn btn-primary">수정</button>
+            <!-- 삭제 버튼 추가 -->
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal">삭제</button>
+
             <!-- csrf 토큰 임시 해제 -->
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
         </div>
@@ -125,4 +128,12 @@
             }
         }).open();
     }
+
+    document.getElementById("deleteBtn").addEventListener("click", function() {
+    console.log("회원 탈퇴 처리 로직 실행");
+    // AJAX 요청을 여기에 추가
+    // 예: 회원 탈퇴 API 호출
+    // 성공적으로 처리되면 모달 창 닫기
+    $("#deleteConfirmModal").modal('hide');
+});
 </script>

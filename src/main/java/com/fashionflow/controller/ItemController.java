@@ -126,12 +126,16 @@ public class ItemController {
         model.addAttribute("category", category); //하위 카테고리
         model.addAttribute("parentCategory", parentCategory); //상위 카테고리
         model.addAttribute("itemImgList", itemImgList); //상품 이미지 리스트
+        //
+        model.addAttribute("heartCount", heartCount); //찜한 갯수
+        //
         model.addAttribute("member", member);//판매자 정보(주소나 비밀번호 등 민감한 정보가 들어가 있음)
         model.addAttribute("profileImage", profileImage);
         model.addAttribute("otherItemList", otherItemList); // 현재 상품을 제외한 다른 상품 리스트
-        model.addAttribute("otherItemImgList", otherItemImgList); //판매자 다른 상품 이미지 리스트
         model.addAttribute("sellCount", sellCount);//판매수
-        model.addAttribute("heartCount", heartCount); //찜한 갯수
+        model.addAttribute("otherItemImgList", otherItemImgList); //판매자 다른 상품 이미지 리스트
+
+
 
         return "item/itemDetail";
     }

@@ -33,9 +33,9 @@
                         </li>
 
                         <li class="nav-item" sec:authorize="isAuthenticated()">
-                            <!-- 로그아웃을 위한 form을 생성합니다. -->
+                            <!-- 로그아웃 form -->
                             <form action="/members/logout" method="post" style="display:inline;">
-                                <!-- CSRF 토큰을 form 안에 포함합니다. Thymeleaf를 사용하면 아래와 같이 자동으로 CSRF 토큰을 포함할 수 있습니다. -->
+                                <!-- CSRF 토큰 포함 -->
                                 <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
                                 <!-- 로그아웃 버튼 -->
                                 <button type="submit" class="btn btn-link nav-link active" aria-current="page" style="border:none; background:none; padding:0; margin:0;">로그아웃</button>
@@ -51,7 +51,7 @@
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <li>
-                                    <a class="dropdown-item" href="/members/memberDetails">상세회원정보</a>
+                                    <a class="dropdown-item" href="/members/memberEdit">회원정보수정</a>
                                 </li>
                                 <li>
                                     <a class="dropdown-item" href="/orders">구매내역</a>

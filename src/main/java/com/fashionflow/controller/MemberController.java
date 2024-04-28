@@ -11,11 +11,13 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/members")
 public class MemberController {
 
     private final MemberService memberService;
@@ -23,26 +25,26 @@ public class MemberController {
 
 
     //로그인 페이지 이동
-    @GetMapping("/members/login")
+    @GetMapping("/login")
     public String loginPage(){
         return "members/memberLoginForm";
     }
 
-    @GetMapping("/members/login/error")
+    @GetMapping("/login/error")
     public String loginError(Model model){
         model.addAttribute("loginErrorMsg", "아이디 비밀번호를 확인해주세요");
-        return "/members/memberLoginForm";
+        return "members/memberLoginForm";
     }
     
     //회원가입 페이지 이동
-    @GetMapping("members/register")
+    @GetMapping("/register")
     public String registerPage(Model model) {
         model.addAttribute("memberFormDTO", new MemberFormDTO());
         return "members/memberRegister";
     }
 
     // 회원 정보 입력
-    @PostMapping("/members/register")
+    @PostMapping("/register")
     public ModelAndView registerMember(@Valid MemberFormDTO memberFormDTO, BindingResult bindingResult) {
 
         ModelAndView modelAndView = new ModelAndView();
@@ -80,6 +82,10 @@ public class MemberController {
         return modelAndView;
     }
 
+    @GetMapping("/memberEdit")
+    public String memberEditPage(){
+        return "members/memberEdit";
+    }
 
 
 }

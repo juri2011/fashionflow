@@ -21,6 +21,7 @@ public class SecurityConfig{
 
         http.authorizeRequests(auth -> auth
                         .requestMatchers("/**").permitAll() // 루트 URL은 인증 없이 접근 허용
+                        .requestMatchers("/members/memberEdit").authenticated() // 루트 URL은 인증 없이 접근 허용
                         .anyRequest().authenticated());
 
 

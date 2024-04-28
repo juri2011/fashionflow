@@ -2,10 +2,13 @@ package com.fashionflow.service;
 
 import com.fashionflow.dto.ItemFormDTO;
 import com.fashionflow.dto.ItemImgDTO;
+import com.fashionflow.dto.ItemTagDTO;
 import com.fashionflow.entity.Item;
 import com.fashionflow.entity.ItemImg;
+import com.fashionflow.entity.ItemTag;
 import com.fashionflow.repository.ItemImgRepository;
 import com.fashionflow.repository.ItemRepository;
+import com.fashionflow.repository.ItemTagRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,9 +24,12 @@ public class ItemService {
 
     private final ItemImgRepository itemImgRepository;
 
+    private final ItemTagRepository itemTagRepository;
+
     /* 상품 상세정보 + 이미지 가져오기 */
     public ItemFormDTO getItemDetail(Long itemId){
 
+        /* 상품 이미지 리스트 가져오기 */
         //상품 이미지 번호 순으로 상품이미지 리스트 가져오기
         List<ItemImg> itemImgList = itemImgRepository.findByItemIdOrderByIdAsc(itemId);
 
@@ -35,6 +41,14 @@ public class ItemService {
             itemImgDTOList.add(itemImgDTO);
         }
 
+        /* 상품 태그 리스트 가져오기 */
+        List<ItemTag> itemTagList = itemTagRepository.findByItemId(itemId);
+        List<ItemTagDTO> itemTagDTOList = new ArrayList<>();
+        for(ItemTag itemTag : itemTagList){
+            ItemTagDTO itemTagDTO = ItemTagDTO.entityToDTO(itemTag);
+            itemTagDTOList.add(itemTagDTO);
+        }
+
         //Repository에서 파라미터(상품 번호)로 Item 엔티티 가져오기
         Item item = itemRepository.findById(itemId).orElseThrow(() ->
                 new EntityNotFoundException("해당 상품이 존재하지 않습니다. id = " + itemId));
@@ -44,6 +58,7 @@ public class ItemService {
 
         //위에서 변환시킨 ItemImgDTOList를 itemFormDTO 객체로 가져오기
         itemFormDTO.setItemImgDTOList(itemImgDTOList);
+
 
         return itemFormDTO;
 

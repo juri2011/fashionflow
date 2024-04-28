@@ -4,6 +4,7 @@ import com.fashionflow.constant.ItemStatus;
 import com.fashionflow.constant.SellStatus;
 import com.fashionflow.entity.Category;
 import com.fashionflow.entity.Item;
+import com.fashionflow.entity.ItemTag;
 import com.fashionflow.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
@@ -37,7 +38,8 @@ public class ItemFormDTO {
 
     private Integer viewCount; //조회수
 
-    private Category category; //카테고리
+    //private Category category; //카테고리
+    private CategoryDTO categoryDTO;
 
     private ItemStatus itemStatus; //상품 상태
 
@@ -47,7 +49,11 @@ public class ItemFormDTO {
     private List<ItemImgDTO> itemImgDTOList = new ArrayList<>();
 
     @Builder.Default
+    private List<ItemTagDTO> itemTagDTOList = new ArrayList<>();
+
+    @Builder.Default
     private List<Long> itemImgIds = new ArrayList<>();
+
 
     private static ModelMapper modelMapper = new ModelMapper();
 
@@ -55,5 +61,10 @@ public class ItemFormDTO {
     public Item createItem(){return modelMapper.map(this, Item.class);}
 
     //Item형을 ItemFormDTO형으로 변환
-    public static ItemFormDTO of (Item item) {return modelMapper.map(item, ItemFormDTO.class);}
+    public static ItemFormDTO of (Item item) {
+        ItemFormDTO itemFormDTO = modelMapper.map(item, ItemFormDTO.class);
+        //CategoryDTO 에 상위 카테고리가 있다면 상위 카테고리의 정보도 저장함
+        itemFormDTO.setCategoryDTO(CategoryDTO.entityToDto(item.getCategory()));
+        return itemFormDTO;
+    }
 }

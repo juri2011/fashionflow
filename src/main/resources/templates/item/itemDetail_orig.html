@@ -8,27 +8,27 @@
     <h1>상품 데이터 출력 예제</h1>
     <h2>상품 데이터</h2>
     <div>
-        상품명 : <span th:text="${itemFormDTO.itemName}"></span>
+        상품명 : <span th:text="${item.itemName}"></span>
     </div>
     <div>
-        상세설명 : <span th:text="${itemFormDTO.content}"></span>
+        상세설명 : <span th:text="${item.content}"></span>
     </div>
     <div>
-        가격 : <span th:text="${itemFormDTO.price}"></span>
+        가격 : <span th:text="${item.price}"></span>
     </div>
     <div>
-        배송비 : <span th:text="${itemFormDTO.delivery}"></span>
+        배송비 : <span th:text="${item.delivery}"></span>
     </div>
     <div>
-        주소 : <span th:text="${itemFormDTO.address}"></span>
+        주소 : <span th:text="${item.address}"></span>
     </div>
     <div>
         등록일 :
-        <span th:text="${#temporals.format(itemFormDTO.regdate, 'yyyy-MM-dd HH:mm:ss')}"></span>
+        <span th:text="${#temporals.format(item.regdate, 'yyyy-MM-dd HH:mm:ss')}"></span>
     </div>
     <div>
         상품상태 :
-        <span th:switch="${#strings.toString(itemFormDTO.itemStatus)}">
+        <span th:switch="${#strings.toString(item.itemStatus)}">
             <span th:case="NEW">새상품</span>
             <span th:case="NO_SIGNS_OF_USE">사용감 없음</span>
             <span th:case="SOME_SIGNS_OF_USE">사용감 적음</span>
@@ -37,18 +37,18 @@
         </span>
         <!--<span th:text="${item.itemStatus}"></span>-->
     </div>
-    <div th:switch="${#strings.toString(itemFormDTO.sellStatus)}">
+    <div th:switch="${#strings.toString(item.sellStatus)}">
         판매상태 :
         <span th:case="SELLING">판매중</span>
         <span th:case="SUSPENDED">판매중단</span>
         <span th:case="SOLD_OUT">판매완료</span>
     </div>
     <div>
-        조회수 : <span th:text="${itemFormDTO.viewCount}"></span> <br>
-        <!--찜한 횟수 : <span th:text="${heartCount}"></span>-->
+        조회수 : <span th:text="${item.viewCount}"></span> <br>
+        찜한 횟수 : <span th:text="${heartCount}"></span>
     </div>
 
-    <div th:each="itemTag, status: ${itemFormDTO.itemTagDTOList}">
+    <div th:each="itemTag, status: ${itemTagList}">
         태그 :
         <span th:switch="${#strings.toString(itemTag.itemTagName)}">
             <span th:case="DIRECT_TRADE">직거래</span>
@@ -60,18 +60,18 @@
 
     <div>
         카테고리 :
-        <span th:if="${itemFormDTO.categoryDTO.parent != null}" th:text="${itemFormDTO.categoryDTO.parent.name}+'&gt'"></span><span th:text="${itemFormDTO.categoryDTO.name}"></span>
+        <span th:if="${parentCategory != null}" th:text="${parentCategory.name}+'&gt'"></span><span th:text="${category.name}"></span>
     </div>
     <!--<img src="/test_images/clothes1_1.png" alt="상품사진">-->
     <hr/>
 
     <h2>판매 상품 이미지</h2>
     <!-- 판매중인 상품 이미지 -->
-    <div th:each="itemImg, status: ${itemFormDTO.itemImgDTOList}">
+    <div th:each="itemImg, status: ${itemImgList}">
         <img th:src="'/test_images/'+${itemImg.oriImgName}">
     </div>
 
-  <!--  <hr>
+    <hr>
 
     <h2>판매자 정보</h2>
     <div>
@@ -87,10 +87,10 @@
     <div>
         판매자 프로필사진 :
         <img th:if="${profileImage}==null" src="/img/profile_default.png">
-        &lt;!&ndash; 테스트를 위해 임시 경로를 지정했지만 파일업로드 기능이 구현되면 변경될 수 있습니다. &ndash;&gt;
-        &lt;!&ndash; view에서 null인지 조건을 검사하는 것보다 회원가입할 때 사용자가 프로필 사진을 따로 설정하지 않았으면
-         기본 사진의 경로와 이미지 이름으로 지정하는 것이 더 깔끔해 보임 &ndash;&gt;
-        &lt;!&ndash; <p th:text="${profileImage.uploadPath}+${profileImage.filename}"></p> &ndash;&gt;
+        <!-- 테스트를 위해 임시 경로를 지정했지만 파일업로드 기능이 구현되면 변경될 수 있습니다. -->
+        <!-- view에서 null인지 조건을 검사하는 것보다 회원가입할 때 사용자가 프로필 사진을 따로 설정하지 않았으면
+         기본 사진의 경로와 이미지 이름으로 지정하는 것이 더 깔끔해 보임 -->
+        <!-- <p th:text="${profileImage.uploadPath}+${profileImage.filename}"></p> -->
         <img th:if="${profileImage}!=null" th:src="${profileImage.uploadPath}+${profileImage.filename}">
     </div>
     <div>
@@ -102,13 +102,21 @@
     <hr/>
 
     <h2>판매중인 다른 상품</h2>
-    &lt;!&ndash; 사용자가 판매중인 다른 상품 &ndash;&gt;
+    <!-- 사용자가 판매중인 다른 상품 -->
     <div th:each="otherItemImg, status: ${otherItemImgList}">
         <img th:src="'/test_images/'+${otherItemImg.oriImgName}" alt="사진">
         <p th:text="${otherItemImg.item.itemName}"></p>
         <p th:text="${otherItemImg.item.price}"></p>
         <p th:text="${#temporals.format(otherItemImg.item.regdate, 'yyyy-MM-dd')}"></p>
         <hr>
-    </div>-->
+    </div>
+
+    <!--
+        더 추가해야 할 것
+        2. 프로필사진(없으면 기본사진)
+        3. 판매자 소개
+        4. 판매자 다른 상품(판매자 아이디로 검색한 상품 리스트로 가져오기)
+    -->
+
 </body>
 </html>

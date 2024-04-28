@@ -129,11 +129,32 @@
         }).open();
     }
 
-    document.getElementById("deleteBtn").addEventListener("click", function() {
-    console.log("회원 탈퇴 처리 로직 실행");
-    // AJAX 요청을 여기에 추가
-    // 예: 회원 탈퇴 API 호출
-    // 성공적으로 처리되면 모달 창 닫기
-    $("#deleteConfirmModal").modal('hide');
-});
+
+    //모달창
+    document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById("deleteBtn").addEventListener("click", function() {
+            var memberId = currentMember.id;
+
+            fetch('/members/' + memberId, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('input[name="_csrf"]').value
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log("회원 삭제 요청이 성공적으로 처리되었습니다.");
+                    $("#deleteConfirmModal").modal('hide');
+                    location.reload();
+                } else {
+                    console.error("회원 삭제 요청에 실패했습니다.");
+                }
+            })
+            .catch(error => {
+                console.error("회원 삭제 요청 중 오류가 발생했습니다.", error);
+            });
+        });
+    });
+
 </script>

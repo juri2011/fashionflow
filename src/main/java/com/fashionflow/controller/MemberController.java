@@ -5,14 +5,13 @@ import com.fashionflow.entity.Member;
 import com.fashionflow.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 
@@ -129,5 +128,16 @@ public class MemberController {
             return "members/memberEdit"; // 에러가 발생한 페이지로 리디렉션 또는 해당 페이지로 포워딩
         }
 
+    }
+
+    // 삭제 기능 추가
+    @DeleteMapping("/{memberId}")
+    public ResponseEntity<String> deleteMember(@PathVariable Long memberId) {
+        try {
+            memberService.deleteMember(memberId);
+            return new ResponseEntity<>("회원 삭제가 완료되었습니다.", HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
     }
 }

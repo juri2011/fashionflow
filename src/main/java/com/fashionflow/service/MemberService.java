@@ -136,7 +136,20 @@ public class MemberService implements UserDetailsService {
         memberRepository.save(currentMember);
     }
 
+    // 회원 삭제 메서드
+    @Transactional
+    public void deleteMember(Long memberId) {
+        // 회원 ID를 기반으로 회원을 조회합니다.
+        Optional<Member> optionalMember = memberRepository.findById(memberId);
 
+        // 회원이 존재하는지 확인한 후 삭제합니다.
+        if (optionalMember.isPresent()) {
+            Member member = optionalMember.get();
+            memberRepository.delete(member);
+        } else {
+            throw new IllegalArgumentException("해당 회원을 찾을 수 없습니다.");
+        }
+    }
 
 
 }

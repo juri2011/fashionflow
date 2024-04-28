@@ -21,10 +21,6 @@
 
 <div layout:fragment="content">
 
-    <!-- 공백란 알림 메시지 출력 -->
-    <p th:if="${errors}" class="error" th:each="error : ${errors}" th:text="${error.defaultMessage}"></p>
-    <!-- 중복 알림 메시지 출력 -->
-    <p th:if="${error}" class="error" th:text="${error}"></p>
 
     <form role="form" method="post" action="/members/memberEdit">
         <div class="form-group mb-3">

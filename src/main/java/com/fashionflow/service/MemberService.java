@@ -108,12 +108,17 @@ public class MemberService implements UserDetailsService {
 
 
     // 회원 정보 업데이트 메서드
-    public void updateMember(MemberFormDTO memberFormDTO) {
+    public void updateMember(MemberFormDTO memberFormDTO, PasswordEncoder passwordEncoder) {
+
+        //Bcrypt 인코드
+        String encodedPassword = passwordEncoder.encode(memberFormDTO.getPwd());
+
         // 이메일로 사용자 조회
         Member currentMember = memberRepository.findByEmail(memberFormDTO.getEmail());
 
+
         // 회원 정보 업데이트
-        currentMember.setPwd(memberFormDTO.getPwd());
+        currentMember.setPwd(encodedPassword);
         currentMember.setNickname(memberFormDTO.getNickname());
         currentMember.setGender(memberFormDTO.getGender());
         currentMember.setUserStnum(memberFormDTO.getUserStnum());

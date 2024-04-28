@@ -96,7 +96,9 @@ public class MemberController {
     @PostMapping("/memberEdit")
     public String memberEdit(MemberFormDTO memberFormDTO) {
 
-        memberService.updateMember(memberFormDTO);
+
+
+        memberService.updateMember(memberFormDTO, passwordEncoder);
 
         return "redirect:/";
     }

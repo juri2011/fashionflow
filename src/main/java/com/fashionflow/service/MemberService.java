@@ -146,5 +146,15 @@ public class MemberService implements UserDetailsService {
         memberRepository.delete(member);
     }
 
+    // 아이디 찾기 메소드
+    public String findId(String name, String phone){
+        Member member = memberRepository.findByNameAndPhone(name, phone);
+
+        if (member == null){
+            throw new IllegalArgumentException("해당 이메일로 등록된 회원을 찾을 수 없습니다.");
+        }
+
+        return member.getEmail();
+    }
 
 }

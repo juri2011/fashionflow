@@ -9,7 +9,6 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -33,10 +32,12 @@ public class Category {
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL,fetch = FetchType.LAZY,
             orphanRemoval = true)
+    @Builder.Default
     private List<Item> item = new ArrayList<>(); //카테고리 상품 리스트
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL,fetch = FetchType.LAZY,
             orphanRemoval = true)
+    @Builder.Default
     private List<Category> children = new ArrayList<>(); //현재 메뉴의 하위 메뉴 리스트
 
     @Override

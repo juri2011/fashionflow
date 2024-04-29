@@ -130,14 +130,21 @@ public class MemberController {
 
     }
 
-    // 삭제 기능 추가
-    @DeleteMapping("/{memberId}")
-    public ResponseEntity<String> deleteMember(@PathVariable Long memberId) {
+
+    @PostMapping("/deleteMember")
+    public ResponseEntity<String> deleteMember() {
+        String email = memberService.currentMemberEmail();
+        if (email == null) {
+            return new ResponseEntity<>("현재 로그인된 사용자를 찾을 수 없습니다.", HttpStatus.UNAUTHORIZED);
+        }
+
         try {
-            memberService.deleteMember(memberId);
+            memberService.deleteMember(email);
             return new ResponseEntity<>("회원 삭제가 완료되었습니다.", HttpStatus.OK);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>("회원 삭제 중 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

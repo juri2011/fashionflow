@@ -94,8 +94,8 @@
         </div>
         <div class="mb-3">
             <button type="submit" class="btn btn-primary">수정</button>
-            <!-- 삭제 버튼 추가 -->
-            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal">삭제</button>
+
+            <button type="button" class="btn btn-danger" id="deleteMemberBtn">회원 탈퇴</button>
 
             <!-- csrf 토큰 임시 해제 -->
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
@@ -106,6 +106,7 @@
 </html>
 
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     function sample6_execDaumPostcode() {
         new daum.Postcode({
@@ -129,32 +130,41 @@
         }).open();
     }
 
+    $(document).ready(function(){
+        $("#deleteMemberBtn").click(function(){
+            // 확인 창 표시
+            var confirmed = confirm("정말로 회원 탈퇴를 하시겠습니까?");
+            if(confirmed){
+                // CSRF 토큰 가져오기
+                var csrfToken = $("meta[name='_csrf']").attr("content");
+                var csrfHeader = $("meta[name='_csrf_header']").attr("content");
 
-    //모달창
-    document.addEventListener("DOMContentLoaded", function() {
-        document.getElementById("deleteBtn").addEventListener("click", function() {
-            var memberId = currentMember.id;
-
-            fetch('/members/' + memberId, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('input[name="_csrf"]').value
-                }
-            })
-            .then(response => {
-                if (response.ok) {
-                    console.log("회원 삭제 요청이 성공적으로 처리되었습니다.");
-                    $("#deleteConfirmModal").modal('hide');
-                    location.reload();
-                } else {
-                    console.error("회원 삭제 요청에 실패했습니다.");
-                }
-            })
-            .catch(error => {
-                console.error("회원 삭제 요청 중 오류가 발생했습니다.", error);
-            });
+                // 확인 버튼 클릭 시 회원 탈퇴 요청 보내기
+                $.ajax({
+                    url: "/members/deleteMember",
+                    type: "POST",
+                    beforeSend: function(xhr) {
+                        // CSRF 토큰을 요청 헤더에 포함
+                        xhr.setRequestHeader(csrfHeader, csrfToken);
+                    },
+                    success: function(response){
+                        // 탈퇴 성공 시 메인 페이지로 이동
+                        location.href = "/";
+                        // 로그아웃 요청 보내기
+                        $.post("/members/logout", {_csrf: csrfToken}, function(data) {
+                            // 로그아웃 성공 시 현재 페이지 새로고침
+                            location.reload();
+                        });
+                    },
+                    error: function(xhr, status, error){
+                        // 오류 처리
+                        console.error(error);
+                        alert("회원 탈퇴 중 오류가 발생했습니다.");
+                    }
+                });
+            }
         });
     });
+
 
 </script>

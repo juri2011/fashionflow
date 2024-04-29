@@ -1,8 +1,6 @@
 package com.fashionflow.dto;
 
-import com.fashionflow.entity.Item;
 import com.fashionflow.entity.ItemImg;
-import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

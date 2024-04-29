@@ -1,10 +1,13 @@
 package com.fashionflow.controller;
 
 import com.fashionflow.dto.ItemFormDTO;
+import com.fashionflow.dto.MemberDetailDTO;
+import com.fashionflow.dto.MemberFormDTO;
 import com.fashionflow.entity.*;
 import com.fashionflow.repository.*;
 import com.fashionflow.service.HeartService;
 import com.fashionflow.service.ItemService;
+import com.fashionflow.service.MemberService;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -47,16 +50,21 @@ public class ItemController {
 
     private final HeartService heartService;
 
+    private final MemberService memberService;
+
     //상품 리스트 출력
     @GetMapping("/item/{itemId}")
     public String itemDetail(Model model, @PathVariable("itemId") Long itemId){
 
         ItemFormDTO itemFormDTO = itemService.getItemDetail(itemId); //상품 상세정보(이미지, 태그, 카테고리 포함)
         Long heartCount = heartService.countHeartById(itemId); //상품 찜한 갯수
-        System.out.println("=====================" + itemFormDTO);
+        //System.out.println("=====================" + itemFormDTO);
+        MemberDetailDTO shopMember = memberService.getShopMember(itemFormDTO.getMemberId(), itemId);
+        System.out.println("==========================" + shopMember);
 
         model.addAttribute("itemFormDTO", itemFormDTO);
         model.addAttribute("heartCount", heartCount);
+        model.addAttribute("shopMember", shopMember);
         return "item/itemDetail";
     }
 
@@ -154,8 +162,9 @@ public class ItemController {
         model.addAttribute("member", member);//판매자 정보(주소나 비밀번호 등 민감한 정보가 들어가 있음)
         model.addAttribute("profileImage", profileImage);
         model.addAttribute("otherItemList", otherItemList); // 현재 상품을 제외한 다른 상품 리스트
-        model.addAttribute("sellCount", sellCount);//판매수
         model.addAttribute("otherItemImgList", otherItemImgList); //판매자 다른 상품 이미지 리스트
+        // column으로 따로 지정하지 않고 sellCount 테이블에서 사용자로 검색한 값을 출력
+        model.addAttribute("sellCount", sellCount);//판매수
 
 
 

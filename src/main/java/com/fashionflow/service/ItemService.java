@@ -59,6 +59,7 @@ public class ItemService {
         //위에서 변환시킨 ItemImgDTOList를 itemFormDTO 객체로 가져오기
         itemFormDTO.setItemImgDTOList(itemImgDTOList);
 
+        itemFormDTO.setItemTagDTOList(itemTagDTOList);
 
         return itemFormDTO;
 

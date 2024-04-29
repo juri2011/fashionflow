@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class HeartService {
 
-    private static HeartRepository heartRepository;
+    private final HeartRepository heartRepository;
 
     public Long countHeartById(Long itemId){
         return heartRepository.countByItemId(itemId);

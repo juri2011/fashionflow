@@ -82,6 +82,7 @@ public class MemberController {
         return modelAndView;
     }
 
+    //회원 수정 페이지
     @GetMapping("/memberEdit")
     public String memberEditPage(Model model) {
         Member currentMember = memberService.findMemberByCurrentEmail();
@@ -92,6 +93,7 @@ public class MemberController {
 
     }
 
+    //회원 수정
     @PostMapping("/memberEdit")
     public String memberEdit(@Valid MemberFormDTO memberFormDTO, BindingResult bindingResult, Model model) {
 
@@ -130,7 +132,7 @@ public class MemberController {
 
     }
 
-
+    // 회원 탈퇴
     @PostMapping("/deleteMember")
     public ResponseEntity<String> deleteMember() {
         String email = memberService.currentMemberEmail();
@@ -148,13 +150,15 @@ public class MemberController {
         }
     }
 
+    //아이디 찾기 페이지
     @GetMapping("/findId")
     public String findIdPage(){
         return "/members/findId";
     }
 
+    //회원 아이디 찾기
     @PostMapping("/findId")
-    public String findIdByNameAndPhone(@RequestParam("name") String name, @RequestParam("phone") String phone, Model model){
+    public String findIdByNameAndPhone(@RequestParam("name") String name, @RequestParam("phone") String phone, Model model) {
 
         try {
             String email = memberService.findId(name, phone);

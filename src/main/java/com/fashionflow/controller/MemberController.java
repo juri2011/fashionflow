@@ -147,4 +147,22 @@ public class MemberController {
             return new ResponseEntity<>("회원 삭제 중 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("/findId")
+    public String findIdPage(){
+        return "/members/findId";
+    }
+
+    @PostMapping("/findId")
+    public String findIdByNameAndPhone(@RequestParam("name") String name, @RequestParam("phone") String phone, Model model){
+
+        try {
+            String email = memberService.findId(name, phone);
+            model.addAttribute("email", email);
+            return "members/findId";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "/members/findId";
+        }
+    }
 }

@@ -15,4 +15,9 @@ public class MainController {
     public String EmailVerify(){
         return "EmailVerify";
     }
+
+    @GetMapping("/ResetPwd")
+    public String resetPassword() {
+        return "ResetPwd";
+    }
 }

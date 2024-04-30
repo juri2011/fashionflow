@@ -33,10 +33,9 @@ dependencies {
 	implementation 'org.modelmapper:modelmapper:3.2.0'
 
 	// Security
-	/*
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	testImplementation 'org.springframework.security:spring-security-test'
-	*/
+
 
 	//validation
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
@@ -70,4 +69,8 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+tasks.withType(JavaCompile) {
+	options.compilerArgs << "-parameters"
 }

@@ -2,89 +2,110 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Email Verification</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-<!-- 이메일 입력 창-->
-<input type="text" id="email" name="email" placeholder="EMAIL">
-<!-- 인증번호 전송 버튼 -->
-<button type="button" id="sendEmail">인증번호 전송</button>
-<br />
-<!-- 인증번호 입력 창 -->
-<input type="text" id="authCode" name="authCode" placeholder="CODE">
-<!-- 인증번호 확인 버튼 -->
-<button type="button" id="confirmEmail">인증번호 확인</button>
-</body>
-</html>
+<div class="container mt-5">
+    <h1 class="mb-4">비밀번호 찾기</h1>
+    <p>찾으시는 회원의 이름과 이메일을 입력해주세요.</p>
+    <form id="verificationForm" class="needs-validation" novalidate>
+        <div class="form-group">
+            <label for="name">이름 :</label>
+            <input type="text" id="name" name="name" class="form-control" placeholder="NAME" required>
+            <div class="invalid-feedback">
+                이름을 입력해주세요.
+            </div>
+        </div>
 
+        <div class="form-group">
+            <label for="email">이메일 :</label>
+            <input type="text" id="email" name="email" class="form-control" placeholder="EMAIL" required>
+            <div class="invalid-feedback">
+                이메일을 입력해주세요.
+            </div>
+        </div>
+
+        <button type="button" id="sendEmail" class="btn btn-primary">인증번호 전송</button>
+        <br><br>
+
+        <div class="form-group">
+            <label for="authCode">인증번호 :</label>
+            <input type="text" id="authCode" name="authCode" class="form-control" placeholder="CODE" required>
+            <div class="invalid-feedback">
+                인증번호를 입력해주세요.
+            </div>
+        </div>
+
+        <button type="button" id="confirmEmail" class="btn btn-success">인증번호 확인</button>
+        <input type="hidden" id="csrfToken" th:value="${_csrf.token}" />
+    </form>
+</div>
+
+<!-- Bootstrap JS, Popper.js, and jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.9.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 <script>
     document.querySelector("#sendEmail").addEventListener("click", function () {
-        // 이메일 입력 창에서 이메일 주소를 가져온다.
         var email = document.querySelector("#email").value;
-        // 이메일 주소가 비어있는지 확인한다.
-        if (email === "") {
-            alert("이메일을 입력해주세요.");
+        var name = document.querySelector("#name").value;
+
+        if (email === "" || name === "") {
+            alert("이메일과 이름을 모두 입력해주세요.");
             return;
         }
-        // 이메일 주소를 JSON 형태로 만든다.
-        var data = {"email": email};
-        // POST /email-authentication 요청을 보낸다.
+
+        var csrfToken = document.querySelector("#csrfToken").value;
+        var data = {"email": email, "name": name};
+
         fetch("/api/v1/auth/email-authentication", {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": csrfToken
             },
             body: JSON.stringify(data)
         }).then((response) => response.json())
-            .then((result) => {
-                if(result.code === 0){
-                    console.log("err" ,result);
-                    // 응답 결과를 alert로 보여준다.
-                    alert(result.message);
-                }
-                if(result.code === 1){
-                    // 응답 결과를 alert로 보여준다.
-                    console.log("err" ,result);
-                    alert(result.message);
-                }
-            });
+          .then((result) => {
+              alert(result.message);
+          });
     });
 
-
     document.querySelector("#confirmEmail").addEventListener("click", function () {
-        // 입력 창에서 값 가져오기
         var email = document.querySelector("#email").value;
         var authenticationCode = document.querySelector("#authCode").value;
 
-        // 이메일과 인증 코드가 비어있는지 확인한다.
         if (email === "" || authenticationCode === "") {
             alert("이메일과 인증 코드를 입력해주세요.");
             return;
         }
-        // 이메일 주소를 JSON 형태로 만든다.
+
+        var csrfToken = document.querySelector("#csrfToken").value;
         var data = {
             "email": email,
             "code": authenticationCode
         };
-        // POST /email-authentication 요청을 보낸다.
+
         fetch("/api/v1/auth/authentication-code", {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": csrfToken
             },
             body: JSON.stringify(data)
         }).then((response) => response.json())
-            .then((result) => {
-                if(result.code === 0){
-                    console.log("err" ,result);
-                    // 응답 결과를 alert로 보여준다.
-                    alert(result.message);
-                }
-                if(result.code === -1){
-                    // 응답 결과를 alert로 보여준다.
-                    console.log("err" ,result);
-                    alert(result.message);
-                }
-            });
+          .then((result) => {
+              if (result.code === 0) {
+                  alert(result.message);
+                  sessionStorage.setItem('email', email);
+                  window.location.href = '/ResetPwd';
+              } else {
+                  alert(result.message);
+              }
+          });
     });
 </script>
+</body>
+</html>

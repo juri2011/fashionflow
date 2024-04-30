@@ -1,5 +1,6 @@
 package com.fashionflow.controller;
 
+import com.fashionflow.dto.ReviewDTO;
 import com.fashionflow.entity.ItemBuy;
 import com.fashionflow.service.BuyerService;
 import com.fashionflow.service.MemberService;
@@ -7,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
@@ -21,8 +24,21 @@ public class BuyerController {
     // 구매내역 페이지 이동
     @GetMapping("/orders")
     public String orders(Model model) {
+
+        //구매자 구매내역 리스트
         List<ItemBuy> purchaseList = buyerService.getItemBuyList();
+        // 리뷰가 이미 작성되었는지 확인
+        boolean reviewExists = buyerService.checkReviews() != null;
+
         model.addAttribute("purchaseList", purchaseList);
+        model.addAttribute("reviewExists", reviewExists); // 리뷰가 이미 작성되었는지 여부를 모델에 추가
         return "buyer/orders";
+    }
+
+
+    // 구매내역 리뷰
+    @PostMapping("/reviews")
+    public String reviews(@ModelAttribute ReviewDTO reviewDTO){
+        return "redirect:/";
     }
 }

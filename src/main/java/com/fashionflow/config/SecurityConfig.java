@@ -18,9 +18,9 @@ public class SecurityConfig{
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http.authorizeRequests(auth -> auth
-                        .requestMatchers("/**").permitAll() // 루트 URL은 인증 없이 접근 허용
-                        .requestMatchers("/members/memberEdit").authenticated() // 루트 URL은 인증 없이 접근 허용
-                        .anyRequest().authenticated());
+                .requestMatchers("/**").permitAll() // 루트 URL은 인증 없이 접근 허용
+                .requestMatchers("/members/memberEdit").authenticated() // 루트 URL은 인증 없이 접근 허용
+                .anyRequest().authenticated());
 
 
         http.formLogin(form -> form
@@ -46,6 +46,7 @@ public class SecurityConfig{
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
 /*
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -69,5 +70,5 @@ public class SecurityConfig{
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
+    }*/
 }

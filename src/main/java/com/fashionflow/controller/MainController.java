@@ -10,4 +10,9 @@ public class MainController {
     public String main(){
         return "main";
     }
+
+    @GetMapping("/EmailVerify")
+    public String EmailVerify(){
+        return "EmailVerify";
+    }
 }

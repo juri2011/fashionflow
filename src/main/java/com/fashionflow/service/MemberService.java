@@ -1,4 +1,3 @@
-/*
 package com.fashionflow.service;
 
 import com.fashionflow.constant.Gender;
@@ -6,18 +5,20 @@ import com.fashionflow.dto.MemberFormDTO;
 import com.fashionflow.entity.Member;
 import com.fashionflow.repository.MemberRepository;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;*/
-/*
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;*//*
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -72,6 +73,7 @@ public class MemberService implements UserDetailsService {
     }
 
 
+    //사용자 인증처리
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Member member = memberRepository.findByEmail(email);
@@ -86,4 +88,75 @@ public class MemberService implements UserDetailsService {
                 .roles(member.getRole().toString())
                 .build();
     }
-}*/
+
+    //현재 로그인된 사용자 security를 이용해 email 반환
+    public String currentMemberEmail() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            return authentication.getName(); // 사용자의 이메일 반환
+        }
+        return null;
+    }
+
+    // 반환된 email로 사용자의 정보 조회 메소드
+    public Member findMemberByCurrentEmail() {
+        String email = currentMemberEmail();
+        if (email != null) {
+            return memberRepository.findByEmail(email);
+        }
+        return null;
+    }
+
+
+
+
+    // 회원 정보 업데이트 메서드
+    public void updateMember(MemberFormDTO memberFormDTO, PasswordEncoder passwordEncoder) {
+
+        //Bcrypt 인코드
+        String encodedPassword = passwordEncoder.encode(memberFormDTO.getPwd());
+
+        // 이메일로 사용자 조회
+        Member currentMember = memberRepository.findByEmail(memberFormDTO.getEmail());
+
+        Member exsitingMember = memberRepository.findByNickname(memberFormDTO.getNickname());
+
+        if(exsitingMember != null && !exsitingMember.getId().equals(currentMember.getId())){
+
+            throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
+        }
+
+
+        // 회원 정보 업데이트
+        currentMember.setPwd(encodedPassword);
+        currentMember.setNickname(memberFormDTO.getNickname());
+        currentMember.setGender(memberFormDTO.getGender());
+        currentMember.setUserStnum(memberFormDTO.getUserStnum());
+        currentMember.setUserAddr(memberFormDTO.getUserAddr());
+        currentMember.setUserDaddr(memberFormDTO.getUserDaddr());
+
+        memberRepository.save(currentMember);
+    }
+
+
+    // 회원 삭제 메소드
+    public void deleteMember(String email) {
+        Member member = memberRepository.findByEmail(email);
+        if (member == null) {
+            throw new IllegalArgumentException("해당 이메일로 등록된 회원을 찾을 수 없습니다.");
+        }
+        memberRepository.delete(member);
+    }
+
+    // 아이디 찾기 메소드
+    public String findId(String name, String phone){
+        Member member = memberRepository.findByNameAndPhone(name, phone);
+
+        if (member == null){
+            throw new IllegalArgumentException("해당 이메일로 등록된 회원을 찾을 수 없습니다.");
+        }
+
+        return member.getEmail();
+    }
+
+}

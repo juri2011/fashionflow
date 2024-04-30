@@ -24,6 +24,7 @@ public class MemberController {
     private final PasswordEncoder passwordEncoder; // PasswordEncoder 주입
 
 
+
     //로그인 페이지 이동
     @GetMapping("/login")
     public String loginPage(){
@@ -68,6 +69,7 @@ public class MemberController {
 
             // 유효성 검사 성공 시 회원 등록 처리
             memberService.registerMember(memberFormDTO, passwordEncoder);
+
 
             // 회원가입 성공 시 메인 페이지로 리다이렉트
             modelAndView.setViewName("redirect:/");

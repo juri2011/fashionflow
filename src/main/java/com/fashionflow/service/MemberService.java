@@ -1,6 +1,5 @@
 package com.fashionflow.service;
 
-import com.fashionflow.constant.Gender;
 import com.fashionflow.dto.MemberFormDTO;
 import com.fashionflow.entity.Member;
 import com.fashionflow.repository.MemberRepository;
@@ -16,7 +15,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 

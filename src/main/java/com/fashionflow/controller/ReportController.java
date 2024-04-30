@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 @RequiredArgsConstructor
 public class ReportController {
 
-    private final ReportMemberService reportMemberService;
     private final ReportItemService reportItemService;
+    private final ReportMemberService reportMemberService;
     @GetMapping("/report")
     public String report(Model model){
 

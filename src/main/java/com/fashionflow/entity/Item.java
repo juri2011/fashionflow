@@ -38,6 +38,8 @@ public class Item {
     @Column(nullable = false)
     private LocalDateTime regdate; //등록일
 
+    private Integer viewCount; //조회수
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="category_id")
     private Category category; //카테고리

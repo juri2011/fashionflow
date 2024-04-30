@@ -1,7 +1,7 @@
 package com.fashionflow.constant;
 
 public enum ReportStatus {
-    WATING("1"), COMPLETE("2");
+    WAITING("1"), COMPLETE("2");
 
     private final String code;
 

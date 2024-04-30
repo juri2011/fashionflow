@@ -61,6 +61,9 @@ public class Member {
     @Column(nullable = false)
     private LocalDateTime regdate; //가입일
 
+    @Column(columnDefinition = "longtext")
+    private String intro; //사용자 소개
+
     //시큐리티 - 사용자 등급
     @Enumerated(EnumType.STRING)
     @Builder.Default

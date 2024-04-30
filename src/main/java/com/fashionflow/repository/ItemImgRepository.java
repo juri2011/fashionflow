@@ -10,4 +10,5 @@ import java.util.List;
 public interface ItemImgRepository extends JpaRepository<ItemImg, Long>, QuerydslPredicateExecutor<ItemImg> {
 
     public List<ItemImg> findByItemId(Long itemId);
+    public List<ItemImg> findByItemIdOrderByIdAsc(Long itemId);
 }

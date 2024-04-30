@@ -44,6 +44,8 @@ public class QItem extends EntityPathBase<Item> {
 
     public final EnumPath<com.fashionflow.constant.SellStatus> sellStatus = createEnum("sellStatus", com.fashionflow.constant.SellStatus.class);
 
+    public final NumberPath<Integer> viewCount = createNumber("viewCount", Integer.class);
+
     public QItem(String variable) {
         this(Item.class, forVariable(variable), INITS);
     }

@@ -1,21 +1,27 @@
 package com.fashionflow.dto;
 
 import com.fashionflow.constant.Gender;
+import com.fashionflow.entity.Member;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
+import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.Profile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
+@Builder
 public class MemberFormDTO {
     @NotBlank(message = "이름을 입력해주세요.")
     private String name; // 이름
@@ -52,4 +58,33 @@ public class MemberFormDTO {
     private String userStnum; // 지번
 
     private LocalDateTime regdate; // 가입일
+
+    private String intro; //사용자 소개
+
+    private int mannerScore; //매너점수
+
+    private ProfileImageDTO profileImageDTO; //프로필 사진
+
+    private Long sellCount; //판매수
+
+    private static ModelMapper modelMapper = new ModelMapper();
+
+    /* Member 엔티티를 DTO로 변환 : 비밀번호, 주소 등 민감한 정보가 같이 들어감 */
+    public static MemberFormDTO entityToDTO(Member member){
+        MemberFormDTO memberFormDTO = modelMapper.map(member, MemberFormDTO.class);
+        return memberFormDTO;
+    }
+
+    /* Member 엔티티를 DTO로 변환 : 저장할 필드를 일일이 정하기 때문에 민감한 정보가 들어가지 않음 */
+    public static MemberFormDTO entityToDTOSafe(Member member){
+        MemberFormDTO memberFormDTO = MemberFormDTO.builder()
+                .name(member.getName())
+                .email(member.getEmail())
+                .nickname(member.getNickname())
+                .regdate(member.getRegdate())
+                .intro(member.getIntro())
+                .mannerScore(member.getMannerScore())
+                .build();
+        return memberFormDTO;
+    }
 }

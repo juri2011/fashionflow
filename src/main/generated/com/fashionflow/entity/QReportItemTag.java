@@ -24,7 +24,7 @@ public class QReportItemTag extends EntityPathBase<ReportItemTag> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final QReportMember reportMember;
+    public final QReportItem reportItem;
 
     public final EnumPath<com.fashionflow.constant.ReportTagItem> reportTagItem = createEnum("reportTagItem", com.fashionflow.constant.ReportTagItem.class);
 
@@ -46,7 +46,7 @@ public class QReportItemTag extends EntityPathBase<ReportItemTag> {
 
     public QReportItemTag(Class<? extends ReportItemTag> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.reportMember = inits.isInitialized("reportMember") ? new QReportMember(forProperty("reportMember"), inits.get("reportMember")) : null;
+        this.reportItem = inits.isInitialized("reportItem") ? new QReportItem(forProperty("reportItem"), inits.get("reportItem")) : null;
     }
 
 }

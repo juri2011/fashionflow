@@ -78,7 +78,7 @@ class ItemTagTest {
 
     @Test
     public void findItemTagByItemIdTest(){
-        List<ItemTag> itemTagList = itemTagRepository.findByItemId(1L); //상품번호 1번의 태그 검색
+        List<ItemTag> itemTagList = itemTagRepository.findByItemId(2L); //상품번호 1번의 태그 검색
 
         itemTagList.forEach(itemTag -> System.out.println("======================================검색결과 : "+itemTag));
     }

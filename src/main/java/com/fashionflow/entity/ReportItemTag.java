@@ -16,7 +16,7 @@ public class ReportItemTag {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="report_id", nullable = false)
-    private ReportMember reportMember;
+    private ReportItem reportItem;
 
     @Enumerated(EnumType.STRING)
     private ReportTagItem reportTagItem;

@@ -13,7 +13,11 @@ public class BuyerService {
 
     private final ItemBuyRepository itemBuyRepository;
 
+    private final MemberService memberService;
+
     public List<ItemBuy> getItemBuyList(){
-        return itemBuyRepository.findAll();
+        Long memberId = memberService.findMemberByCurrentEmail().getId();
+        return itemBuyRepository.findByMemberId(memberId);
     }
+
 }

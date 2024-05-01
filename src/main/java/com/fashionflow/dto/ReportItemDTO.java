@@ -18,9 +18,14 @@ import java.util.List;
 public class ReportItemDTO {
     private Long id; //상품신고번호
 
-    private Long reporterMemberId; //신고자 회원번호
+    //private Long reporterMemberId; //신고자 회원번호
+    private String reporterMemberEmail; //신고자 회원번호
 
-    private Long reportedItemId; //신고대상 상품번호
+    //private MemberFormDTO reporterMember;
+
+    //private Long reportedItemId; //신고대상 상품번호
+
+    private ItemFormDTO reportedItem;
 
     private LocalDateTime regdate; //등록일
 
@@ -35,8 +40,12 @@ public class ReportItemDTO {
 
     public static ReportItemDTO entityToDTO(ReportItem reportItem){
         ReportItemDTO reportItemDTO = modelMapper.map(reportItem, ReportItemDTO.class);
-        reportItemDTO.setReportedItemId(reportItem.getReportedItem().getId());
-        reportItemDTO.setReporterMemberId(reportItem.getReporterMember().getId());
+
+        reportItemDTO.setReportedItem(ItemFormDTO.of(reportItem.getReportedItem()));
+        //reportItemDTO.setReportedItemId(reportItem.getReportedItem().getId());
+        //reportItemDTO.setReporterMember(MemberFormDTO.entityToDTOSafe(reportItem.getReporterMember()));
+        //reportItemDTO.setReporterMemberId(reportItem.getReporterMember().getId());
+        reportItemDTO.setReporterMemberEmail(reportItem.getReporterMember().getEmail());
 
         return reportItemDTO;
     }

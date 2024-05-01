@@ -41,11 +41,17 @@ public class ItemController {
         Long heartCount = heartService.countHeartById(itemId); //상품 찜한 갯수
         //System.out.println("=====================" + itemFormDTO);
         MemberDetailDTO shopMember = memberService.getShopMember(itemFormDTO.getMemberId(), itemId);
-        System.out.println("==========================" + shopMember);
+        //System.out.println("==========================" + shopMember);
+        Member currentMember = memberService.findMemberByCurrentEmail();
+        String currentMemberEmail = "anonymous";
+        if(currentMember != null) currentMemberEmail = currentMember.getEmail();
+
+        System.out.println(currentMemberEmail);
 
         model.addAttribute("itemFormDTO", itemFormDTO);
         model.addAttribute("heartCount", heartCount);
         model.addAttribute("shopMember", shopMember);
+        model.addAttribute("currentMemberEmail", currentMemberEmail);
         return "item/itemDetail";
     }
 

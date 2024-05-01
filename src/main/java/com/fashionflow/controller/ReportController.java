@@ -29,8 +29,8 @@ public class ReportController {
         //reportItemDTOList.forEach(reportItemDTO -> System.out.println("==========================" + reportItemDTO));
         reportMemberDTOList.forEach(reportMemberDTO -> System.out.println("==========================" + reportMemberDTO));
 
-        //model.addAttribute("reportItemList", reportItemDTOList);
-        //model.addAttribute("reportMemberList", reportMemberDTOList)
+        model.addAttribute("reportItemList", reportItemDTOList);
+        //model.addAttribute("reportMemberList", reportMemberDTOList);
         return "report/reportList";
     }
 }

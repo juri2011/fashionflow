@@ -175,8 +175,6 @@ public class MemberService implements UserDetailsService {
         return member.getEmail();
     }
 
-
-
     //판매자 정보 찾기 메소드(상세페이지)
     public MemberDetailDTO getShopMember(Long memberId, Long itemId){
 

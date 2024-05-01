@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface ItemBuyRepository extends JpaRepository<ItemBuy, Long> {
     List<ItemBuy> findByMemberId(Long memberId);
+
+    ItemBuy findItemBuyByItem(Item item);
 }

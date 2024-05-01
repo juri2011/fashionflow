@@ -30,6 +30,8 @@ public class QItemBuy extends EntityPathBase<ItemBuy> {
 
     public final QMember member;
 
+    public final BooleanPath reviewExists = createBoolean("reviewExists");
+
     public QItemBuy(String variable) {
         this(ItemBuy.class, forVariable(variable), INITS);
     }

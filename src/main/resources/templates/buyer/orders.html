@@ -47,23 +47,23 @@
 
     <!-- 구매내역 목록 -->
     <div th:each="purchase : ${purchaseList}" class="purchase-box">
-        <form th:action="@{/reviews}" method="post" class="purchase-form">
+        <form th:action="@{/buyer/reviews}" method="post" class="purchase-form">
 
             <!-- 아직 이미지는 안넣어봤음
                     <img th:if="${purchase.item.itemImg.imgUrl}" th:src="${purchase.item.itemImg.imgUrl}" alt="상품 이미지" class="product-image">
             -->
 
-            <span type="hidden" name="itemId" th:if="${purchase.item.id}"></span>
+            <input type="hidden" name="id" th:value="${purchase.item.id}" />
             <span th:if="${purchase.item.itemName}" th:text="'상품명: ' + ${purchase.item.itemName}" ></span>
             <span th:if="${purchase.item.price}" th:text="'가격: ' + ${purchase.item.price}" ></span>
             <span th:if="${purchase.buyDate}" th:text="'거래일: ' + ${purchase.buyDate}" ></span>
 
 
-            <div th:unless="${reviewExists}">
+            <div th:unless="${purchase.reviewExists}">
                 <button type="button" class="review-button">리뷰 남기기</button>
 
                 <!-- 리뷰 입력 텍스트 박스 -->
-                <textarea class="review-textbox" name="review" placeholder="리뷰를 작성해주세요"></textarea>
+                <textarea class="review-textbox" name="content" placeholder="리뷰를 작성해주세요"></textarea>
                 <!-- 점수 선택 드롭다운 -->
                 <select class="score-dropdown" name="score" style="display: none;">
                     <option value="">점수를 선택하세요</option>
@@ -74,7 +74,7 @@
 
                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
             </div>
-            <div th:if="${reviewExists}">
+            <div th:if="${purchase.reviewExists}">
                 <p>리뷰 완료</p>
             </div>
         </form>

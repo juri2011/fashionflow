@@ -27,11 +27,10 @@ public class BuyerController {
 
         //구매자 구매내역 리스트
         List<ItemBuy> purchaseList = buyerService.getItemBuyList();
-        // 리뷰가 이미 작성되었는지 확인
-        boolean reviewExists = buyerService.checkReviews() != null;
+        // 리뷰 여부 확인
+        buyerService.checkItemWithReview(purchaseList);
 
-        model.addAttribute("purchaseList", purchaseList);
-        model.addAttribute("reviewExists", reviewExists); // 리뷰가 이미 작성되었는지 여부를 모델에 추가
+        model.addAttribute("purchaseList", purchaseList); // 리뷰가 이미 작성되었는지 여부를 모델에 추가
         return "buyer/orders";
     }
 
@@ -39,6 +38,8 @@ public class BuyerController {
     // 구매내역 리뷰
     @PostMapping("/reviews")
     public String reviews(@ModelAttribute ReviewDTO reviewDTO){
-        return "redirect:/";
+
+        buyerService.registerReview(reviewDTO);
+        return "redirect:/buyer/orders";
     }
 }

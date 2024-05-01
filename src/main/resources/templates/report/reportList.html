@@ -55,7 +55,7 @@
                 </td>
                 <!--<td th:text="${reportItem.reportStatus}"></td>-->
                 <!-- 사용자의 아이디가 표시되는 경우에만 수정 가능 -->
-                <td th:if="false"><button type="button">수정</button>
+                <td th:if="${reportItem.isMyReport}"><button type="button">수정</button>
                     <button type="button">삭제</button></td>
 
             </tr>

@@ -18,6 +18,12 @@ public class ReportItemTagDTO {
 
     private static ModelMapper modelMapper = new ModelMapper();
 
+    public ReportItemTag createReportItemTagDTO(){
+        return ReportItemTag.builder()
+                .reportTagItem(this.reportTagItem)
+                .build();
+    }
+
     public static ReportItemTagDTO entityToDTO(ReportItemTag reportItemTag){
         return modelMapper.map(reportItemTag, ReportItemTagDTO.class);
     }

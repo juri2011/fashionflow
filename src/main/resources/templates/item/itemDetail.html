@@ -17,6 +17,13 @@
             position: fixed;
             background-color: yellow;
         }
+
+        .tagBlock{
+            display: inline-block;
+            background-color:white;
+            margin-right: 5px;
+            padding: 5px;
+        }
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </head>
@@ -32,16 +39,30 @@
             reportItem();
             $('#detailPopup').hide();
         });
+        $('#tagSelect').on('input', function(){
+            let selectedOption = $('#tagSelect option:selected').val();
+            let selectedText = $('#tagSelect option:selected').text();
+            let tagBlock = '<span class="tagBlock" data-tag="'+selectedOption+'">'+ selectedText +'</span>';
+            if(selectedOption !== 'default'){
+                if($('.tagBox').find('.tagBlock[data-tag="'+selectedOption+'"]').length>0){alert('존재함')}
+                else $('.tagBox').append(tagBlock);
+            }
+
+
+        });
     });
     function reportItem(){
         const token = $("meta[name='_csrf']").attr("content");
         const header = $("meta[name='_csrf_header']").attr("content");
         const url = "/reportItem";
+        const tagArray = $('.tagBlock').map(function(){
+            return $(this).data('tag');
+        }).get();
 
         const paramData = {
-            reported_item_id:$('#itemId').val(),
-            reporter_member_email:$('#currentMemberEmail').val(),
-            content: $('#reportContent').val()
+            reportedItemId:$('#itemId').val(),
+            content: $('#reportContent').val(),
+            reportTagItemList: tagArray
         };
 
         console.log(paramData);
@@ -78,8 +99,6 @@
 </script>
 <body>
     <input type="hidden" id="itemId" th:value="${itemFormDTO.id}">
-    <input type="hidden" id="currentMemberEmail" th:value="${currentMemberEmail}">
-    <input type="hidden" id="currentMemberEmail" th:value="${currentMemberEmail}">
 
     <h1>상품 데이터 출력 예제</h1>
     <h2>상품 데이터</h2>
@@ -192,7 +211,6 @@
 
     <div id="detailPopup">
         <h2>신고 상세</h2>
-        <p>신고자: </p>
         <span th:each="itemImg, status: ${itemFormDTO.itemImgDTOList}">
             <img style="width: 100px; height:100px;"
                  th:if="${itemImg.repimgYn} == 'Y'"
@@ -201,8 +219,10 @@
         <span th:text="${itemFormDTO.itemName}"></span>
         <textarea id="reportContent" name="reportContent" placeholder="내용을 입력하세요"></textarea>
         태그선택
-        <select name="" id="">
-            <option value="규정위반">규정위반</option>
+        <select name="tagSelect" id="tagSelect">
+            <option value="default">--선택--</option>
+            <option value="VIOLATION">규정위반</option>
+            <option value="test">test</option>
         </select>
         <div class="tagBox"></div>
         <button type="button" class="reportConfirm">신고하기</button>

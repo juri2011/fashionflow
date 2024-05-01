@@ -2,9 +2,7 @@ package com.fashionflow.entity;
 
 import com.fashionflow.constant.ReportStatus;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -12,6 +10,9 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ReportItem {
     @Id
     @Column(name="report_item_id")

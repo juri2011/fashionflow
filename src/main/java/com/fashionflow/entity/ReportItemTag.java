@@ -2,12 +2,15 @@ package com.fashionflow.entity;
 
 import com.fashionflow.constant.ReportTagItem;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Getter
 @Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ReportItemTag {
     @Id
     @Column(name="report_tag_id")

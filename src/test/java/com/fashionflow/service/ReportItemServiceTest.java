@@ -19,8 +19,8 @@ class ReportItemServiceTest {
 
     @Test
     public void findReportTest(){
-        List<ReportItem> reportItemList = reportItemRepository.findAll();
-
+        //List<ReportItem> reportItemList = reportItemRepository.findAll();
+        List<ReportItem> reportItemList = reportItemRepository.findAllByOrderByRegdateDesc();
         reportItemList.forEach(reportItem -> System.out.println("=============================="+reportItem));
     }
 

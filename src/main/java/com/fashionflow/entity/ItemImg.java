@@ -27,4 +27,10 @@ public class ItemImg {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id")
     private Item item;
+
+    public void updateItemImg(String oriImgNamem, String imgName, String imgUrl){
+        this.oriImgName = oriImgNamem;
+        this.imgName = imgName;
+        this.imgUrl = imgUrl;
+    }
 }

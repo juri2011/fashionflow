@@ -1,10 +1,13 @@
 package com.fashionflow.controller;
 
+import com.fashionflow.constant.ItemTagName;
+import com.fashionflow.dto.CategoryDTO;
 import com.fashionflow.dto.ItemFormDTO;
 import com.fashionflow.dto.MemberDetailDTO;
 import com.fashionflow.dto.MemberFormDTO;
 import com.fashionflow.entity.*;
 import com.fashionflow.repository.*;
+import com.fashionflow.service.CategoryService;
 import com.fashionflow.service.HeartService;
 import com.fashionflow.service.ItemService;
 import com.fashionflow.service.MemberService;
@@ -13,7 +16,9 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -32,6 +38,10 @@ public class ItemController {
     private final HeartService heartService;
 
     private final MemberService memberService;
+
+    private final CategoryService categoryService;
+
+
 
     //상품 리스트 출력
     @GetMapping("/item/{itemId}")
@@ -177,4 +187,34 @@ public class ItemController {
 
         return "item/itemDetail_orig";
     }*/
+
+
+
+    @GetMapping("/members/item/new")
+    public String itemForm(Model model) {
+        // 새 ItemFormDTO 객체를 모델에 추가
+        model.addAttribute("itemFormDto", new ItemFormDTO());
+
+        // 카테고리 서비스를 사용하여 상위 카테고리만을 DTO 리스트로 가져오고 모델에 추가
+        List<CategoryDTO> parentCategories = categoryService.findParentCategories();
+        model.addAttribute("categories", parentCategories);
+
+        // 태그선택 옵션을 동적으로 생성
+        model.addAttribute("allTags", ItemTagName.values());
+
+        // 상품 등록 폼 뷰 이름 반환
+        return "item/itemForm";
+    }
+
+
+    @GetMapping("/getSubcategories/{parentId}")
+    public ResponseEntity<List<CategoryDTO>> getSubcategories(@PathVariable Long parentId) {
+        List<CategoryDTO> subcategories = categoryService.findSubcategoriesByParentId(parentId);
+        return ResponseEntity.ok(subcategories);
+    }
+
+
+
+
+
 }

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout1}">
+
+<!-- 사용자 CSS 추가 -->
+<th:block layout:fragment="css">
+    <style>
+        .error {
+            color: #bd2130;
+        }
+    </style>
+</th:block>
+
+<div layout:fragment="content">
+
+
+    <!-- 공백란 알림 메시지 출력 -->
+    <p th:if="${errors}" class="error" th:each="error : ${errors}" th:text="${error.defaultMessage}"></p>
+    <!-- 중복 알림 메시지 출력 -->
+    <p th:if="${error}" class="error" th:text="${error}"></p>
+
+    <form role="form" method="post" action="/oauth/register">
+        <div class="form-group mb-3">
+            <label for="name">이름</label>
+            <input type="text" name="name" id="name" class="form-control" placeholder="이름을 입력해주세요" th:value="${memberFormDTO.name}">
+        </div>
+        <div class="form-group mb-3">
+            <label for="email">이메일주소</label>
+            <input type="email" name="email" id="email" class="form-control" placeholder="이메일을 입력해주세요" th:value="${memberFormDTO.email}" readonly>
+        </div>
+        <div class="form-group mb-3">
+            <label for="pwd">비밀번호</label>
+            <input type="password" name="pwd" id="pwd" class="form-control" placeholder="비밀번호 입력" th:value="${memberFormDTO.pwd}">
+        </div>
+        <div class="form-group mb-3">
+            <label for="confirmPwd">비밀번호 재입력</label>
+            <input type="password" name="confirmPwd" id="confirmPwd" class="form-control" placeholder="비밀번호 다시 입력" th:value="${memberFormDTO.confirmPwd}">
+        </div>
+        <div class="form-group mb-3">
+            <label for="nickname">닉네임</label>
+            <input type="text" name="nickname" id="nickname" class="form-control" placeholder="닉네임을 입력해주세요" th:value="${memberFormDTO.nickname}">
+        </div>
+        <div class="form-group mb-3">
+            <label for="phone">전화번호</label>
+            <input type="text" name="phone" id="phone" class="form-control" placeholder="전화번호를 입력해주세요" th:value="${memberFormDTO.phone}">
+        </div>
+        <div class="form-group mb-3">
+            <label for="birth">생년월일</label>
+            <input type="date" name="birth" id="birth" class="form-control" th:value="${memberFormDTO.birth}">
+        </div>
+        <div class="form-group mb-3">
+            <label for="gender">성별</label>
+            <select name="gender" id="gender" class="form-control">
+                <option value="m" th:selected="${memberFormDTO.gender == 'm'}">남성</option>
+                <option value="f" th:selected="${memberFormDTO.gender == 'f'}">여성</option>
+                <option value="secret" th:selected="${memberFormDTO.gender == 'secret'}">기타</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-3 mb-3">
+                <label for="sample6_postcode">우편번호</label>
+                <input type="text" name="userStnum" id="sample6_postcode" class="form-control" placeholder="우편번호" th:value="${memberFormDTO.userStnum}">
+                <input type="button" onclick="sample6_execDaumPostcode()" value="우편번호 찾기"><br>
+            </div>
+            <div class="form-group col-md-6 mb-3">
+                <label for="sample6_address">주소</label>
+                <input type="text" name="userAddr" id="sample6_address" class="form-control" placeholder="주소" th:value="${memberFormDTO.userAddr}">
+            </div>
+            <div class="form-group col-md-3 mb-3">
+                <label for="sample6_detailAddress">상세주소</label>
+                <input type="text" name="userDaddr" id="sample6_detailAddress" class="form-control" placeholder="상세주소를 입력해주세요" th:value="${memberFormDTO.userDaddr}">
+            </div>
+
+        </div>
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary">회원가입</button>
+            <!-- csrf 토큰 임시 해제 -->
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+        </div>
+    </form>
+
+</div>
+
+
+
+</html>
+
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script>
+    function sample6_execDaumPostcode() {
+        new daum.Postcode({
+            oncomplete: function(data) {
+                // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+
+                // 각 주소의 노출 규칙에 따라 주소를 조합한다.
+                // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+                var addr = ''; // 주소 변수
+
+                //사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+                if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+                    addr = data.roadAddress;
+                } else { // 사용자가 지번 주소를 선택했을 경우(J)
+                    addr = data.jibunAddress;
+                }
+
+
+                // 우편번호와 주소 정보를 해당 필드에 넣는다.
+                document.getElementById('sample6_postcode').value = data.zonecode;
+                document.getElementById("sample6_address").value = addr;
+                // 커서를 상세주소 필드로 이동한다.
+                document.getElementById("sample6_detailAddress").focus();
+            }
+        }).open();
+    }
+</script>

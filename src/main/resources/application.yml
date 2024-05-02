@@ -61,6 +61,7 @@ spring:
 
 
 
+
 #itemImgLocation: D:/shop/item
 
 #uploadPath: file:///D:/shop/

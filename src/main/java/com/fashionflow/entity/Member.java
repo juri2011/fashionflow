@@ -69,5 +69,14 @@ public class Member {
     @Builder.Default
     private Role role = Role.USER; // 기본값 USER
 
+    // provider : google이 들어감
+    @Column(name = "provider")
+    private String provider;
+
+    // providerId : 구굴 로그인 한 유저의 고유 ID가 들어감
+    @Column(name = "provider_id")
+    private String providerId;
+
+
 
 }

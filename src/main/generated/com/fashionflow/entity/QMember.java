@@ -37,6 +37,10 @@ public class QMember extends EntityPathBase<Member> {
 
     public final StringPath phone = createString("phone");
 
+    public final StringPath provider = createString("provider");
+
+    public final StringPath providerId = createString("providerId");
+
     public final StringPath pwd = createString("pwd");
 
     public final DateTimePath<java.time.LocalDateTime> regdate = createDateTime("regdate", java.time.LocalDateTime.class);

@@ -72,8 +72,9 @@ public class MemberService implements UserDetailsService {
 
     }
 
+
     //중복 체크 메소드
-    private void checkDuplicate(Member member) {
+    public void checkDuplicate(Member member) {
         Member checkMember = memberRepository.findByEmailOrPhoneOrNickname(member.getEmail(), member.getPhone(), member.getNickname());
         if (checkMember != null) {
             if (checkMember.getEmail().equals(member.getEmail())) {

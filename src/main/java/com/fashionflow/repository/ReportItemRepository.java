@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface ReportItemRepository extends JpaRepository<ReportItem, Long> {
+public interface ReportItemRepository extends JpaRepository<ReportItem, Long>,
+        ReportItemRepositoryCustom {
     public List<ReportItem> findAllByOrderByRegdateDesc();
 }

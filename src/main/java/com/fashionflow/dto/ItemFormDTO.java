@@ -72,4 +72,13 @@ public class ItemFormDTO {
         itemFormDTO.setMemberId(item.getMember().getId());
         return itemFormDTO;
     }
+
+    public void saveRepimg(){
+        for(ItemImgDTO itemImgDTO : this.itemImgDTOList){
+            if(itemImgDTO.getRepimgYn().equals("Y")){
+                this.itemRepImgDTO = itemImgDTO;
+                return;
+            }
+        }
+    }
 }

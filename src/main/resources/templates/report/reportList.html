@@ -29,7 +29,45 @@
                 deleteReportItem($(this).data('id'));
             });
 
+            $('.updateReport').on('click', function(){
+
+                const id = $(this).data('id');
+                console.log(id);
+
+                getReportItem(id, function(report){
+                    console.log(report);
+
+                    const repimg = '<img src="/test_images/'+report.reportedItem.itemRepImgDTO.oriImgName+
+                                    '" style="width: 100px; height: 100px;"/>';
+
+                    $('.repimg-box').append(repimg);
+                    $('.itemName').text(report.reportedItem.itemName);
+                    $('#reportContent').text(report.content);
+                    report.reportItemTagDTOList.forEach((element) => {
+                        let tagBlock = '<span class="tagBlock" data-tag="'+element.reportTagItem+'">'+ element.reportTagDesc +'</span>';
+                        $('.tagBox').append(tagBlock);
+                    });
+                });
+
+                $("#detailPopup").show();
+
+            });
+
         });
+
+        function getReportItem(id, callback, error){
+            $.get("/reportItem/"+id, function(result){
+                if(callback) callback(result);
+            }).fail(function(xhr, status, err){
+                if (xhr.status == '401') {
+                        alert('로그인 후 이용해주세요');
+                        //location.href = '/members/login';
+                    } else {
+                        alert(xhr.responseText);
+                    }
+            });
+        }
+
 
         function deleteReportItem(id){
             const token = $("meta[name='_csrf']").attr("content");
@@ -92,6 +130,13 @@
             position: fixed;
             background-color: yellow;
         }
+
+        .tagBlock{
+            display: inline-block;
+            background-color:white;
+            margin-right: 5px;
+            padding: 5px;
+        }
         .page-item{
             cursor:pointer;
         }
@@ -128,7 +173,7 @@
                 <!--<td th:text="${reportItem.reportStatus}"></td>-->
                 <!-- 사용자의 아이디가 표시되는 경우에만 수정 가능 -->
                 <td th:if="${reportItem.isMyReport}">
-                    <!--<button type="button">수정</button>-->
+                    <button th:attr="data-id=${reportItem.id}" class="updateReport" type="button">수정</button>
                     <button th:attr="data-id=${reportItem.id}" class="deleteReport" type="button">삭제</button></td>
 
             </tr>
@@ -161,17 +206,23 @@
     </div>
     
     <!-- 신고 상세보기 팝업창 출력 -->
-    <!--
     <div id="detailPopup">
         <h2>신고 상세</h2>
-        사용자
-        신고대상상품
-        <textarea placeholder="내용을 입력하세요"></textarea>
-        태그
-        <button type="button" class="">신고</button>
-        <button type="button" class="closePopup">확인</button>
+        <span class="repimg-box">
+            <!--<img style="width: 100px; height:100px;">-->
+        </span>
+        <span class="itemName"></span>
+        <textarea id="reportContent" name="reportContent" placeholder="내용을 입력하세요"></textarea>
+        태그선택
+        <select name="tagSelect" id="tagSelect">
+            <option value="default">--선택--</option>
+            <option value="VIOLATION">규정위반</option>
+            <option value="test">test</option>
+        </select>
+        <div class="tagBox"></div>
+        <button type="button" class="reportConfirm">신고하기</button>
+        <button type="button" class="closePopup">취소</button>
     </div>
-    -->
     <!-- 신고하기 팝업창(구현하려면 검색기능 있어야 함) -->
 </div>
 </html>

@@ -88,6 +88,13 @@ public class ReportController {
     }
 */
 
+    @GetMapping("/reportItem/{id}")
+    public @ResponseBody ResponseEntity get(@PathVariable("id") Long id){
+        System.out.println(id);
+        ReportItemDTO reportItemDTO = reportItemService.getReportItemDTOById(id);
+        return new ResponseEntity<>(reportItemDTO,HttpStatus.OK);
+    }
+
     @DeleteMapping("/delete/reportItem/{id}")
     public @ResponseBody ResponseEntity deleteReportItem(@PathVariable("id") Long id){
 

@@ -11,6 +11,7 @@ import com.fashionflow.repository.ItemRepository;
 import com.fashionflow.repository.MemberRepository;
 import com.fashionflow.repository.ReportItemRepository;
 import com.fashionflow.repository.ReportItemTagRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.data.domain.Page;
@@ -28,6 +29,8 @@ public class ReportItemService {
     private final ReportItemTagRepository reportItemTagRepository;
     private final ItemRepository itemRepository;
     private final MemberRepository memberRepository;
+
+    private final ItemService itemService;
 
     public Long addReportItem(ReportItemDTO reportItemDTO){
         System.out.println("========================service 진입" + reportItemDTO);
@@ -100,6 +103,28 @@ public class ReportItemService {
 
     public void deleteReportItem(Long id) {
         reportItemRepository.deleteById(id);
+    }
+
+    public ReportItemDTO getReportItemDTOById(Long id) {
+        ReportItem reportItem = reportItemRepository.findById(id).orElseThrow(() ->
+                new EntityNotFoundException("해당 리뷰가 존재하지 않습니다. id = " + id));
+
+        ReportItemDTO reportItemDTO = ReportItemDTO.entityToDTO(reportItem);
+        Long itemId = reportItemDTO.getReportedItem().getId();
+        reportItemDTO.getReportedItem().setItemImgDTOList(itemService.getItemImgDTOList(itemId));
+        reportItemDTO.getReportedItem().saveRepimg();
+
+        List<ReportItemTagDTO> reportItemTagDTOList = new ArrayList<>();
+        for(ReportItemTag reportItemTag : reportItemTagRepository.findAllByReportItem_Id(id)){
+
+            ReportItemTagDTO reportItemTagDTO = ReportItemTagDTO.entityToDTO(reportItemTag);
+            reportItemTagDTOList.add(reportItemTagDTO);
+            reportItemDTO.getReportTagItemList().add(reportItemTag.getReportTagItem().getDescription());
+        }
+
+        reportItemDTO.setReportItemTagDTOList(reportItemTagDTOList);
+
+        return reportItemDTO;
     }
 /*
     public List<ReportItemDTO> getReportItemDTOList(){

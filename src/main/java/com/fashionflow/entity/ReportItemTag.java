@@ -3,6 +3,8 @@ package com.fashionflow.entity;
 import com.fashionflow.constant.ReportTagItem;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Getter
@@ -19,6 +21,7 @@ public class ReportItemTag {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="report_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private ReportItem reportItem;
 
     @Enumerated(EnumType.STRING)

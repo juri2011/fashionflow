@@ -88,6 +88,21 @@ public class ReportController {
     }
 */
 
+    @DeleteMapping("/delete/reportItem/{id}")
+    public @ResponseBody ResponseEntity deleteReportItem(@PathVariable("id") Long id){
+
+        System.out.println("========================== delete :"+id);
+
+        try {
+            reportItemService.deleteReportItem(id);
+            return new ResponseEntity<>("성공적으로 삭제되었습니다.", HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>("삭제 중 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @PostMapping("/reportItem")
     public @ResponseBody ResponseEntity reportItem(@RequestBody @Valid ReportItemDTO reportItemDTO, BindingResult bindingResult,
                                                    Principal principal){

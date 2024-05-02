@@ -98,9 +98,13 @@ public class ReportItemService {
         return reportItemDTOPage;
     }
 
+    public void deleteReportItem(Long id) {
+        reportItemRepository.deleteById(id);
+    }
+/*
     public List<ReportItemDTO> getReportItemDTOList(){
         
-        /* Repository로부터 List 받아오기 */
+        *//* Repository로부터 List 받아오기 *//*
         List<ReportItem> reportItemList = reportItemRepository.findAllByOrderByRegdateDesc();
 
         // view에 전달할 DTO 리스트 생성
@@ -126,4 +130,5 @@ public class ReportItemService {
 
         return reportItemDTOList;
     }
+*/
 }

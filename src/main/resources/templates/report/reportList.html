@@ -4,6 +4,82 @@
       layout:decorate="~{layouts/layout1}">
 <head>
     <meta charset="UTF-8">
+
+    <title>Title</title>
+    <!-- 사용자 스크립트 추가 -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script th:inline="javascript">
+
+        $(document).ready(function(){
+            $('.closePopup').on('click', function(){
+                $('#detailPopup').hide();
+            });
+            $('.reportBtn').on('click', function(){
+                $('#detailPopup').show();
+            });
+
+            $("#searchBtn").on("click",function(e) {
+                e.preventDefault();
+                page(0);
+            });
+
+            $('.deleteReport').on('click', function(){
+                //console.log($(this).data('id'));
+
+                deleteReportItem($(this).data('id'));
+            });
+
+        });
+
+        function deleteReportItem(id){
+            const token = $("meta[name='_csrf']").attr("content");
+            const header = $("meta[name='_csrf_header']").attr("content");
+            const url = "/delete/reportItem/"+id;
+
+            $.ajax({
+                url: url,
+                type: "DELETE",
+                beforeSend: function (xhr) {
+                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                    xhr.setRequestHeader(header, token);
+                },
+                cache: false,
+                success: function (result, status) {
+                    alert("삭제되었습니다.");
+                    location.href = '/report/item';
+                },
+                error: function (jqXHR, status, error) {
+
+                    if (jqXHR.status == '401') {
+                        alert('로그인 후 이용해주세요');
+                        //location.href = '/members/login';
+                    } else {
+                        alert(jqXHR.responseText);
+                    }
+
+                }
+            });
+
+        }
+
+
+        function page(page){
+            //var searchDateType = $("#searchDateType").val();
+            //var searchSellStatus = $("#searchSellStatus").val();
+            //var searchBy = $("#searchBy").val();
+            //var searchQuery = $("#searchQuery").val();
+
+            location.href="/report/item/" + page;
+
+            //location.href="/admin/items/" + page + "?searchDateType=" + searchDateType
+            //+ "&searchSellStatus=" + searchSellStatus
+            //+ "&searchBy=" + searchBy
+            //+ "&searchQuery=" + searchQuery;
+        }
+
+    </script>
+
+    <!-- 사용자 CSS 추가 -->
     <style>
         #detailPopup{
             display: none;
@@ -16,56 +92,13 @@
             position: fixed;
             background-color: yellow;
         }
+        .page-item{
+            cursor:pointer;
+        }
+        .page-item.disabled{
+            cursor:default;
+        }
     </style>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <title>Title</title>
-    <!-- 사용자 스크립트 추가 -->
-
-    <th:block layout:fragment="script">
-        <script th:inline="javascript">
-
-            $(document).ready(function(){
-                $('.closePopup').on('click', function(){
-                    $('#detailPopup').hide();
-                });
-                $('.reportBtn').on('click', function(){
-                    $('#detailPopup').show();
-                });
-
-                $("#searchBtn").on("click",function(e) {
-                    e.preventDefault();
-                    page(0);
-                });
-            });
-
-            function page(page){
-                //var searchDateType = $("#searchDateType").val();
-                //var searchSellStatus = $("#searchSellStatus").val();
-                //var searchBy = $("#searchBy").val();
-                //var searchQuery = $("#searchQuery").val();
-
-                location.href="/report/item/" + page;
-
-                //location.href="/admin/items/" + page + "?searchDateType=" + searchDateType
-                //+ "&searchSellStatus=" + searchSellStatus
-                //+ "&searchBy=" + searchBy
-                //+ "&searchQuery=" + searchQuery;
-            }
-
-        </script>
-    </th:block>
-
-    <!-- 사용자 CSS 추가 -->
-    <th:block layout:fragment="css">
-        <style>
-            .page-item{
-                cursor:pointer;
-            }
-            .page-item.disabled{
-                cursor:default;
-            }
-        </style>
-    </th:block>
 </head>
 <div layout:fragment="content">
     <h1>신고 리스트</h1>
@@ -94,8 +127,9 @@
                 </td>
                 <!--<td th:text="${reportItem.reportStatus}"></td>-->
                 <!-- 사용자의 아이디가 표시되는 경우에만 수정 가능 -->
-                <td th:if="${reportItem.isMyReport}"><button type="button">수정</button>
-                    <button type="button">삭제</button></td>
+                <td th:if="${reportItem.isMyReport}">
+                    <!--<button type="button">수정</button>-->
+                    <button th:attr="data-id=${reportItem.id}" class="deleteReport" type="button">삭제</button></td>
 
             </tr>
         </tbody>

@@ -58,8 +58,44 @@ public class ReportItemService {
     }
 
     public Page<ReportItemDTO> getReportItemDTOPage(Pageable pageable){
-        //Page<ReportItem> reportItemRepository.getReportItemPage(pageable);
-        return null;
+
+
+        System.out.println("=====================service==================");
+        Page<ReportItem> reportItems = reportItemRepository.findAllByOrderByIdDesc(pageable);
+        //Page<ReportItem> reportItems = reportItemRepository.getReportItemPage(pageable);
+
+
+        System.out.println(reportItems.getTotalPages());
+
+        /* 상품 이미지, 태그 정보는 들어있지 않음 */
+        Page<ReportItemDTO> reportItemDTOPage = reportItems.map(m -> {
+
+            //신고 항목 entity를 DTO로 변환
+            ReportItemDTO reportItemDTO = ReportItemDTO.entityToDTO(m);
+
+            /* 신고 태그 목록 필드에 들어갈 리스트 생성 */
+            //DB에서 현재 신고목록의 태그 목록 받아오기
+            List<ReportItemTag> reportItemTagList = reportItemTagRepository.findAllByReportItem_Id(m.getId());
+
+            //신고 항목 DTO에 저장할 리스트 생성
+            List<ReportItemTagDTO> reportItemTagDTOList = new ArrayList<>();
+
+            //신고 태그 목록 Entity -> DTO로 변경
+            for(ReportItemTag reportItemTag : reportItemTagList){
+                ReportItemTagDTO reportItemTagDTO = ReportItemTagDTO.entityToDTO(reportItemTag);
+                reportItemTagDTOList.add(reportItemTagDTO);
+            }
+
+            //신고 항목의 태그목록 필드 저장
+            reportItemDTO.setReportItemTagDTOList(reportItemTagDTOList);
+
+            return reportItemDTO;
+        });
+
+        System.out.println(reportItemDTOPage.getTotalPages());
+
+
+        return reportItemDTOPage;
     }
 
     public List<ReportItemDTO> getReportItemDTOList(){

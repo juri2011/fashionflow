@@ -25,10 +25,11 @@ public class ReportItemRepositoryCustomImpl implements ReportItemRepositoryCusto
         List<ReportItem> results = queryFactory
                 .selectFrom(QReportItem.reportItem)
                 //.where()
-                .orderBy(QReportItem.reportItem.regdate.desc())
+                .orderBy(QReportItem.reportItem.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
+
         long total = results.size();
 
         return new PageImpl<>(results, pageable, total);

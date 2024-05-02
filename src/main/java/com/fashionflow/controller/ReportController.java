@@ -31,27 +31,38 @@ public class ReportController {
     private final ReportItemService reportItemService;
     private final ReportMemberService reportMemberService;
 
-    @GetMapping({"/report/item", "/reportnew/item/{page}"})
+    @GetMapping({"/report/item", "/report/item/{page}"})
     public String reportNew(Model model, Principal principal,
                             @PathVariable("page") Optional<Integer> page){
 
+        System.out.println("현재 페이지 ================="+page.orElse(0));
+
         /* 경로에 페이지 번호가 없으면 0페이지 조회 */
-        Pageable pageable = PageRequest.of(page.orElse(0), 5);
+        Pageable pageable = PageRequest.of(page.orElse(0), 2);
         Page<ReportItemDTO> reportItems = reportItemService.getReportItemDTOPage(pageable);
 
-        List<ReportItemDTO> reportItemDTOList = reportItemService.getReportItemDTOList();
+        //로그인한 사용자에 대해 자신이 작성한 리뷰항목 구분
+        if(principal != null){
+            //사용자가 작성한 신고 항목 구분
+            reportItems.getContent().forEach(reportItemDTO -> {
+                if(principal.getName().equals(reportItemDTO.getReporterMemberEmail())){
+                    reportItemDTO.setMyReport(true);
+                }
+            });
+        }
 
-        //사용자가 작성한 글 구분
-        reportItemDTOList.forEach(reportItemDTO -> {
-            if(principal.getName().equals(reportItemDTO.getReporterMemberEmail())){
-                reportItemDTO.setMyReport(true);
-            }
-            System.out.println("==========================" + reportItemDTO);
-        });
+        reportItems.getContent().forEach(reportItemDTO -> System.out.println("================"+reportItemDTO));
 
-        model.addAttribute("reportItemList", reportItemDTOList);
+        System.out.println("총 페이지 수 : "+reportItems.getTotalPages());
+
+        model.addAttribute("reportItemList", reportItems);
+        model.addAttribute("maxPage", 10); //페이지네이션 한 블록당 출력할 페이지 수
+
+
         return "report/reportList";
     }
+
+/*
 
     @GetMapping("/report")
     public String report(Model model, Principal principal){
@@ -73,8 +84,9 @@ public class ReportController {
         model.addAttribute("reportItemList", reportItemDTOList);
         model.addAttribute("reportItemList", reportItemDTOList);
         //model.addAttribute("reportMemberList", reportMemberDTOList);
-        return "report/reportList";
+        return "report/reportList_orig";
     }
+*/
 
     @PostMapping("/reportItem")
     public @ResponseBody ResponseEntity reportItem(@RequestBody @Valid ReportItemDTO reportItemDTO, BindingResult bindingResult,

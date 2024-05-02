@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout1}">
 <head>
     <meta charset="UTF-8">
     <style>
@@ -17,22 +19,59 @@
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <title>Title</title>
+    <!-- 사용자 스크립트 추가 -->
+
+    <th:block layout:fragment="script">
+        <script th:inline="javascript">
+
+            $(document).ready(function(){
+                $('.closePopup').on('click', function(){
+                    $('#detailPopup').hide();
+                });
+                $('.reportBtn').on('click', function(){
+                    $('#detailPopup').show();
+                });
+
+                $("#searchBtn").on("click",function(e) {
+                    e.preventDefault();
+                    page(0);
+                });
+            });
+
+            function page(page){
+                //var searchDateType = $("#searchDateType").val();
+                //var searchSellStatus = $("#searchSellStatus").val();
+                //var searchBy = $("#searchBy").val();
+                //var searchQuery = $("#searchQuery").val();
+
+                location.href="/report/item/" + page;
+
+                //location.href="/admin/items/" + page + "?searchDateType=" + searchDateType
+                //+ "&searchSellStatus=" + searchSellStatus
+                //+ "&searchBy=" + searchBy
+                //+ "&searchQuery=" + searchQuery;
+            }
+
+        </script>
+    </th:block>
+
+    <!-- 사용자 CSS 추가 -->
+    <th:block layout:fragment="css">
+        <style>
+            .page-item{
+                cursor:pointer;
+            }
+            .page-item.disabled{
+                cursor:default;
+            }
+        </style>
+    </th:block>
 </head>
-<script>
-    $(document).ready(function(){
-        $('.closePopup').on('click', function(){
-            $('#detailPopup').hide();
-        });
-        $('.reportBtn').on('click', function(){
-            $('#detailPopup').show();
-        });
-    });
-</script>
-<body>
+<div layout:fragment="content">
     <h1>신고 리스트</h1>
 
     <button type="button" class="reportBtn">신고하기</button>
-    <table>
+    <table class="table">
         <thead>
             <tr>
                 <th>번호</th>
@@ -43,7 +82,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr th:each="reportItem : ${reportItemList}">
+            <tr th:each="reportItem : ${reportItemList.getContent()}">
                 <td th:text="${reportItem.id}"></td>
                 <!-- 관리자나 작성자인 경우만 표시 -->
                 <td th:text="${reportItem.content}"></td>
@@ -64,7 +103,31 @@
 
     <!-- 페이지네이션 추가 -->
 
+    <div th:with="start=${(reportItemList.number/maxPage)*maxPage + 1}, end=(${(reportItemList.totalPages == 0) ? 1 : (start + (maxPage - 1) < reportItemList.totalPages ? start + (maxPage - 1) : reportItemList.totalPages)})" >
+        <ul class="pagination justify-content-center">
+
+            <li class="page-item" th:classappend="${reportItemList.first}?'disabled'">
+                <a th:onclick="'javascript:page(' + ${reportItemList.number - 1} + ')'" aria-label='Previous' class="page-link">
+                    <span aria-hidden='true'>Previous</span>
+                </a>
+            </li>
+
+            <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}" th:classappend="${reportItemList.number eq page-1}?'active':''">
+                <a th:onclick="'javascript:page(' + ${page - 1} + ')'" th:inline="text" class="page-link">[[${page}]]</a>
+                <!--<a th:onclick="'javascript:page(' + ${page - 1} + ')'" th:inline="text" class="page-link">[[${page}]]</a>-->
+            </li>
+
+            <li class="page-item" th:classappend="${reportItemList.last}?'disabled'">
+                <a th:onclick="'javascript:page(' + ${reportItemList.number + 1} + ')'" aria-label='Next' class="page-link">
+                    <span aria-hidden='true'>Next</span>
+                </a>
+            </li>
+
+        </ul>
+    </div>
+    
     <!-- 신고 상세보기 팝업창 출력 -->
+    <!--
     <div id="detailPopup">
         <h2>신고 상세</h2>
         사용자
@@ -74,7 +137,7 @@
         <button type="button" class="">신고</button>
         <button type="button" class="closePopup">확인</button>
     </div>
-
+    -->
     <!-- 신고하기 팝업창(구현하려면 검색기능 있어야 함) -->
-</body>
+</div>
 </html>

@@ -47,9 +47,17 @@
                 if($('.tagBox').find('.tagBlock[data-tag="'+selectedOption+'"]').length>0){alert('존재함')}
                 else $('.tagBox').append(tagBlock);
             }
-
+            $('#tagSelect option:eq(0)').prop('selected', true);
 
         });
+
+        $('.tagBox').on('click', '.tagBlock', function() {
+            // 클릭된 동적으로 생성된 버튼에 대한 처리를 여기에 작성합니다.
+            console.log($(event.target).text());
+            $(event.target).remove();
+
+        });
+
     });
     function reportItem(){
         const token = $("meta[name='_csrf']").attr("content");

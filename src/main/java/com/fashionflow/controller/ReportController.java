@@ -88,6 +88,41 @@ public class ReportController {
     }
 */
 
+
+    @PutMapping("/reportItem/update")
+    public @ResponseBody ResponseEntity updateReportItem(@RequestBody @Valid ReportItemDTO reportItemDTO,
+                                                         BindingResult bindingResult,
+                                                         Principal principal){
+        System.out.println("=========================put 진입");
+        if(bindingResult.hasErrors()){
+            StringBuilder sb = new StringBuilder();
+            List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+
+            for(FieldError fieldError : fieldErrors){
+                sb.append(fieldError.getDefaultMessage());
+            }
+
+            return new ResponseEntity<String>(sb.toString(), HttpStatus.BAD_REQUEST);
+        }
+        if(principal == null) return new ResponseEntity<String>("로그인이 필요합니다.", HttpStatus.BAD_REQUEST);
+        String email = principal.getName();
+        System.out.println(email);
+
+        reportItemDTO.setReporterMemberEmail(email);
+        System.out.println(reportItemDTO);
+        Long reportItemId;
+
+
+        try {
+            reportItemId = reportItemService.updateReportItem(reportItemDTO);
+        } catch(Exception e){
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<Long>(1L, HttpStatus.OK);
+        //return new ResponseEntity<Long>(reportItemId, HttpStatus.OK);
+
+    }
+
     @GetMapping("/reportItem/{id}")
     public @ResponseBody ResponseEntity get(@PathVariable("id") Long id){
         System.out.println(id);
@@ -137,8 +172,7 @@ public class ReportController {
         } catch(Exception e){
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<Long>(1L, HttpStatus.OK);
-        //return new ResponseEntity<Long>(reportItemId, HttpStatus.OK);
+        return new ResponseEntity<Long>(reportItemId, HttpStatus.OK);
 
     }
 }

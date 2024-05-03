@@ -18,6 +18,31 @@
                 $('#detailPopup').show();
             });
 
+            $('.reportConfirm').on('click', function(){
+                updateReportItem($(this).data('id'), $(this).data('itemId'));
+                //$('#detailPopup').hide();
+            });
+
+            $('#tagSelect').on('input', function(){
+                let selectedOption = $('#tagSelect option:selected').val();
+                let selectedText = $('#tagSelect option:selected').text();
+                let tagBlock = '<span class="tagBlock" data-tag="'+selectedOption+'">'+ selectedText +'</span>';
+                if(selectedOption !== 'default'){
+                    if($('.tagBox').find('.tagBlock[data-tag="'+selectedOption+'"]').length>0){alert('존재함')}
+                    else $('.tagBox').append(tagBlock);
+                }
+                $('#tagSelect option:eq(0)').prop('selected', true);
+
+            });
+
+            $('.tagBox').on('click', '.tagBlock', function() {
+                // 클릭된 동적으로 생성된 버튼에 대한 처리를 여기에 작성합니다.
+                console.log($(event.target).text());
+                $(event.target).remove();
+
+            });
+
+
             $("#searchBtn").on("click",function(e) {
                 e.preventDefault();
                 page(0);
@@ -47,13 +72,65 @@
                         let tagBlock = '<span class="tagBlock" data-tag="'+element.reportTagItem+'">'+ element.reportTagDesc +'</span>';
                         $('.tagBox').append(tagBlock);
                     });
+                    $(".reportConfirm").data('id', report.id);
+                    $(".reportConfirm").data('itemId', report.reportedItemId);
                 });
+
 
                 $("#detailPopup").show();
 
             });
 
         });
+
+        const token = $("meta[name='_csrf']").attr("content");
+        const header = $("meta[name='_csrf_header']").attr("content");
+
+        function updateReportItem(id, itemId){
+            const url = "/reportItem/update";
+
+            const tagArray = $('.tagBlock').map(function(){
+                return $(this).data('tag');
+            }).get();
+
+            const paramData = {
+                id:id,
+                reportedItemId:itemId,
+                content: $('#reportContent').val(),
+                reportTagItemList: tagArray
+            };
+
+            console.log(paramData);
+
+            const param = JSON.stringify(paramData);
+
+            $.ajax({
+                url: url,
+                type: "PUT",
+                contentType: "application/json",
+                data: param,
+                beforeSend: function (xhr) {
+                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                    xhr.setRequestHeader(header, token);
+                },
+                dataType: "json",
+                cache: false,
+                success: function (result, status) {
+                    alert("삭제되었습니다.");
+                    location.href = '/report/item';
+                },
+                error: function (jqXHR, status, error) {
+
+                    if (jqXHR.status == '401') {
+                        alert('로그인 후 이용해주세요');
+                        //location.href = '/members/login';
+                    } else {
+                        alert(jqXHR.responseText);
+                    }
+
+                }
+            });
+        }
 
         function getReportItem(id, callback, error){
             $.get("/reportItem/"+id, function(result){
@@ -70,8 +147,6 @@
 
 
         function deleteReportItem(id){
-            const token = $("meta[name='_csrf']").attr("content");
-            const header = $("meta[name='_csrf_header']").attr("content");
             const url = "/delete/reportItem/"+id;
 
             $.ajax({
@@ -117,6 +192,7 @@
 
     </script>
 
+
     <!-- 사용자 CSS 추가 -->
     <style>
         #detailPopup{
@@ -128,6 +204,7 @@
             transform: translateX(-50%);
             padding: 20px;
             position: fixed;
+            z-index:9999;
             background-color: yellow;
         }
 

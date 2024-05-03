@@ -17,12 +17,15 @@ import org.apache.commons.lang3.EnumUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ReportItemService {
 
     private final ReportItemRepository reportItemRepository;
@@ -125,6 +128,55 @@ public class ReportItemService {
         reportItemDTO.setReportItemTagDTOList(reportItemTagDTOList);
 
         return reportItemDTO;
+    }
+
+    public Long updateReportItem(ReportItemDTO reportItemDTO) {
+        ReportItem targetReportItem = reportItemRepository.findById(reportItemDTO.getId()).orElseThrow(() ->
+                new EntityNotFoundException("해당 리뷰가 존재하지 않습니다. id = " + reportItemDTO.getId()));
+
+        //DTO에서 태그 정보 가져옴
+        List<ReportItemTagDTO> reportItemTagDTOList = reportItemDTO.getReportItemTagDTOList();
+        //태그 정보에서 enum값만 빼서 list로 변환
+        List<ReportTagItem> reportTagItemDTOs = reportItemTagDTOList.stream()
+                .map(ReportItemTagDTO::getReportTagItem)
+                .toList();
+
+        //DB에서 태그 정보 가져옴
+        List<ReportItemTag> reportItemTagList = reportItemTagRepository.findAllByReportItem_Id(reportItemDTO.getId());
+        //태그 정보에서 enum값만 빼서 list로 변환
+        List<ReportTagItem> reportTagItems = reportItemTagList.stream()
+                .map(ReportItemTag::getReportTagItem)
+                .toList();
+
+        //System.out.println("===============태그목록 : "+reportItemTagList);
+
+        //실제 entity에 있는 값들 중 DTO에 없는 값이 있다면 삭제
+        for(ReportItemTag reportItemTag : reportItemTagList){
+            if(!reportTagItemDTOs.contains(reportItemTag.getReportTagItem())){
+                //System.out.println("======================== 태그 삭제 : "+reportItemTag.getReportTagItem());
+                reportItemTagRepository.deleteById(reportItemTag.getId());
+            }
+        }
+
+        //DTO에 담긴 값들 중 실제 entity에 없는 값이 있다면 추가
+        for(ReportItemTagDTO reportItemTagDTO : reportItemTagDTOList){
+            if(!reportTagItems.contains(reportItemTagDTO.getReportTagItem())){
+                //DB에 저장할 새로운 Entity 추가
+                ReportItemTag reportItemTag = reportItemTagDTO.createReportItemTagDTO();
+                //현재 신고 항목 setter로 추가
+                reportItemTag.setReportItem(targetReportItem);
+                System.out.println("========================== 태그 추가 : "+reportItemTag.getReportTagItem());
+                reportItemTagRepository.save(reportItemTag);
+            }
+        }
+
+        //추가
+
+        targetReportItem.setContent(reportItemDTO.getContent());
+        System.out.println("===================== targetReportItem : " + targetReportItem);
+        System.out.println("===================== reportItemDTO : " + reportItemDTO);
+
+        return 1L;
     }
 /*
     public List<ReportItemDTO> getReportItemDTOList(){

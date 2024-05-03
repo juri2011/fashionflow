@@ -1,12 +1,14 @@
 package com.fashionflow.controller;
 
 import com.fashionflow.dto.MemberFormDTO;
+import com.fashionflow.repository.MemberRepository;
 import com.fashionflow.service.MemberService;
 import com.fashionflow.service.OAuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,25 +18,30 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Validator;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.security.Principal;
+import java.util.UUID;
 
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/oauth")
 public class OAuthController {
 
-/*
-    private final CustomOAuth2UserService customOAuth2UserService;
-*/
-    private final MemberService memberService;
+    private final MemberRepository memberRepository;
     private final OAuthService oAuthService;
     private final PasswordEncoder passwordEncoder;
+    private final Validator validator;
 
+
+
+    //OAuth 로그인
     @GetMapping("/login")
     public String oauthLogin(Model model, HttpServletRequest request) {
         // 컨트롤러 실행 시 MemberFormDTO 초기화 및 모델에 추가
@@ -55,26 +62,46 @@ public class OAuthController {
             }
         }
 
+        // 인증된 사용자가 OAuth 2.0 사용자인지 확인
+        if (authentication.getPrincipal() instanceof OAuth2User) {
+
+            OAuth2User oauthUser = (OAuth2User) authentication.getPrincipal();
+            // 사용자 정보에서 이메일 속성 추출
+            String email = oauthUser.getAttribute("email");
+            if (email != null) {
+                memberFormDTO.setEmail(email);
+
+                if(memberRepository.findByEmail(email) != null){
+                    return "redirect:/";
+                }
+            }
+        }
+
         return "oauth/oauthLogin";
     }
 
+
+    //OAuth 회원 정보 등록
     @PostMapping("/register")
-    public ModelAndView oauthRegister(@Valid MemberFormDTO memberFormDTO, BindingResult bindingResult, HttpServletRequest request){
+    public ModelAndView oauthRegister(MemberFormDTO memberFormDTO, BindingResult bindingResult, HttpServletRequest request){
 
         ModelAndView modelAndView = new ModelAndView();
 
-        // 비밀번호와 비밀번호 확인이 일치하는지 확인
-        if (!memberFormDTO.getPwd().equals(memberFormDTO.getConfirmPwd())) {
-            //에러 메세지 바인딩 시키는 메소드
-            bindingResult.rejectValue("confirmPwd", "error.memberFormDTO", "비밀번호와 비밀번호 확인이 일치하지 않습니다.");
-        }
+        // 난수 비밀번호 생성
+        String randomPwd = oAuthService.generateRandomString(20);
+
+        memberFormDTO.setPwd(randomPwd);
+        memberFormDTO.setConfirmPwd(randomPwd);
+
+        //pwd 세팅 이후 유효성검사
+        validator.validate(memberFormDTO, bindingResult);
 
         // 유효성 검사 실패 시 회원가입 페이지로 다시 이동
         if (bindingResult.hasErrors()) {
             modelAndView.addObject("errors", bindingResult.getAllErrors());
             // 실패한 경우 ModelAndView에 기존에 입력한 정보 추가하여 전달
             modelAndView.addObject("memberFormDTO", memberFormDTO);
-            modelAndView.setViewName("members/memberRegister");
+            modelAndView.setViewName("oauth/oauthLogin");
             return modelAndView;
         }
 

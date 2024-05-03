@@ -66,7 +66,15 @@ public class OAuthController {
                 Map<String, Object> kakaoAccount = oauthUser.getAttribute("kakao_account");
                 //email 키값 return 후, Map 형식 형변환
                 email = (String) kakaoAccount.get("email");
-            } else { //구글 계정인 경우
+            }
+            //네이버 계정인 경우
+            else if (oauthUser.getAttributes().containsKey("response")) {
+                Map<String, Object> naverAccount = oauthUser.getAttribute("response");
+                //email 키값 return 후, Map 형식 형변환
+                email = (String) naverAccount.get("email");
+            }
+            //구글 계정인 경우
+            else {
                 email = oauthUser.getAttribute("email");
             }
 
@@ -79,7 +87,7 @@ public class OAuthController {
                 }
             }
         }
-        
+
         return "oauth/oauthLogin";
     }
 

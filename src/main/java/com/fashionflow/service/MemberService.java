@@ -117,17 +117,22 @@ public class MemberService implements UserDetailsService {
 
         // OAuth 2.0 인증
         if (authentication instanceof OAuth2AuthenticationToken) {
+
             OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
             OAuth2User oauthUser = oauthToken.getPrincipal();
 
             Map<String, Object> attributes = oauthToken.getPrincipal().getAttributes();
+
             if ("kakao".equals(oauthToken.getAuthorizedClientRegistrationId())) {
                 Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
                 // 사용자 정보에서 이메일 속성 추출
                 return (String) kakaoAccount.get("email");
-            }
+            } else if ("naver".equals(oauthToken.getAuthorizedClientRegistrationId())) {
+                Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("response");
+                // 사용자 정보에서 이메일 속성 추출
+                return (String) kakaoAccount.get("email"); }
 
-            // 사용자 정보에서 이메일 속성 추출
+            // 구글 사용자 정보에서 이메일 속성 추출
             return (String) attributes.get("email");
         }
 

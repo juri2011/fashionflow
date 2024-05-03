@@ -28,8 +28,8 @@ public class ItemImg {
     @JoinColumn(name = "item_id")
     private Item item;
 
-    public void updateItemImg(String oriImgNamem, String imgName, String imgUrl){
-        this.oriImgName = oriImgNamem;
+    public void updateItemImg(String oriImgName, String imgName, String imgUrl){
+        this.oriImgName = oriImgName;
         this.imgName = imgName;
         this.imgUrl = imgUrl;
     }

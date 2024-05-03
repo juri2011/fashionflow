@@ -1,6 +1,7 @@
 package com.fashionflow.controller;
 
 import com.fashionflow.dto.MemberFormDTO;
+import com.fashionflow.entity.Member;
 import com.fashionflow.repository.MemberRepository;
 import com.fashionflow.service.MemberService;
 import com.fashionflow.service.OAuthService;
@@ -35,6 +36,7 @@ import java.util.UUID;
 public class OAuthController {
 
     private final MemberRepository memberRepository;
+    private final MemberService memberService;
     private final OAuthService oAuthService;
     private final PasswordEncoder passwordEncoder;
     private final Validator validator;
@@ -136,6 +138,45 @@ public class OAuthController {
         }
 
         return modelAndView;
+    }
+
+    //회원 수정
+    @PostMapping("/oauthEdit")
+    public String memberEdit(MemberFormDTO memberFormDTO, BindingResult bindingResult, Model model) {
+
+        // 난수 비밀번호 생성
+        String randomPwd = oAuthService.generateRandomString(20);
+
+        memberFormDTO.setPwd(randomPwd);
+        memberFormDTO.setConfirmPwd(randomPwd);
+
+        //pwd 세팅 이후 유효성검사
+        validator.validate(memberFormDTO, bindingResult);
+
+        // 유효성 검사 실패 시
+        if (bindingResult.hasErrors()) {
+            // 현재 멤버 정보를 가져와서 다시 모델에 추가
+            Member currentMember = memberService.findMemberByCurrentEmail();
+            model.addAttribute("currentMember", currentMember);
+            // 유효성 검사에 실패한 필드에 대한 오류 메시지를 추출하여 모델에 추가
+            model.addAttribute("errors", bindingResult.getAllErrors());
+            // 유효성 검사 실패에 따른 오류 메시지를 뷰로 전달
+            return "oauth/oauthEdit"; // 에러가 발생한 페이지로 리디렉션 또는 해당 페이지로 포워딩
+        }
+
+        // 닉네임 중복 검사
+        try {
+            memberService.updateMember(memberFormDTO, passwordEncoder);
+            return "redirect:/";
+        } catch (IllegalArgumentException e) {
+            // 현재 멤버 정보를 가져와서 다시 모델에 추가
+            Member currentMember = memberService.findMemberByCurrentEmail();
+            model.addAttribute("currentMember", currentMember);
+
+            model.addAttribute("duplicateErrorMessage", e.getMessage());
+            return "oauth/oauthEdit"; // 에러가 발생한 페이지로 리디렉션 또는 해당 페이지로 포워딩
+        }
+
     }
 
 }

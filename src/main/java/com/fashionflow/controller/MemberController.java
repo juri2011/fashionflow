@@ -91,8 +91,11 @@ public class MemberController {
 
         model.addAttribute("currentMember", currentMember);
 
-        return "members/memberEdit"; // 수정 페이지로 이동
-
+        if(currentMember.getProviderId() != null){
+            return "oauth/oauthEdit"; // OAuth 수정 페이지 이동
+        } else {
+            return "members/memberEdit"; // 수정 페이지로 이동
+        }
     }
 
     //회원 수정

@@ -24,6 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -117,7 +118,15 @@ public class MemberService implements UserDetailsService {
         // OAuth 2.0 인증
         if (authentication instanceof OAuth2AuthenticationToken) {
             OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
+            OAuth2User oauthUser = oauthToken.getPrincipal();
+
             Map<String, Object> attributes = oauthToken.getPrincipal().getAttributes();
+            if ("kakao".equals(oauthToken.getAuthorizedClientRegistrationId())) {
+                Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
+                // 사용자 정보에서 이메일 속성 추출
+                return (String) kakaoAccount.get("email");
+            }
+
             // 사용자 정보에서 이메일 속성 추출
             return (String) attributes.get("email");
         }

@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.security.Principal;
+import java.util.Map;
 import java.util.UUID;
 
 @Controller
@@ -58,27 +59,27 @@ public class OAuthController {
 
             OAuth2User oauthUser = (OAuth2User) authentication.getPrincipal();
             // 사용자 정보에서 이메일 속성 추출
-            String email = oauthUser.getAttribute("email");
-            if (email != null) {
-                memberFormDTO.setEmail(email);
+            String email = null;
+
+            // 카카오 계정인 경우
+            if (oauthUser.getAttributes().containsKey("kakao_account")) {
+                Map<String, Object> kakaoAccount = oauthUser.getAttribute("kakao_account");
+                //email 키값 return 후, Map 형식 형변환
+                email = (String) kakaoAccount.get("email");
+            } else { //구글 계정인 경우
+                email = oauthUser.getAttribute("email");
             }
-        }
 
-        // 인증된 사용자가 OAuth 2.0 사용자인지 확인
-        if (authentication.getPrincipal() instanceof OAuth2User) {
-
-            OAuth2User oauthUser = (OAuth2User) authentication.getPrincipal();
-            // 사용자 정보에서 이메일 속성 추출
-            String email = oauthUser.getAttribute("email");
             if (email != null) {
                 memberFormDTO.setEmail(email);
 
+                // 해당 이메일이 이미 등록되어 있는지 확인
                 if(memberRepository.findByEmail(email) != null){
                     return "redirect:/";
                 }
             }
         }
-
+        
         return "oauth/oauthLogin";
     }
 

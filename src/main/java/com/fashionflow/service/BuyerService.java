@@ -30,16 +30,6 @@ public class BuyerService {
         return itemBuyRepository.findByMemberId(memberId);
     }
 
-    //리스트의 리뷰여부 확인
-    public void checkItemWithReview(List<ItemBuy> purchaseList) {
-        Member member = memberService.findMemberByCurrentEmail();
-
-        for (ItemBuy purchaseItem : purchaseList) {
-            Review review = reviewRepository.findByMemberAndItem(member, purchaseItem.getItem());
-            purchaseItem.setReviewExists(review != null);
-        }
-    }
-
     //리뷰 등록 메소드
     public void registerReview(ReviewDTO reviewDTO){
 

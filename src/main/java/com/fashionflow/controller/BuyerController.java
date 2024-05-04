@@ -27,8 +27,7 @@ public class BuyerController {
 
         //구매자 구매내역 리스트
         List<ItemBuy> purchaseList = buyerService.getItemBuyList();
-        // 리뷰 여부 확인
-        buyerService.checkItemWithReview(purchaseList);
+
 
         model.addAttribute("purchaseList", purchaseList); // 리뷰가 이미 작성되었는지 여부를 모델에 추가
         return "buyer/orders";

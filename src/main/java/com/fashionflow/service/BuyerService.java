@@ -9,6 +9,7 @@ import com.fashionflow.repository.ItemBuyRepository;
 import com.fashionflow.repository.ItemRepository;
 import com.fashionflow.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -27,7 +28,8 @@ public class BuyerService {
     //구매한 아이템 리스트
     public List<ItemBuy> getItemBuyList() {
         Long memberId = memberService.findMemberByCurrentEmail().getId();
-        return itemBuyRepository.findByMemberId(memberId);
+        Sort sort = Sort.by(Sort.Direction.DESC, "buyDate"); // 거래일 내림차순 정렬
+        return itemBuyRepository.findByMemberId(memberId, sort);
     }
 
     //리뷰 등록 메소드

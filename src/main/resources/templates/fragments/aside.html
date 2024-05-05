@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="recentViewedItems">
+  <div class="card recent-viewed-items">
+    <div class="card-header">
+      최근 본 상품
+    </div>
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item" th:each="item : ${recentViewedItems}">
+        <a th:href="@{'/item/' + ${item.id}}" th:text="${item.name}"></a>
+      </li>
+    </ul>
+  </div>
+  <style>
+    .recent-viewed-items {
+      position: fixed;
+      top: 70px;
+      right: 20px;
+      width: 150px;
+      height: 400px;
+      z-index: 1000;
+    }
+  </style>
+</div>
+</html>

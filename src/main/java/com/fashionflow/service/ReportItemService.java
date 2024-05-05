@@ -134,21 +134,58 @@ public class ReportItemService {
         ReportItem targetReportItem = reportItemRepository.findById(reportItemDTO.getId()).orElseThrow(() ->
                 new EntityNotFoundException("해당 리뷰가 존재하지 않습니다. id = " + reportItemDTO.getId()));
 
-        //DTO에서 태그 정보 가져옴
-        List<ReportItemTagDTO> reportItemTagDTOList = reportItemDTO.getReportItemTagDTOList();
-        //태그 정보에서 enum값만 빼서 list로 변환
-        List<ReportTagItem> reportTagItemDTOs = reportItemTagDTOList.stream()
-                .map(ReportItemTagDTO::getReportTagItem)
-                .toList();
-
-        //DB에서 태그 정보 가져옴
+        //DB에서 태그 불러오기
         List<ReportItemTag> reportItemTagList = reportItemTagRepository.findAllByReportItem_Id(reportItemDTO.getId());
-        //태그 정보에서 enum값만 빼서 list로 변환
+        //태그 이름만 List로 변환
         List<ReportTagItem> reportTagItems = reportItemTagList.stream()
                 .map(ReportItemTag::getReportTagItem)
                 .toList();
 
-        //System.out.println("===============태그목록 : "+reportItemTagList);
+        //Entity를 순회해서 DTO에 없는 태그는 삭제
+        for(ReportItemTag reportItemTag : reportItemTagList){
+            ReportTagItem reportTagItem = reportItemTag.getReportTagItem();
+            if(!reportItemDTO.getReportTagItemList().contains(reportTagItem.name())){
+                reportItemTagRepository.deleteById(reportItemTag.getId());
+            }
+        }
+
+        /*
+        //실제 entity에 있는 값들 중 DTO에 없는 값이 있다면 삭제
+        for(ReportItemTag reportItemTag : reportItemTagList){
+            if(!reportTagItemDTOs.contains(reportItemTag.getReportTagItem())){
+                //System.out.println("======================== 태그 삭제 : "+reportItemTag.getReportTagItem());
+                reportItemTagRepository.deleteById(reportItemTag.getId());
+            }
+        }
+*/
+        //DTO가 entity에 없는 태그를 갖고 있다면 추가
+        for(String reportTagItemString : reportItemDTO.getReportTagItemList()){
+
+            //유효한 태그만 추가
+            if(EnumUtils.isValidEnum(ReportTagItem.class,reportTagItemString)){
+
+                if(reportTagItems.contains(ReportTagItem.valueOf(reportTagItemString))) continue;
+
+                ReportItemTag reportItemTag = ReportItemTag.builder()
+                        .reportTagItem(ReportTagItem.valueOf(reportTagItemString)) //String to Enum
+                        .build();
+                reportItemTag.setReportItem(targetReportItem);
+                reportItemTagRepository.save(reportItemTag);
+            }
+        }
+
+        /*
+        //DTO에서 태그 정보 가져옴
+        List<ReportTagItem> reportTagItemList = reportItemDTO.getReportTagItemList();
+        //태그 정보에서 enum값만 빼서 list로 변환
+        *//*List<ReportTagItem> reportTagItemDTOs = reportItemTagDTOList.stream()
+                .map(ReportItemTagDTO::getReportTagItem)
+                .toList();*//*
+
+        //DB에서 태그 정보 가져옴
+        List<ReportItemTag> reportItemTagList = reportItemTagRepository.findAllByReportItem_Id(reportItemDTO.getId());
+        //태그 정보에서 enum값만 빼서 list로 변환
+
 
         //실제 entity에 있는 값들 중 DTO에 없는 값이 있다면 삭제
         for(ReportItemTag reportItemTag : reportItemTagList){
@@ -168,7 +205,7 @@ public class ReportItemService {
                 System.out.println("========================== 태그 추가 : "+reportItemTag.getReportTagItem());
                 reportItemTagRepository.save(reportItemTag);
             }
-        }
+        }*/
 
         //추가
 

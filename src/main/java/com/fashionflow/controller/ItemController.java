@@ -3,6 +3,7 @@ package com.fashionflow.controller;
 import com.fashionflow.dto.ItemFormDTO;
 import com.fashionflow.dto.MemberDetailDTO;
 import com.fashionflow.dto.MemberFormDTO;
+import com.fashionflow.dto.RecentViewItemDTO;
 import com.fashionflow.entity.*;
 import com.fashionflow.repository.*;
 import com.fashionflow.service.HeartService;
@@ -54,21 +55,23 @@ public class ItemController {
         model.addAttribute("shopMember", shopMember);
         model.addAttribute("currentMemberEmail", currentMemberEmail);
 
-        // 최근 본 리스트 세션 불러오기, 없다면 새로운 세션 생성
-        List<Long> recentViewedItems = (List<Long>) session.getAttribute("recentViewedItems");
+
+        // 최근 본 상품 리스트 세션 불러오기
+        List<RecentViewItemDTO> recentViewedItems = (List<RecentViewItemDTO>) session.getAttribute("recentViewedItems");
         if (recentViewedItems == null) {
             recentViewedItems = new ArrayList<>();
         }
 
-        // 현재 상품이 이미 목록에 있는 경우, 기존 위치에서 제거
-        recentViewedItems.remove(itemId);
+        // 현재 상품이 이미 목록에 있는 경우 제거
+        recentViewedItems.removeIf(item -> item.getItemId().equals(itemId));
 
         // 현재 상품을 최근 본 상품 목록의 맨 앞에 추가
-        recentViewedItems.add(0, itemId);
+        RecentViewItemDTO recentItem = itemService.getRecentView(itemId);
+        recentViewedItems.add(0, recentItem);
 
-        // 항목수 5개 제한
+        // 항목수 5개로 제한
         if (recentViewedItems.size() > 5) {
-            recentViewedItems.remove(5); // 가장 오래된 항목을 제거
+            recentViewedItems.remove(5);
         }
 
         // 업데이트된 목록을 세션에 저장

@@ -3,6 +3,7 @@ package com.fashionflow.service;
 import com.fashionflow.dto.ItemFormDTO;
 import com.fashionflow.dto.ItemImgDTO;
 import com.fashionflow.dto.ItemTagDTO;
+import com.fashionflow.dto.RecentViewItemDTO;
 import com.fashionflow.entity.Item;
 import com.fashionflow.entity.ItemImg;
 import com.fashionflow.entity.ItemTag;
@@ -64,5 +65,24 @@ public class ItemService {
         return itemFormDTO;
 
     }
+
+    // 최근 본 아이템 정보 DTO 추가
+    public RecentViewItemDTO getRecentView(Long itemId) {
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다. id=" + itemId));
+
+        ItemImg repImg = itemImgRepository.findFirstByItemIdAndRepimgYn(itemId, "Y")
+                .orElse(null); // 대표 이미지 조회
+
+        RecentViewItemDTO recentViewItemDTO = new RecentViewItemDTO();
+        recentViewItemDTO.setItemId(item.getId());
+        recentViewItemDTO.setItemName(item.getItemName());
+        if (repImg != null) {
+            recentViewItemDTO.setOriImgName(repImg.getOriImgName());
+        }
+
+        return recentViewItemDTO;
+    }
+
 
 }

@@ -60,13 +60,15 @@ public class ItemController {
             recentViewedItems = new ArrayList<>();
         }
 
-        // 현재 상품을 최근 본 상품 목록에 추가, 이미 존재하는 경우는 추가 X
-        if (!recentViewedItems.contains(itemId)) {
-            recentViewedItems.add(itemId);
-            // 항목수 5개 제한
-            if (recentViewedItems.size() > 5) {
-                recentViewedItems.remove(0); // 가장 오래된 항목을 제거
-            }
+        // 현재 상품이 이미 목록에 있는 경우, 기존 위치에서 제거
+        recentViewedItems.remove(itemId);
+
+        // 현재 상품을 최근 본 상품 목록의 맨 앞에 추가
+        recentViewedItems.add(0, itemId);
+
+        // 항목수 5개 제한
+        if (recentViewedItems.size() > 5) {
+            recentViewedItems.remove(5); // 가장 오래된 항목을 제거
         }
 
         // 업데이트된 목록을 세션에 저장

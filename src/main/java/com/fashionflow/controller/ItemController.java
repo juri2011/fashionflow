@@ -12,6 +12,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Controller;
@@ -35,7 +36,7 @@ public class ItemController {
 
     //상품 리스트 출력
     @GetMapping("/item/{itemId}")
-    public String itemDetail(Model model, @PathVariable("itemId") Long itemId){
+    public String itemDetail(Model model, @PathVariable("itemId") Long itemId, HttpSession session){
 
         ItemFormDTO itemFormDTO = itemService.getItemDetail(itemId); //상품 상세정보(이미지, 태그, 카테고리 포함)
         Long heartCount = heartService.countHeartById(itemId); //상품 찜한 갯수
@@ -52,6 +53,25 @@ public class ItemController {
         model.addAttribute("heartCount", heartCount);
         model.addAttribute("shopMember", shopMember);
         model.addAttribute("currentMemberEmail", currentMemberEmail);
+
+        // 최근 본 리스트 세션 불러오기, 없다면 새로운 세션 생성
+        List<Long> recentViewedItems = (List<Long>) session.getAttribute("recentViewedItems");
+        if (recentViewedItems == null) {
+            recentViewedItems = new ArrayList<>();
+        }
+
+        // 현재 상품을 최근 본 상품 목록에 추가, 이미 존재하는 경우는 추가 X
+        if (!recentViewedItems.contains(itemId)) {
+            recentViewedItems.add(itemId);
+            // 항목수 5개 제한
+            if (recentViewedItems.size() > 5) {
+                recentViewedItems.remove(0); // 가장 오래된 항목을 제거
+            }
+        }
+
+        // 업데이트된 목록을 세션에 저장
+        session.setAttribute("recentViewedItems", recentViewedItems);
+
         return "item/itemDetail";
     }
 

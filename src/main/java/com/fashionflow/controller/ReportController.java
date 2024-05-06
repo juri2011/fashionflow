@@ -1,5 +1,6 @@
 package com.fashionflow.controller;
 
+import com.fashionflow.dto.ReportCommandDTO;
 import com.fashionflow.dto.ReportItemDTO;
 import com.fashionflow.dto.ReportItemTagDTO;
 import com.fashionflow.dto.ReportMemberDTO;
@@ -30,6 +31,14 @@ public class ReportController {
 
     private final ReportItemService reportItemService;
     private final ReportMemberService reportMemberService;
+
+    @GetMapping("/report/itemdetail/{id}")
+    public String reportDetail(Model model, @PathVariable("id") Long id){
+        ReportItemDTO reportItemDTO = reportItemService.getReportItemDTOById(id);
+        System.out.println(reportItemDTO);
+        model.addAttribute("reportItem",reportItemDTO);
+        return "report/reportItemDetail";
+    }
 
     @GetMapping({"/report/item", "/report/item/{page}"})
     public String reportNew(Model model, Principal principal,
@@ -62,32 +71,6 @@ public class ReportController {
         return "report/reportList";
     }
 
-/*
-
-    @GetMapping("/report")
-    public String report(Model model, Principal principal){
-
-        List<ReportItemDTO> reportItemDTOList = reportItemService.getReportItemDTOList();
-        List<ReportMemberDTO> reportMemberDTOList = reportMemberService.getReportMemberDTOList();
-
-
-
-        //reportItemDTOList.forEach(reportItemDTO -> System.out.println("==========================" + reportItemDTO));
-        reportItemDTOList.forEach(reportItemDTO -> {
-            if(principal.getName().equals(reportItemDTO.getReporterMemberEmail())){
-                reportItemDTO.setMyReport(true);
-            }
-            System.out.println("==========================" + reportItemDTO);
-        });
-
-
-        model.addAttribute("reportItemList", reportItemDTOList);
-        model.addAttribute("reportItemList", reportItemDTOList);
-        //model.addAttribute("reportMemberList", reportMemberDTOList);
-        return "report/reportList_orig";
-    }
-*/
-
 
     @PutMapping("/reportItem/update")
     public @ResponseBody ResponseEntity updateReportItem(@RequestBody @Valid ReportItemDTO reportItemDTO,
@@ -118,8 +101,7 @@ public class ReportController {
         } catch(Exception e){
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<Long>(1L, HttpStatus.OK);
-        //return new ResponseEntity<Long>(reportItemId, HttpStatus.OK);
+        return new ResponseEntity<Long>(reportItemId, HttpStatus.OK);
 
     }
 
@@ -174,5 +156,17 @@ public class ReportController {
         }
         return new ResponseEntity<Long>(reportItemId, HttpStatus.OK);
 
+    }
+
+    @PostMapping("/report/process")
+    public @ResponseBody ResponseEntity processItem(@RequestBody ReportCommandDTO reportCommandDTO){
+
+        ReportItemDTO reportItemDTO = reportItemService.getReportItemDTOById(reportCommandDTO.getId());
+        try {
+            reportItemService.processReportItem(reportItemDTO, reportCommandDTO.getCommand());
+        } catch(Exception e){
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<Long>(reportCommandDTO.getId(), HttpStatus.OK);
     }
 }

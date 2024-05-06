@@ -63,7 +63,7 @@ public class ReportItemDTO {
         ReportItemDTO reportItemDTO = modelMapper.map(reportItem, ReportItemDTO.class);
 
         reportItemDTO.setReportedItem(ItemFormDTO.of(reportItem.getReportedItem()));
-        //reportItemDTO.setReportedItemId(reportItem.getReportedItem().getId());
+        //reportItemDTO.setReportedItemId(reportItem.getReportedItem());
         //reportItemDTO.setReporterMember(MemberFormDTO.entityToDTOSafe(reportItem.getReporterMember()));
         //reportItemDTO.setReporterMemberId(reportItem.getReporterMember().getId());
         reportItemDTO.setReporterMemberEmail(reportItem.getReporterMember().getEmail());

@@ -25,11 +25,14 @@ public class HeartController {
     public @ResponseBody ResponseEntity addHeart(@RequestBody Map<String, Long> requestData, Principal principal){
         Long itemId = requestData.get("id");
         System.out.println("상품번호 : " + itemId);
+        String msg = null;
         try{
             System.out.println("사용자 이메일 : " + principal.getName());
-            heartService.addHeart(itemId, principal.getName());
-        }catch(Exception e){
+            msg = heartService.addHeart(itemId, principal.getName());
+        }catch(NullPointerException e){
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+        }catch(Exception e){
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
 
 
@@ -37,6 +40,6 @@ public class HeartController {
         //사용자가 찜하지 않았으면 찜 목록에 추가
         //현재 상품에 찜 횟수 추가
 
-        return new ResponseEntity<Long>(1L, HttpStatus.OK);
+        return new ResponseEntity<String>(msg, HttpStatus.OK);
     }
 }

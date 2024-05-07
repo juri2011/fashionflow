@@ -109,6 +109,17 @@ public class ItemService {
 
     }
 
+    public void updateViewCount(Long itemId){
+        //Repository에서 파라미터(상품 번호)로 Item 엔티티 가져오기
+        Item item = itemRepository.findById(itemId).orElseThrow(() ->
+                new EntityNotFoundException("해당 상품이 존재하지 않습니다. id = " + itemId));
+        System.out.println("조회수 : "+item.getViewCount());
+        int viewCount = item.getViewCount();
+        item.setViewCount(viewCount+1);
+        itemRepository.save(item);
+    }
+
+
     // 최근 본 아이템 정보 DTO 추가
     public RecentViewItemDTO getRecentView(Long itemId) {
         Item item = itemRepository.findById(itemId)

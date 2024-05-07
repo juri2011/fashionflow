@@ -1,9 +1,7 @@
 package com.fashionflow.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -11,6 +9,9 @@ import org.hibernate.annotations.OnDeleteAction;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Heart {
     @Id
     @Column(name="heart_id")

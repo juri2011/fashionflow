@@ -16,11 +16,14 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -46,28 +49,26 @@ public class ItemController {
 
     private final CategoryService categoryService;
 
-
-
     //상품 리스트 출력
     @GetMapping("/item/{itemId}")
-    public String itemDetail(Model model, @PathVariable("itemId") Long itemId, HttpSession session){
+    public String itemDetail(Model model, @PathVariable("itemId") Long itemId, HttpSession session,
+                             HttpServletRequest req, HttpServletResponse res){
 
         ItemFormDTO itemFormDTO = itemService.getItemDetail(itemId); //상품 상세정보(이미지, 태그, 카테고리 포함)
         Long heartCount = heartService.countHeartById(itemId); //상품 찜한 갯수
-        //System.out.println("=====================" + itemFormDTO);
         MemberDetailDTO shopMember = memberService.getShopMember(itemFormDTO.getMemberId(), itemId);
-        //System.out.println("==========================" + shopMember);
         Member currentMember = memberService.findMemberByCurrentEmail();
-        /*
-        String currentMemberEmail = "anonymous";
-        if(currentMember != null) currentMemberEmail = currentMember.getEmail();
 
-        System.out.println(currentMemberEmail);
+        //조회수 증가
+        itemService.updateViewCount(itemId);
 
-         */
         model.addAttribute("itemFormDTO", itemFormDTO);
         model.addAttribute("heartCount", heartCount);
         model.addAttribute("shopMember", shopMember);
+
+        res.setHeader("Pragma", "no-cache"); // HTTP 1.0.
+        res.setHeader("Expires", "Sat, 6 May 1995 12:00:00 GMT");
+        res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1.
         //model.addAttribute("currentMemberEmail", currentMemberEmail);
 
 

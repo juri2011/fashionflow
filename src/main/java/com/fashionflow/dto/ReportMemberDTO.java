@@ -21,15 +21,19 @@ import java.util.List;
 public class ReportMemberDTO {
     private Long id;
 
-    private Long reporterMemberId;
+    //private Long reporterMemberId;
+    private String reporterMemberEmail;
 
-    private Long reportedMemberId;
+    //private Long reportedMemberId;
+    private String reportedMemberEmail;
 
     private LocalDateTime regdate;
 
     private String content;
 
     private ReportStatus reportStatus;
+
+    private boolean isMyReport;
 
     @Builder.Default
     private List<ReportMemberTagDTO> reportMemberTagDTOList = new ArrayList<>();
@@ -38,8 +42,10 @@ public class ReportMemberDTO {
 
     public static ReportMemberDTO entityToDTO(ReportMember reportMember){
         ReportMemberDTO reportMemberDTO = modelMapper.map(reportMember, ReportMemberDTO.class);
-        reportMemberDTO.setReporterMemberId(reportMember.getReporterMember().getId());
-        reportMemberDTO.setReportedMemberId(reportMember.getReportedMember().getId());
+        //reportMemberDTO.setReporterMemberId(reportMember.getReporterMember().getId());
+        reportMemberDTO.setReporterMemberEmail(reportMember.getReporterMember().getEmail());
+        //reportMemberDTO.setReportedMemberId(reportMember.getReportedMember().getId());
+        reportMemberDTO.setReportedMemberEmail(reportMember.getReportedMember().getEmail());
 
         return reportMemberDTO;
     }

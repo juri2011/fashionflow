@@ -2,9 +2,7 @@ package com.fashionflow.controller;
 
 import com.fashionflow.dto.ReportCommandDTO;
 import com.fashionflow.dto.ReportItemDTO;
-import com.fashionflow.dto.ReportItemTagDTO;
 import com.fashionflow.dto.ReportMemberDTO;
-import com.fashionflow.entity.ReportMember;
 import com.fashionflow.service.ReportItemService;
 import com.fashionflow.service.ReportMemberService;
 import jakarta.validation.Valid;
@@ -24,23 +22,22 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
-// 신고 컨트롤러
 @Controller
 @RequiredArgsConstructor
-public class ReportController {
+public class ReportMemberController {
 
-    private final ReportItemService reportItemService;
+    //private final ReportItemService reportItemService;
     private final ReportMemberService reportMemberService;
-
+/*
     @GetMapping("/report/itemdetail/{id}")
     public String reportDetail(Model model, @PathVariable("id") Long id){
         ReportItemDTO reportItemDTO = reportItemService.getReportItemDTOById(id);
         System.out.println(reportItemDTO);
         model.addAttribute("reportItem",reportItemDTO);
         return "report/reportItemDetail";
-    }
+    }*/
 
-    @GetMapping({"/report/item", "/report/item/{page}"})
+    @GetMapping({"/report/member", "/report/member/{page}"})
     public String reportNew(Model model, Principal principal,
                             @PathVariable("page") Optional<Integer> page){
 
@@ -48,30 +45,30 @@ public class ReportController {
 
         /* 경로에 페이지 번호가 없으면 0페이지 조회 */
         Pageable pageable = PageRequest.of(page.orElse(0), 2);
-        Page<ReportItemDTO> reportItems = reportItemService.getReportItemDTOPage(pageable);
+        Page<ReportMemberDTO> reportMembers = reportMemberService.getReportMemberDTOPage(pageable);
 
         //로그인한 사용자에 대해 자신이 작성한 리뷰항목 구분
         if(principal != null){
             //사용자가 작성한 신고 항목 구분
-            reportItems.getContent().forEach(reportItemDTO -> {
-                if(principal.getName().equals(reportItemDTO.getReporterMemberEmail())){
-                    reportItemDTO.setMyReport(true);
+            reportMembers.getContent().forEach(reportMemberDTO -> {
+                if(principal.getName().equals(reportMemberDTO.getReporterMemberEmail())){
+                    reportMemberDTO.setMyReport(true);
                 }
             });
         }
 
-        reportItems.getContent().forEach(reportItemDTO -> System.out.println("================"+reportItemDTO));
+        reportMembers.getContent().forEach(reportItemDTO -> System.out.println("================"+reportItemDTO));
 
-        System.out.println("총 페이지 수 : "+reportItems.getTotalPages());
+        System.out.println("총 페이지 수 : "+reportMembers.getTotalPages());
 
-        model.addAttribute("reportItemList", reportItems);
+        model.addAttribute("reportMemberList", reportMembers);
         model.addAttribute("maxPage", 10); //페이지네이션 한 블록당 출력할 페이지 수
 
 
-        return "report/reportList";
+        return "report/reportMemberList";
     }
 
-
+/*
     @PutMapping("/reportItem/update")
     public @ResponseBody ResponseEntity updateReportItem(@RequestBody @Valid ReportItemDTO reportItemDTO,
                                                          BindingResult bindingResult,
@@ -168,5 +165,5 @@ public class ReportController {
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<Long>(reportCommandDTO.getId(), HttpStatus.OK);
-    }
+    }*/
 }

@@ -58,7 +58,49 @@
 
         });
 
+        //찜하기
+        $('.heartBtn').on('click', function(){
+            heartItem();
+        });
+
     });
+
+    //찜하기
+    function heartItem(){
+        const token = $("meta[name='_csrf']").attr("content");
+        const header = $("meta[name='_csrf_header']").attr("content");
+        const url = "/heart/addHeart";
+        const paramData = {id: $('#itemId').val()};
+        console.log(paramData);
+        const param = JSON.stringify(paramData);
+        $.ajax({
+            url: url,
+            type: "POST",
+            contentType: "application/json",
+            data: param,
+            beforeSend: function (xhr) {
+                /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                xhr.setRequestHeader(header, token);
+            },
+            dataType: "json",
+            cache: false,
+            success: function (result, status) {
+                alert("찜 상품에 추가되었습니다.");
+                //location.href = '/';
+            },
+            error: function (jqXHR, status, error) {
+
+                if (jqXHR.status == '401') {
+                    alert('로그인 후 이용해주세요');
+                    //location.href = '/members/login';
+                } else {
+                    alert(jqXHR.responseText);
+                }
+
+            }
+        });
+    }
+
     function reportItem(){
         const token = $("meta[name='_csrf']").attr("content");
         const header = $("meta[name='_csrf_header']").attr("content");
@@ -111,6 +153,7 @@
     <h1>상품 데이터 출력 예제</h1>
     <h2>상품 데이터</h2>
     <button type="button" class="reportBtn">신고하기</button>
+    <button type="button" class="heartBtn">찜하기</button>
     <div>
         상품명 : <span th:text="${itemFormDTO.itemName}"></span>
     </div>

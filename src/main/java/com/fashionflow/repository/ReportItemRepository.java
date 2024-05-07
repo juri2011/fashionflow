@@ -2,10 +2,15 @@ package com.fashionflow.repository;
 
 import com.fashionflow.entity.ItemBuy;
 import com.fashionflow.entity.ReportItem;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface ReportItemRepository extends JpaRepository<ReportItem, Long> {
+public interface ReportItemRepository extends JpaRepository<ReportItem, Long>,
+        ReportItemRepositoryCustom {
     public List<ReportItem> findAllByOrderByRegdateDesc();
+
+    public Page<ReportItem> findAllByOrderByIdDesc(Pageable pageable);
 }

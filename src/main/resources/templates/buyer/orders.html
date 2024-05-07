@@ -46,17 +46,15 @@
     <h2>구매완료</h2>
 
     <!-- 구매내역 목록 -->
-    <div th:each="purchase : ${purchaseList}" class="purchase-box">
+    <div th:each="purchase : ${getItemBuyListWithImg}" class="purchase-box">
         <form th:action="@{/buyer/reviews}" method="post" class="purchase-form">
 
-            <!-- 아직 이미지는 안넣어봤음
-                    <img th:if="${purchase.item.itemImg.imgUrl}" th:src="${purchase.item.itemImg.imgUrl}" alt="상품 이미지" class="product-image">
-            -->
 
-            <input type="hidden" name="id" th:value="${purchase.item.id}" />
-            <span th:if="${purchase.item.itemName}" th:text="'상품명: ' + ${purchase.item.itemName}" ></span>
-            <span th:if="${purchase.item.price}" th:text="'가격: ' + ${purchase.item.price}" ></span>
-            <span th:if="${purchase.buyDate}" th:text="'거래일: ' + ${purchase.buyDate}" ></span>
+            <input type="hidden" name="id" th:value="${purchase.id}" />
+            <img th:if="${purchase.oriImgName}" th:src="'/test_images/'+${purchase.oriImgName}" alt="Product Image" class="product-image">
+            <span th:if="${purchase.itemName}" th:text="'상품명: ' + ${purchase.itemName}" ></span>
+            <span th:if="${purchase.price}" th:text="'가격: ' + ${purchase.price}" ></span>
+            <span th:if="${purchase.buyDate}" th:text="'거래일: ' + ${#temporals.format(purchase.buyDate, 'yyyy-MM-dd')}" ></span>
 
 
             <div th:unless="${purchase.reviewExists}">

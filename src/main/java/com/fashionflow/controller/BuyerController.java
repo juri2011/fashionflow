@@ -1,5 +1,6 @@
 package com.fashionflow.controller;
 
+import com.fashionflow.dto.BuyerDTO;
 import com.fashionflow.dto.ReviewDTO;
 import com.fashionflow.entity.ItemBuy;
 import com.fashionflow.service.BuyerService;
@@ -26,11 +27,10 @@ public class BuyerController {
     public String orders(Model model) {
 
         //구매자 구매내역 리스트
-        List<ItemBuy> purchaseList = buyerService.getItemBuyList();
-        // 리뷰 여부 확인
-        buyerService.checkItemWithReview(purchaseList);
+        List<BuyerDTO> getItemBuyListWithImg = buyerService.getItemBuyListWithImg();
 
-        model.addAttribute("purchaseList", purchaseList); // 리뷰가 이미 작성되었는지 여부를 모델에 추가
+
+        model.addAttribute("getItemBuyListWithImg", getItemBuyListWithImg); // 리뷰가 이미 작성되었는지 여부를 모델에 추가
         return "buyer/orders";
     }
 

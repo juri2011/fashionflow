@@ -69,6 +69,10 @@ public class MemberFormDTO {
 
     private static ModelMapper modelMapper = new ModelMapper();
 
+    private String provider;
+
+    private String providerId;
+
     /* Member 엔티티를 DTO로 변환 : 비밀번호, 주소 등 민감한 정보가 같이 들어감 */
     public static MemberFormDTO entityToDTO(Member member){
         MemberFormDTO memberFormDTO = modelMapper.map(member, MemberFormDTO.class);

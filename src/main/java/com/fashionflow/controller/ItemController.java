@@ -3,6 +3,7 @@ package com.fashionflow.controller;
 import com.fashionflow.dto.ItemFormDTO;
 import com.fashionflow.dto.MemberDetailDTO;
 import com.fashionflow.dto.MemberFormDTO;
+import com.fashionflow.dto.RecentViewItemDTO;
 import com.fashionflow.entity.*;
 import com.fashionflow.repository.*;
 import com.fashionflow.service.HeartService;
@@ -12,6 +13,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Controller;
@@ -35,7 +37,7 @@ public class ItemController {
 
     //상품 리스트 출력
     @GetMapping("/item/{itemId}")
-    public String itemDetail(Model model, @PathVariable("itemId") Long itemId){
+    public String itemDetail(Model model, @PathVariable("itemId") Long itemId, HttpSession session){
 
         ItemFormDTO itemFormDTO = itemService.getItemDetail(itemId); //상품 상세정보(이미지, 태그, 카테고리 포함)
         Long heartCount = heartService.countHeartById(itemId); //상품 찜한 갯수
@@ -52,6 +54,29 @@ public class ItemController {
         model.addAttribute("heartCount", heartCount);
         model.addAttribute("shopMember", shopMember);
         model.addAttribute("currentMemberEmail", currentMemberEmail);
+
+
+        // 최근 본 상품 리스트 세션 불러오기
+        List<RecentViewItemDTO> recentViewedItems = (List<RecentViewItemDTO>) session.getAttribute("recentViewedItems");
+        if (recentViewedItems == null) {
+            recentViewedItems = new ArrayList<>();
+        }
+
+        // 현재 상품이 이미 목록에 있는 경우 제거
+        recentViewedItems.removeIf(item -> item.getItemId().equals(itemId));
+
+        // 현재 상품을 최근 본 상품 목록의 맨 앞에 추가
+        RecentViewItemDTO recentItem = itemService.getRecentView(itemId);
+        recentViewedItems.add(0, recentItem);
+
+        // 항목수 5개로 제한
+        if (recentViewedItems.size() > 5) {
+            recentViewedItems.remove(5);
+        }
+
+        // 업데이트된 목록을 세션에 저장
+        session.setAttribute("recentViewedItems", recentViewedItems);
+
         return "item/itemDetail";
     }
 

@@ -23,9 +23,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Optional;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,8 +75,9 @@ public class MemberService implements UserDetailsService {
 
     }
 
+
     //중복 체크 메소드
-    private void checkDuplicate(Member member) {
+    public void checkDuplicate(Member member) {
         Member checkMember = memberRepository.findByEmailOrPhoneOrNickname(member.getEmail(), member.getPhone(), member.getNickname());
         if (checkMember != null) {
             if (checkMember.getEmail().equals(member.getEmail())) {
@@ -107,8 +111,33 @@ public class MemberService implements UserDetailsService {
 
     //현재 로그인된 사용자 security를 이용해 email 반환
     public String currentMemberEmail() {
+
+        // 현재 인증된 사용자 정보 가져오기
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated()) {
+
+        // OAuth 2.0 인증
+        if (authentication instanceof OAuth2AuthenticationToken) {
+
+            OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
+            OAuth2User oauthUser = oauthToken.getPrincipal();
+
+            Map<String, Object> attributes = oauthToken.getPrincipal().getAttributes();
+
+            if ("kakao".equals(oauthToken.getAuthorizedClientRegistrationId())) {
+                Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
+                // 사용자 정보에서 이메일 속성 추출
+                return (String) kakaoAccount.get("email");
+            } else if ("naver".equals(oauthToken.getAuthorizedClientRegistrationId())) {
+                Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("response");
+                // 사용자 정보에서 이메일 속성 추출
+                return (String) kakaoAccount.get("email"); }
+
+            // 구글 사용자 정보에서 이메일 속성 추출
+            return (String) attributes.get("email");
+        }
+
+        //사이트 자체 회원 인증
+        else if (authentication != null && authentication.isAuthenticated()) {
             return authentication.getName(); // 사용자의 이메일 반환
         }
         return null;

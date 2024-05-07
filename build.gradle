@@ -65,6 +65,10 @@ dependencies {
 	// 문자열 자동 생성 함수 사용 위해 추가
 	implementation 'org.apache.commons:commons-lang3:3.12.0'
 
+	//Oauth2.0
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+
 }
 
 tasks.named('test') {

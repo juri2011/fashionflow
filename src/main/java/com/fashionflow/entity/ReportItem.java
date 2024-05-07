@@ -2,9 +2,9 @@ package com.fashionflow.entity;
 
 import com.fashionflow.constant.ReportStatus;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
 
@@ -12,6 +12,9 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ReportItem {
     @Id
     @Column(name="report_item_id")
@@ -20,11 +23,14 @@ public class ReportItem {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="reporter_member_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Member reporterMember;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="reported_item_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Item reportedItem;
+
 
     @Column(nullable = false)
     private LocalDateTime regdate;

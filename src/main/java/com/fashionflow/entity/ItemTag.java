@@ -3,6 +3,8 @@ package com.fashionflow.entity;
 import com.fashionflow.constant.ItemTagName;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name="item_tag")
@@ -25,5 +27,6 @@ public class ItemTag {
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="item_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Item item;
 }

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout1}">
+<head>
+    <meta charset="UTF-8">
+
+    <title>Title</title>
+    <!-- 사용자 스크립트 추가 -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script th:inline="javascript">
+
+        $(document).ready(function(){
+            $('.closePopup').on('click', function(){
+                $('#detailPopup').hide();
+            });
+            $('.reportBtn').on('click', function(){
+                $('#detailPopup').show();
+            });
+
+            $('.reportConfirm').on('click', function(){
+                updateReportItem($(this).data('id'), $(this).data('itemId'));
+                //$('#detailPopup').hide();
+            });
+
+            $('#tagSelect').on('input', function(){
+                let selectedOption = $('#tagSelect option:selected').val();
+                let selectedText = $('#tagSelect option:selected').text();
+                let tagBlock = '<span class="tagBlock" data-tag="'+selectedOption+'">'+ selectedText +'</span>';
+                if(selectedOption !== 'default'){
+                    if($('.tagBox').find('.tagBlock[data-tag="'+selectedOption+'"]').length>0){alert('존재함')}
+                    else $('.tagBox').append(tagBlock);
+                }
+                $('#tagSelect option:eq(0)').prop('selected', true);
+
+            });
+
+            $('.tagBox').on('click', '.tagBlock', function() {
+                // 클릭된 동적으로 생성된 버튼에 대한 처리를 여기에 작성합니다.
+                console.log($(event.target).text());
+                $(event.target).remove();
+
+            });
+
+
+            $("#searchBtn").on("click",function(e) {
+                e.preventDefault();
+                page(0);
+            });
+
+            $('.deleteReport').on('click', function(){
+                //console.log($(this).data('id'));
+
+                deleteReportItem($(this).data('id'));
+            });
+
+            $('.updateReport').on('click', function(){
+
+                const id = $(this).data('id');
+                console.log(id);
+
+                getReportItem(id, function(report){
+                    console.log(report);
+
+                    const repimg = '<img src="/test_images/'+report.reportedItem.itemRepImgDTO.oriImgName+
+                                    '" style="width: 100px; height: 100px;"/>';
+
+                    $('.repimg-box').append(repimg);
+                    $('.itemName').text(report.reportedItem.itemName);
+                    $('#reportContent').text(report.content);
+                    report.reportItemTagDTOList.forEach((element) => {
+                        let tagBlock = '<span class="tagBlock" data-tag="'+element.reportTagItem+'">'+ element.reportTagDesc +'</span>';
+                        $('.tagBox').append(tagBlock);
+                    });
+                    $(".reportConfirm").data('id', report.id);
+                    $(".reportConfirm").data('itemId', report.reportedItemId);
+                });
+
+
+                $("#detailPopup").show();
+
+            });
+
+        });
+
+        const token = $("meta[name='_csrf']").attr("content");
+        const header = $("meta[name='_csrf_header']").attr("content");
+
+        function updateReportItem(id, itemId){
+            const url = "/reportItem/update";
+
+            const tagArray = $('.tagBlock').map(function(){
+                return $(this).data('tag');
+            }).get();
+
+            const paramData = {
+                id:id,
+                reportedItemId:itemId,
+                content: $('#reportContent').val(),
+                reportTagItemList: tagArray
+            };
+
+            console.log(paramData);
+
+            const param = JSON.stringify(paramData);
+
+            $.ajax({
+                url: url,
+                type: "PUT",
+                contentType: "application/json",
+                data: param,
+                beforeSend: function (xhr) {
+                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                    xhr.setRequestHeader(header, token);
+                },
+                dataType: "json",
+                cache: false,
+                success: function (result, status) {
+                    alert("정상적으로 수정되었습니다.");
+                    location.href = '/report/item';
+                },
+                error: function (jqXHR, status, error) {
+
+                    if (jqXHR.status == '401') {
+                        alert('로그인 후 이용해주세요');
+                        //location.href = '/members/login';
+                    } else {
+                        alert(jqXHR.responseText);
+                    }
+
+                }
+            });
+        }
+
+        function getReportItem(id, callback, error){
+            $.get("/reportItem/"+id, function(result){
+                if(callback) callback(result);
+            }).fail(function(xhr, status, err){
+                if (xhr.status == '401') {
+                        alert('로그인 후 이용해주세요');
+                        //location.href = '/members/login';
+                    } else {
+                        alert(xhr.responseText);
+                    }
+            });
+        }
+
+
+        function deleteReportItem(id){
+            const url = "/delete/reportItem/"+id;
+
+            $.ajax({
+                url: url,
+                type: "DELETE",
+                beforeSend: function (xhr) {
+                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                    xhr.setRequestHeader(header, token);
+                },
+                cache: false,
+                success: function (result, status) {
+                    alert("삭제되었습니다.");
+                    location.href = '/report/item';
+                },
+                error: function (jqXHR, status, error) {
+
+                    if (jqXHR.status == '401') {
+                        alert('로그인 후 이용해주세요');
+                        //location.href = '/members/login';
+                    } else {
+                        alert(jqXHR.responseText);
+                    }
+
+                }
+            });
+
+        }
+
+
+        function page(page){
+            //var searchDateType = $("#searchDateType").val();
+            //var searchSellStatus = $("#searchSellStatus").val();
+            //var searchBy = $("#searchBy").val();
+            //var searchQuery = $("#searchQuery").val();
+
+            location.href="/report/item/" + page;
+
+            //location.href="/admin/items/" + page + "?searchDateType=" + searchDateType
+            //+ "&searchSellStatus=" + searchSellStatus
+            //+ "&searchBy=" + searchBy
+            //+ "&searchQuery=" + searchQuery;
+        }
+
+    </script>
+
+
+    <!-- 사용자 CSS 추가 -->
+    <style>
+        #detailPopup{
+            display: none;
+            width: 600px;
+            height: 600px;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 20px;
+            position: fixed;
+            z-index:9999;
+            background-color: yellow;
+        }
+
+        .tagBlock{
+            display: inline-block;
+            background-color:white;
+            margin-right: 5px;
+            padding: 5px;
+        }
+        .page-item{
+            cursor:pointer;
+        }
+        .page-item.disabled{
+            cursor:default;
+        }
+    </style>
+</head>
+<div layout:fragment="content">
+    <h1>신고 리스트</h1>
+
+    <button type="button" class="reportBtn">신고하기</button>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>번호</th>
+                <th>내용</th>
+                <th>작성자</th>
+                <th>등록일</th>
+                <th>거래상태</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="reportItem : ${reportItemList.getContent()}">
+                <td th:text="${reportItem.id}"></td>
+                <!-- 관리자나 작성자인 경우만 표시 -->
+                <td th:text="${reportItem.content}"></td>
+                <td th:text="${reportItem.reporterMemberEmail}"></td>
+                <td th:text="${#temporals.format(reportItem.regdate, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                <td th:switch="${#strings.toString(reportItem.reportStatus)}">
+                    <span th:case="WAITING" style="color:red">처리대기중</span>
+                    <span th:case="COMPLETE" style="color:green">처리완료</span>
+                </td>
+                <!--<td th:text="${reportItem.reportStatus}"></td>-->
+                <!-- 사용자의 아이디가 표시되는 경우에만 수정 가능 -->
+                <td th:if="${reportItem.isMyReport}">
+                    <button th:attr="data-id=${reportItem.id}" class="updateReport" type="button">수정</button>
+                    <button th:attr="data-id=${reportItem.id}" class="deleteReport" type="button">삭제</button></td>
+
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- 페이지네이션 추가 -->
+
+    <div th:with="start=${(reportItemList.number/maxPage)*maxPage + 1}, end=(${(reportItemList.totalPages == 0) ? 1 : (start + (maxPage - 1) < reportItemList.totalPages ? start + (maxPage - 1) : reportItemList.totalPages)})" >
+        <ul class="pagination justify-content-center">
+
+            <li class="page-item" th:classappend="${reportItemList.first}?'disabled'">
+                <a th:onclick="'javascript:page(' + ${reportItemList.number - 1} + ')'" aria-label='Previous' class="page-link">
+                    <span aria-hidden='true'>Previous</span>
+                </a>
+            </li>
+
+            <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}" th:classappend="${reportItemList.number eq page-1}?'active':''">
+                <a th:onclick="'javascript:page(' + ${page - 1} + ')'" th:inline="text" class="page-link">[[${page}]]</a>
+                <!--<a th:onclick="'javascript:page(' + ${page - 1} + ')'" th:inline="text" class="page-link">[[${page}]]</a>-->
+            </li>
+
+            <li class="page-item" th:classappend="${reportItemList.last}?'disabled'">
+                <a th:onclick="'javascript:page(' + ${reportItemList.number + 1} + ')'" aria-label='Next' class="page-link">
+                    <span aria-hidden='true'>Next</span>
+                </a>
+            </li>
+
+        </ul>
+    </div>
+    
+    <!-- 신고 상세보기 팝업창 출력 -->
+    <div id="detailPopup">
+        <h2>신고 상세</h2>
+        <span class="repimg-box">
+            <!--<img style="width: 100px; height:100px;">-->
+        </span>
+        <span class="itemName"></span>
+        <textarea id="reportContent" name="reportContent" placeholder="내용을 입력하세요"></textarea>
+        태그선택
+        <select name="tagSelect" id="tagSelect">
+            <option value="default">--선택--</option>
+            <option value="VIOLATION">규정위반</option>
+            <option value="test">test</option>
+        </select>
+        <div class="tagBox"></div>
+        <button type="button" class="reportConfirm">신고하기</button>
+        <button type="button" class="closePopup">취소</button>
+    </div>
+    <!-- 신고하기 팝업창(구현하려면 검색기능 있어야 함) -->
+</div>
+</html>

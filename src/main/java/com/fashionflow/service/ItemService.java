@@ -59,8 +59,8 @@ public class ItemService {
 
 
     /* 상품 상세정보 + 이미지 가져오기 */
-    public ItemFormDTO getItemDetail(Long itemId){
 
+    public List<ItemImgDTO> getItemImgDTOList(Long itemId){
         /* 상품 이미지 리스트 가져오기 */
         //상품 이미지 번호 순으로 상품이미지 리스트 가져오기
         List<ItemImg> itemImgList = itemImgRepository.findByItemIdOrderByIdAsc(itemId);
@@ -73,6 +73,10 @@ public class ItemService {
             itemImgDTOList.add(itemImgDTO);
         }
 
+        return itemImgDTOList;
+    }
+
+    public List<ItemTagDTO> getItemTagDTOList (Long itemId){
         /* 상품 태그 리스트 가져오기 */
         List<ItemTag> itemTagList = itemTagRepository.findByItemId(itemId);
         List<ItemTagDTO> itemTagDTOList = new ArrayList<>();
@@ -80,6 +84,13 @@ public class ItemService {
             ItemTagDTO itemTagDTO = ItemTagDTO.entityToDTO(itemTag);
             itemTagDTOList.add(itemTagDTO);
         }
+
+        return itemTagDTOList;
+    }
+
+
+    /* 상품 상세정보 + 이미지 가져오기 */
+    public ItemFormDTO getItemDetail(Long itemId){
 
         //Repository에서 파라미터(상품 번호)로 Item 엔티티 가져오기
         Item item = itemRepository.findById(itemId).orElseThrow(() ->
@@ -89,9 +100,10 @@ public class ItemService {
         ItemFormDTO itemFormDTO = ItemFormDTO.of(item);
 
         //위에서 변환시킨 ItemImgDTOList를 itemFormDTO 객체로 가져오기
-        itemFormDTO.setItemImgDTOList(itemImgDTOList);
+        itemFormDTO.setItemImgDTOList(getItemImgDTOList(itemId));
+        itemFormDTO.saveRepimg();
 
-        itemFormDTO.setItemTagDTOList(itemTagDTOList);
+        itemFormDTO.setItemTagDTOList(getItemTagDTOList(itemId));
 
         return itemFormDTO;
 

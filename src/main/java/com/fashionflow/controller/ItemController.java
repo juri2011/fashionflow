@@ -57,15 +57,17 @@ public class ItemController {
         MemberDetailDTO shopMember = memberService.getShopMember(itemFormDTO.getMemberId(), itemId);
         //System.out.println("==========================" + shopMember);
         Member currentMember = memberService.findMemberByCurrentEmail();
+        /*
         String currentMemberEmail = "anonymous";
         if(currentMember != null) currentMemberEmail = currentMember.getEmail();
 
         System.out.println(currentMemberEmail);
 
+         */
         model.addAttribute("itemFormDTO", itemFormDTO);
         model.addAttribute("heartCount", heartCount);
         model.addAttribute("shopMember", shopMember);
-        model.addAttribute("currentMemberEmail", currentMemberEmail);
+        //model.addAttribute("currentMemberEmail", currentMemberEmail);
 
 
         // 최근 본 상품 리스트 세션 불러오기

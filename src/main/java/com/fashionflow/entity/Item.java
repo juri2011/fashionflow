@@ -2,10 +2,13 @@ package com.fashionflow.entity;
 
 import com.fashionflow.constant.ItemStatus;
 import com.fashionflow.constant.SellStatus;
+import com.fashionflow.dto.ItemFormDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Date;
+
 @Entity
 @Getter
 @Setter
@@ -49,8 +52,24 @@ public class Item {
     private Member member;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private ItemStatus itemStatus; //상품 상태
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private SellStatus sellStatus; //판매 상태
+
+
+   /* public void updateItem(ItemFormDTO itemFormDto){
+        this.itemName = itemFormDto.getItemName();
+        this.content = itemFormDto.getContent();
+        this.price = itemFormDto.getPrice();
+        this.delivery = itemFormDto.getDelivery();
+        this.address = itemFormDto.getAddress();
+        this.category = itemFormDto.createItem().getCategory();
+        this.itemStatus = itemFormDto.getItemStatus();
+        this.sellStatus = itemFormDto.getSellStatus();
+    }*/
+
+
 }

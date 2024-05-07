@@ -59,12 +59,9 @@ spring:
           writetimeout: 5000
     auth-code-expiration-millis: 1800000
 
+itemImgLocation: C:/shop/item
 
-
-
-#itemImgLocation: D:/shop/item
-
-#uploadPath: file:///D:/shop/
+uploadPath: file:///C:/shop/
 
 logging:
   level:

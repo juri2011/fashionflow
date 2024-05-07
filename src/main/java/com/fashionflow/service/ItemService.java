@@ -7,12 +7,16 @@ import com.fashionflow.dto.RecentViewItemDTO;
 import com.fashionflow.entity.Item;
 import com.fashionflow.entity.ItemImg;
 import com.fashionflow.entity.ItemTag;
+import com.fashionflow.entity.Member;
 import com.fashionflow.repository.ItemImgRepository;
 import com.fashionflow.repository.ItemRepository;
 import com.fashionflow.repository.ItemTagRepository;
+import com.fashionflow.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,9 +27,36 @@ public class ItemService {
 
     private final ItemRepository itemRepository;
 
+    private final ItemImgService itemImgService;
+
     private final ItemImgRepository itemImgRepository;
 
     private final ItemTagRepository itemTagRepository;
+
+    private final MemberRepository memberRepository;
+
+    @Transactional
+    public void saveItem(ItemFormDTO ItemFormDTO, List<MultipartFile> itemImgFileList, String userEmail) throws Exception {
+        Member member = memberRepository.findByEmail(userEmail);
+        if (member == null) {
+            throw new RuntimeException("회원 정보를 찾을 수 없습니다.");
+        }
+
+        Item item = ItemFormDTO.createItem();
+        item.setMember(member);
+        itemRepository.save(item);
+
+        if (itemImgFileList != null && !itemImgFileList.isEmpty()) {
+            for (MultipartFile file : itemImgFileList) {
+                if (!file.isEmpty()) {
+                    ItemImg itemImg = new ItemImg();
+                    itemImg.setItem(item);
+                    itemImgService.saveItemImg(itemImg, file);
+                }
+            }
+        }
+    }
+
 
     /* 상품 상세정보 + 이미지 가져오기 */
     public ItemFormDTO getItemDetail(Long itemId){

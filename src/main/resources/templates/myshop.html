@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout1}">
+<head>
+    <meta charset="UTF-8">
+    <title>내상점페이지</title>
+</head>
+<body>
+<h1>상점페이지 입니다.</h1>
+
+<!-- 상품 등록 버튼 -->
+<div layout:fragment="content">
+    <form th:action="@{/members/item/new}" method="get">
+        <button type="submit" class="btn btn-primary">내 상품 등록</button>
+    </form>
+</div>
+
+</body>
+</html>

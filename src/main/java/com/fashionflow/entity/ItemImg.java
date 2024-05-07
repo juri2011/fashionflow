@@ -26,8 +26,15 @@ public class ItemImg {
 
     private String repimgYn;     //대표 이미지 여부
 
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Item item;
+
+    public void updateItemImg(String oriImgName, String imgName, String imgUrl){
+        this.oriImgName = oriImgName;
+        this.imgName = imgName;
+        this.imgUrl = imgUrl;
+    }
 }

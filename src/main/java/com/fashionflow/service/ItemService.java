@@ -3,15 +3,20 @@ package com.fashionflow.service;
 import com.fashionflow.dto.ItemFormDTO;
 import com.fashionflow.dto.ItemImgDTO;
 import com.fashionflow.dto.ItemTagDTO;
+import com.fashionflow.dto.RecentViewItemDTO;
 import com.fashionflow.entity.Item;
 import com.fashionflow.entity.ItemImg;
 import com.fashionflow.entity.ItemTag;
+import com.fashionflow.entity.Member;
 import com.fashionflow.repository.ItemImgRepository;
 import com.fashionflow.repository.ItemRepository;
 import com.fashionflow.repository.ItemTagRepository;
+import com.fashionflow.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,9 +27,38 @@ public class ItemService {
 
     private final ItemRepository itemRepository;
 
+    private final ItemImgService itemImgService;
+
     private final ItemImgRepository itemImgRepository;
 
     private final ItemTagRepository itemTagRepository;
+
+    private final MemberRepository memberRepository;
+
+    @Transactional
+    public void saveItem(ItemFormDTO ItemFormDTO, List<MultipartFile> itemImgFileList, String userEmail) throws Exception {
+        Member member = memberRepository.findByEmail(userEmail);
+        if (member == null) {
+            throw new RuntimeException("회원 정보를 찾을 수 없습니다.");
+        }
+
+        Item item = ItemFormDTO.createItem();
+        item.setMember(member);
+        itemRepository.save(item);
+
+        if (itemImgFileList != null && !itemImgFileList.isEmpty()) {
+            for (MultipartFile file : itemImgFileList) {
+                if (!file.isEmpty()) {
+                    ItemImg itemImg = new ItemImg();
+                    itemImg.setItem(item);
+                    itemImgService.saveItemImg(itemImg, file);
+                }
+            }
+        }
+    }
+
+
+    /* 상품 상세정보 + 이미지 가져오기 */
 
     public List<ItemImgDTO> getItemImgDTOList(Long itemId){
         /* 상품 이미지 리스트 가져오기 */
@@ -74,5 +108,24 @@ public class ItemService {
         return itemFormDTO;
 
     }
+
+    // 최근 본 아이템 정보 DTO 추가
+    public RecentViewItemDTO getRecentView(Long itemId) {
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다. id=" + itemId));
+
+        ItemImg repImg = itemImgRepository.findFirstByItemIdAndRepimgYn(itemId, "Y")
+                .orElse(null); // 대표 이미지 조회
+
+        RecentViewItemDTO recentViewItemDTO = new RecentViewItemDTO();
+        recentViewItemDTO.setItemId(item.getId());
+        recentViewItemDTO.setItemName(item.getItemName());
+        if (repImg != null) {
+            recentViewItemDTO.setOriImgName(repImg.getOriImgName());
+        }
+
+        return recentViewItemDTO;
+    }
+
 
 }

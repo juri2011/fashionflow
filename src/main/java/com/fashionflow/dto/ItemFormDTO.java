@@ -30,7 +30,8 @@ public class ItemFormDTO {
 
     private String address; //주소
 
-    private LocalDateTime regdate; //등록일
+    @Builder.Default // Builder로 인스턴스 생성 시 초기값 지정
+    private LocalDateTime regdate = LocalDateTime.now(); // 등록일을 현재 시간으로 초기화
 
     private Integer viewCount; //조회수
 

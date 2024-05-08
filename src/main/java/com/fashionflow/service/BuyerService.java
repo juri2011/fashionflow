@@ -54,11 +54,6 @@ public class BuyerService {
     //리뷰 등록 메소드
     public void registerReview(ReviewDTO reviewDTO){
 
-        // 리뷰 내용이 null인지 확인
-        if (reviewDTO.getContent() == null || reviewDTO.getContent().isEmpty()) {
-            throw new IllegalArgumentException("리뷰 내용이 비어 있습니다.");
-        }
-
 
         Member member = memberService.findMemberByCurrentEmail();
         Item item = itemRepository.findItemById(reviewDTO.getId());

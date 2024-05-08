@@ -2,8 +2,7 @@ package com.fashionflow.entity;
 
 import com.fashionflow.constant.ReportStatus;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,6 +10,10 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ReportMember {
     @Id
     @Column(name="report_member_id")
@@ -35,8 +38,10 @@ public class ReportMember {
     @Enumerated(EnumType.STRING)
     private ReportStatus reportStatus;
 
+/*
     @OneToMany(mappedBy = "reportMember", cascade = CascadeType.ALL,fetch = FetchType.LAZY,
             orphanRemoval = true)
     private List<ReportMemberTag> reportMemberTagList;
+*/
 
 }

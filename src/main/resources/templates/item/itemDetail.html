@@ -6,7 +6,7 @@
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title>Title</title>
     <style>
-        #detailPopup{
+        #detailPopup, #detailPopupMember{
             display: none;
             width: 600px;
             height: 600px;
@@ -18,7 +18,7 @@
             background-color: yellow;
         }
 
-        .tagBlock{
+        .tagBlock, .tagBlockMember{
             display: inline-block;
             background-color:white;
             margin-right: 5px;
@@ -48,14 +48,12 @@
                 else $('.tagBox').append(tagBlock);
             }
             $('#tagSelect option:eq(0)').prop('selected', true);
-
         });
 
         $('.tagBox').on('click', '.tagBlock', function() {
             // 클릭된 동적으로 생성된 버튼에 대한 처리를 여기에 작성합니다.
             console.log($(event.target).text());
             $(event.target).remove();
-
         });
 
         //찜하기
@@ -63,6 +61,32 @@
             heartItem();
         });
 
+        //사용자 신고
+        $('.reportMemberBtn').on('click', function(){
+            $('#detailPopupMember').show();
+        });
+        $('.reportConfirmMember').on('click', function(){
+            reportMember();
+            $('#detailPopupMember').hide();
+        });
+        $('.closePopupMember').on('click', function(){
+            $('#detailPopupMember').hide();
+        });
+        $('#tagSelectMember').on('input', function(){
+            let selectedOption = $('#tagSelectMember option:selected').val();
+            let selectedText = $('#tagSelectMember option:selected').text();
+            let tagBlock = '<span class="tagBlockMember" data-tag="'+selectedOption+'">'+ selectedText +'</span>';
+            if(selectedOption !== 'default'){
+                if($('.tagBoxMember').find('.tagBlockMember[data-tag="'+selectedOption+'"]').length>0){alert('존재함')}
+                else $('.tagBoxMember').append(tagBlock);
+            }
+            $('#tagSelect option:eq(0)').prop('selected', true);
+        });
+        $('.tagBoxMember').on('click', '.tagBlockMember', function() {
+            // 클릭된 동적으로 생성된 버튼에 대한 처리를 여기에 작성합니다.
+            console.log($(event.target).text());
+            $(event.target).remove();
+        });
     });
 
     //찜하기
@@ -101,10 +125,58 @@
         });
     }
 
+    //사용자 신고
+    function reportMember(){
+        const token = $("meta[name='_csrf']").attr("content");
+        const header = $("meta[name='_csrf_header']").attr("content");
+        const url = "/report/reportMember";
+        const tagArray = $('.tagBlockMember').map(function(){
+            return $(this).data('tag');
+        }).get();
+
+        const paramData = {
+            reportedMemberEmail:$('#shopMemberEmail').val(),
+            content: $('#reportContentMember').val(),
+            reportMemberTagStringList: tagArray
+        };
+
+        console.log(paramData);
+
+        const param = JSON.stringify(paramData);
+
+        $.ajax({
+            url: url,
+            type: "POST",
+            contentType: "application/json",
+            data: param,
+            beforeSend: function (xhr) {
+                /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                xhr.setRequestHeader(header, token);
+            },
+            dataType: "json",
+            cache: false,
+            success: function (result, status) {
+                alert("신고처리 되었습니다.");
+                location.href = '/';
+            },
+            error: function (jqXHR, status, error) {
+
+                if (jqXHR.status == '401') {
+                    alert('로그인 후 이용해주세요');
+                    //location.href = '/members/login';
+                } else {
+                    alert(jqXHR.responseText);
+                }
+            }
+        });
+
+    }
+
+    //상품 신고
     function reportItem(){
         const token = $("meta[name='_csrf']").attr("content");
         const header = $("meta[name='_csrf_header']").attr("content");
-        const url = "/reportItem";
+        const url = "/report/reportItem";
         const tagArray = $('.tagBlock').map(function(){
             return $(this).data('tag');
         }).get();
@@ -214,6 +286,8 @@
     <hr>
 
         <h2>판매자 정보</h2>
+        <input type="hidden" id="shopMemberEmail" th:value="${shopMember.email}">
+        <button class="reportMemberBtn" type="button">사용자 신고하기</button>
         <div>
             판매자 닉네임 : <span th:text="${shopMember.nickname}"></span>
         </div>
@@ -269,6 +343,22 @@
         <div class="tagBox"></div>
         <button type="button" class="reportConfirm">신고하기</button>
         <button type="button" class="closePopup">취소</button>
+    </div>
+
+    <div id="detailPopupMember">
+        <h2>신고 상세</h2>
+        <span th:text="${shopMember.nickname}"></span>
+        <span th:text="'('+${shopMember.email}+')'"></span>
+        <textarea id="reportContentMember" name="reportContentMember" placeholder="내용을 입력하세요"></textarea>
+        태그선택
+        <select name="tagSelectMember" id="tagSelectMember">
+            <option value="default">--선택--</option>
+            <option value="DISRESPECTFUL">비매너</option>
+            <option value="FRAUD">사기</option>
+        </select>
+        <div class="tagBoxMember"></div>
+        <button type="button" class="reportConfirmMember">신고하기</button>
+        <button type="button" class="closePopupMember">취소</button>
     </div>
 </body>
 </html>

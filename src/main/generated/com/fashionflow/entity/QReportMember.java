@@ -32,8 +32,6 @@ public class QReportMember extends EntityPathBase<ReportMember> {
 
     public final QMember reporterMember;
 
-    public final ListPath<ReportMemberTag, QReportMemberTag> reportMemberTagList = this.<ReportMemberTag, QReportMemberTag>createList("reportMemberTagList", ReportMemberTag.class, QReportMemberTag.class, PathInits.DIRECT2);
-
     public final EnumPath<com.fashionflow.constant.ReportStatus> reportStatus = createEnum("reportStatus", com.fashionflow.constant.ReportStatus.class);
 
     public QReportMember(String variable) {

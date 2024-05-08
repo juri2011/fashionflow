@@ -132,6 +132,8 @@ public class ReportItemService {
 
         reportItemDTO.setReportItemTagDTOList(reportItemTagDTOList);
 
+        //System.out.println(reportItemDTO);
+
         return reportItemDTO;
     }
 

@@ -5,6 +5,7 @@ import com.fashionflow.dto.ReportItemDTO;
 import com.fashionflow.dto.ReportMemberDTO;
 import com.fashionflow.service.ReportItemService;
 import com.fashionflow.service.ReportMemberService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -37,6 +38,43 @@ public class ReportMemberController {
         return "report/reportItemDetail";
     }*/
 
+    @PostMapping("/report/reportMember")
+    public @ResponseBody ResponseEntity reportMember(@RequestBody @Valid ReportMemberDTO reportMemberDTO,
+                                                     BindingResult bindingResult, Principal principal){
+
+        System.out.println(reportMemberDTO);
+
+        if(bindingResult.hasErrors()){
+            StringBuilder sb = new StringBuilder();
+            List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+
+            for(FieldError fieldError : fieldErrors){
+                sb.append(fieldError.getDefaultMessage());
+            }
+
+            return new ResponseEntity<String>(sb.toString(), HttpStatus.BAD_REQUEST);
+        }
+
+        if(principal == null) return new ResponseEntity<String>("로그인이 필요합니다.", HttpStatus.BAD_REQUEST);
+        String email = principal.getName();
+        System.out.println(email);
+
+        reportMemberDTO.setReporterMemberEmail(email);
+        System.out.println(reportMemberDTO);
+        Long reportItemId;
+
+        try {
+            reportItemId = reportMemberService.addReportMember(reportMemberDTO);
+        } catch(EntityNotFoundException e) {
+            //로그인 정보가 없는 상태에서 DB에 저장하려 할 때 에러 메시지 출력
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+        } catch(Exception e){
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<Long>(reportItemId, HttpStatus.OK);
+
+    }
+
     @GetMapping({"/report/member", "/report/member/{page}"})
     public String reportNew(Model model, Principal principal,
                             @PathVariable("page") Optional<Integer> page){
@@ -68,54 +106,21 @@ public class ReportMemberController {
         return "report/reportMemberList";
     }
 
-/*
-    @PutMapping("/reportItem/update")
-    public @ResponseBody ResponseEntity updateReportItem(@RequestBody @Valid ReportItemDTO reportItemDTO,
-                                                         BindingResult bindingResult,
-                                                         Principal principal){
-        System.out.println("=========================put 진입");
-        if(bindingResult.hasErrors()){
-            StringBuilder sb = new StringBuilder();
-            List<FieldError> fieldErrors = bindingResult.getFieldErrors();
-
-            for(FieldError fieldError : fieldErrors){
-                sb.append(fieldError.getDefaultMessage());
-            }
-
-            return new ResponseEntity<String>(sb.toString(), HttpStatus.BAD_REQUEST);
-        }
-        if(principal == null) return new ResponseEntity<String>("로그인이 필요합니다.", HttpStatus.BAD_REQUEST);
-        String email = principal.getName();
-        System.out.println(email);
-
-        reportItemDTO.setReporterMemberEmail(email);
-        System.out.println(reportItemDTO);
-        Long reportItemId;
-
-
-        try {
-            reportItemId = reportItemService.updateReportItem(reportItemDTO);
-        } catch(Exception e){
-            return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<Long>(reportItemId, HttpStatus.OK);
-
-    }
-
-    @GetMapping("/reportItem/{id}")
+    //사용자 신고 정보 가져오기
+    @GetMapping("/reportMember/{id}")
     public @ResponseBody ResponseEntity get(@PathVariable("id") Long id){
         System.out.println(id);
-        ReportItemDTO reportItemDTO = reportItemService.getReportItemDTOById(id);
-        return new ResponseEntity<>(reportItemDTO,HttpStatus.OK);
+        ReportMemberDTO reportMemberDTO = reportMemberService.getReportMemberDTOById(id);
+        return new ResponseEntity<>(reportMemberDTO,HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete/reportItem/{id}")
-    public @ResponseBody ResponseEntity deleteReportItem(@PathVariable("id") Long id){
+    @DeleteMapping("/delete/reportMember/{id}")
+    public @ResponseBody ResponseEntity deleteReportMember(@PathVariable("id") Long id){
 
         System.out.println("========================== delete :"+id);
 
         try {
-            reportItemService.deleteReportItem(id);
+            reportMemberService.deleteReportMember(id);
             return new ResponseEntity<>("성공적으로 삭제되었습니다.", HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -124,10 +129,10 @@ public class ReportMemberController {
         }
     }
 
-    @PostMapping("/reportItem")
-    public @ResponseBody ResponseEntity reportItem(@RequestBody @Valid ReportItemDTO reportItemDTO, BindingResult bindingResult,
-                                                   Principal principal){
-        System.out.println("=========================post 진입");
+    @PutMapping("/reportMember/update")
+    public @ResponseBody ResponseEntity updateReportItem(@RequestBody @Valid ReportMemberDTO reportMemberDTO,
+                                                         BindingResult bindingResult,
+                                                         Principal principal){
         if(bindingResult.hasErrors()){
             StringBuilder sb = new StringBuilder();
             List<FieldError> fieldErrors = bindingResult.getFieldErrors();
@@ -142,18 +147,23 @@ public class ReportMemberController {
         String email = principal.getName();
         System.out.println(email);
 
-        reportItemDTO.setReporterMemberEmail(email);
-        System.out.println(reportItemDTO);
-        Long reportItemId;
+        reportMemberDTO.setReporterMemberEmail(email);
+        System.out.println(reportMemberDTO);
+        Long reportMemberId;
+
 
         try {
-            reportItemId = reportItemService.addReportItem(reportItemDTO);
+            reportMemberId = reportMemberService.updateReportMember(reportMemberDTO);
         } catch(Exception e){
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<Long>(reportItemId, HttpStatus.OK);
+        return new ResponseEntity<Long>(reportMemberId, HttpStatus.OK);
 
     }
+
+/*
+
+
 
     @PostMapping("/report/process")
     public @ResponseBody ResponseEntity processItem(@RequestBody ReportCommandDTO reportCommandDTO){

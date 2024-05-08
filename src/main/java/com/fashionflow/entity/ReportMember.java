@@ -3,6 +3,8 @@ package com.fashionflow.entity;
 import com.fashionflow.constant.ReportStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,10 +24,12 @@ public class ReportMember {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="reporter_member")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Member reporterMember;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="reported_member")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Member reportedMember;
 
     @Column(nullable = false)

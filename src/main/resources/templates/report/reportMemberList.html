@@ -121,7 +121,7 @@
                 cache: false,
                 success: function (result, status) {
                     alert("정상적으로 수정되었습니다.");
-                    //location.href = '/report/member';
+                    location.href = '/report/member';
                 },
                 error: function (jqXHR, status, error) {
 
@@ -245,7 +245,9 @@
             <tr th:each="reportMember : ${reportMemberList.getContent()}">
                 <td th:text="${reportMember.id}"></td>
                 <!-- 관리자나 작성자인 경우만 표시 -->
-                <td th:text="${reportMember.content}"></td>
+                <td><a th:href="'/report/memberdetail/'+${reportMember.id}">
+                    <span th:text="${reportMember.content}"></span>
+                </a></td>
                 <td th:text="${reportMember.reporterMemberEmail}"></td>
                 <td th:text="${#temporals.format(reportMember.regdate, 'yyyy-MM-dd HH:mm:ss')}"></td>
                 <td th:switch="${#strings.toString(reportMember.reportStatus)}">

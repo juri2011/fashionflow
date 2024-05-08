@@ -29,14 +29,14 @@ public class ReportMemberController {
 
     //private final ReportItemService reportItemService;
     private final ReportMemberService reportMemberService;
-/*
-    @GetMapping("/report/itemdetail/{id}")
+
+    @GetMapping("/report/memberdetail/{id}")
     public String reportDetail(Model model, @PathVariable("id") Long id){
-        ReportItemDTO reportItemDTO = reportItemService.getReportItemDTOById(id);
-        System.out.println(reportItemDTO);
-        model.addAttribute("reportItem",reportItemDTO);
-        return "report/reportItemDetail";
-    }*/
+        ReportMemberDTO reportMemberDTO = reportMemberService.getReportMemberDTOById(id);
+        System.out.println(reportMemberDTO);
+        model.addAttribute("reportMember",reportMemberDTO);
+        return "report/reportMemberDetail";
+    }
 
     @PostMapping("/report/reportMember")
     public @ResponseBody ResponseEntity reportMember(@RequestBody @Valid ReportMemberDTO reportMemberDTO,
@@ -161,19 +161,15 @@ public class ReportMemberController {
 
     }
 
-/*
+    @PostMapping("/report/processMember")
+    public @ResponseBody ResponseEntity processMember(@RequestBody ReportCommandDTO reportCommandDTO){
 
-
-
-    @PostMapping("/report/process")
-    public @ResponseBody ResponseEntity processItem(@RequestBody ReportCommandDTO reportCommandDTO){
-
-        ReportItemDTO reportItemDTO = reportItemService.getReportItemDTOById(reportCommandDTO.getId());
+        ReportMemberDTO reportMemberDTO = reportMemberService.getReportMemberDTOById(reportCommandDTO.getId());
         try {
-            reportItemService.processReportItem(reportItemDTO, reportCommandDTO.getCommand());
+            reportMemberService.processReportMember(reportMemberDTO, reportCommandDTO.getCommand());
         } catch(Exception e){
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<Long>(reportCommandDTO.getId(), HttpStatus.OK);
-    }*/
+    }
 }

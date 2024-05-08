@@ -1,6 +1,6 @@
 package com.fashionflow.service;
 
-import com.fashionflow.constant.ReportTagMember;
+import com.fashionflow.constant.*;
 import com.fashionflow.constant.ReportTagMember;
 import com.fashionflow.constant.ReportTagMember;
 import com.fashionflow.dto.*;
@@ -114,13 +114,13 @@ public class ReportMemberService {
         //사용자 신고 entity -> DTO 변환
         ReportMemberDTO reportMemberDTO = ReportMemberDTO.entityToDTO(reportMember);
         //String memberEmail = reportMemberDTO.getReportedMemberEmail();
-        
+
         //사용자 신고 태그 DTO 리스트
         List<ReportMemberTagDTO> reportMemberTagDTOList = new ArrayList<>();
-        
+
         //신고항목 id로 신고항목 태그 리스트 가져오기
         for(ReportMemberTag reportMemberTag : reportMemberTagRepository.findAllByReportMember_Id(id)){
-            
+
             //Entity -> DTO로 변환
             ReportMemberTagDTO reportMemberTagDTO = ReportMemberTagDTO.entityToDTO(reportMemberTag);
             reportMemberTagDTOList.add(reportMemberTagDTO);
@@ -179,6 +179,29 @@ public class ReportMemberService {
         //System.out.println("===================== reportMemberDTO : " + reportMemberDTO);
 
         return targetReportMember.getId();
+    }
+
+    public void processReportMember(ReportMemberDTO reportMemberDTO, String command){
+        String memberEmail = reportMemberDTO.getReportedMemberEmail();
+        Member member = memberRepository.findByEmail(memberEmail);
+        if(member == null){
+            throw new EntityNotFoundException("해당 회원이 존재하지 않습니다. email : " + memberEmail);
+        }
+
+        if(EnumUtils.isValidEnum(ReportManageCommand.class,command)){
+            if(ReportManageCommand.valueOf(command).equals(ReportManageCommand.SUSPEND)){
+                //활동정지로 상태 변경
+                member.setRole(Role.BLACK);
+            }
+        }else{
+            throw new IllegalStateException("유효하지 않은 명령입니다.");
+        }
+
+        //신고 처리완료
+        Long reportId = reportMemberDTO.getId();
+        ReportMember reportMember = reportMemberRepository.findById(reportId).orElseThrow(() ->
+                new EntityNotFoundException("해당 리뷰가 존재하지 않습니다. id = " + reportId));
+        reportMember.setReportStatus(ReportStatus.COMPLETE);
     }
 
 }

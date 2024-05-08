@@ -77,6 +77,10 @@ public class Member {
     @Column(name = "provider_id")
     private String providerId;
 
+    // 매너점수 업데이트
+    public void updateMannerScore(int newScore) {
 
+        this.mannerScore = newScore;
+    }
 
 }

@@ -73,6 +73,13 @@
                 <label for="scoreRange" class="form-label" style="display: none;">점수 선택:</label>
                 <input type="range" class="form-range score-range" id="scoreRange" name="score" min="1" max="10" value="5" style="display: none;">
                 <span id="scoreValue" style="display: none;">5 점</span> <!-- 점수 표시 -->
+                <!-- 리뷰 태그 체크박스 -->
+                <div class="review-tags" style="display: none;">
+                    <label><input type="checkbox" name="reviewTags" value="FRIENDLY">친절해요</label>
+                    <label><input type="checkbox" name="reviewTags" value="AFFORDABLE">저렴해요</label>
+                    <label><input type="checkbox" name="reviewTags" value="FAST_DELIVERY">배송이 빨라요</label>
+                </div>
+
                 <button type="submit" class="submit-review" style="display: none;">제출</button>
 
                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
@@ -93,11 +100,12 @@
             event.preventDefault(); // 기본 이벤트 막기
 
             var form = this.closest('.purchase-form');
-            var reviewTextbox = form.querySelector('.review-textbox');
-            var scoreRange = form.querySelector('.score-range');
-            var scoreLabel = form.querySelector('.form-label');
+            var reviewTextbox = form.querySelector('.review-textbox'); // 리뷰박스
+            var scoreRange = form.querySelector('.score-range'); // 점수 범위
+            var scoreLabel = form.querySelector('.form-label'); // 점수
             var scoreValue = form.querySelector('#scoreValue'); // 점수 표시
-            var submitButton = form.querySelector('.submit-review');
+            var submitButton = form.querySelector('.submit-review'); // 제출 버튼
+            var reviewTagsDiv = form.querySelector('.review-tags'); // 태그
 
             // 표시/숨김 토글
             if (reviewTextbox.style.display === 'none') {
@@ -106,12 +114,14 @@
                 scoreLabel.style.display = 'block';
                 scoreValue.style.display = 'block';
                 submitButton.style.display = 'block';
+                reviewTagsDiv.style.display = 'block';
             } else {
                 reviewTextbox.style.display = 'none';
                 scoreRange.style.display = 'none';
                 scoreLabel.style.display = 'none';
                 scoreValue.style.display = 'none';
                 submitButton.style.display = 'none';
+                reviewTagsDiv.style.display = 'none';
             }
 
             // 점수 표시 업데이트

@@ -145,8 +145,8 @@
 
 <h2>판매 상품 이미지</h2>
 <!-- 판매중인 상품 이미지 -->
-<div th:each="itemImg, status: ${itemFormDTO.itemImgDTOList}">
-    <img th:src="'/test_images/'+${itemImg.oriImgName}">
+<div th:each="itemImg, status : ${itemFormDTO.itemImgDTOList}">
+    <img th:src="@{'/images/' + ${itemImg.imgName}}" alt="상품 이미지" />
 </div>
 
 <hr>

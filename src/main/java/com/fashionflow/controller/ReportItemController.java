@@ -124,7 +124,7 @@ public class ReportItemController {
         }
     }
 
-    @PostMapping("/reportItem")
+    @PostMapping("/report/reportItem")
     public @ResponseBody ResponseEntity reportItem(@RequestBody @Valid ReportItemDTO reportItemDTO, BindingResult bindingResult,
                                                    Principal principal){
         System.out.println("=========================post 진입");
@@ -140,10 +140,10 @@ public class ReportItemController {
         }
         if(principal == null) return new ResponseEntity<String>("로그인이 필요합니다.", HttpStatus.BAD_REQUEST);
         String email = principal.getName();
-        System.out.println(email);
+        //System.out.println(email);
 
         reportItemDTO.setReporterMemberEmail(email);
-        System.out.println(reportItemDTO);
+        //System.out.println(reportItemDTO);
         Long reportItemId;
 
         try {

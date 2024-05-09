@@ -28,5 +28,32 @@
       height: auto;
     }
   </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var recentItems = Cookies.get('recentViewedItems');
+
+      if (recentItems) {
+        try {
+          var items = JSON.parse(decodeURIComponent(recentItems));
+          var list = document.querySelector('.list-group');
+          items.forEach(function(item) {
+            var listItem = document.createElement('li');
+            listItem.className = 'list-group-item';
+            listItem.innerHTML = '<a href="/item/' + item.itemId + '">' +
+                                 '<img src="/test_images/' + item.oriImgName + '" alt="상품 이미지" />' +
+                                 '<span>' + item.itemName + '</span>' +
+                                 '</a>';
+            list.appendChild(listItem);
+          });
+        } catch (e) {
+          console.error('최근 본 상품 목록을 불러오는 데 실패했습니다.', e);
+        }
+      }
+    });
+  </script>
 </div>
 </html>
+

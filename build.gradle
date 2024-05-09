@@ -68,7 +68,8 @@ dependencies {
 	//Oauth2.0
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
-
+	//websocket(채팅)
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 }
 
 tasks.named('test') {

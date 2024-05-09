@@ -27,7 +27,6 @@ public class Review {
     private Member member;
 
     @Lob
-    @Column(nullable = false)
     private String content;
 
     @Column(nullable = false)

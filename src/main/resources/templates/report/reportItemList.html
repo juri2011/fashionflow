@@ -13,6 +13,11 @@
         $(document).ready(function(){
             $('.closePopup').on('click', function(){
                 $('#detailPopup').hide();
+                //팝업창 내용 초기화
+                $('.memberName').text("");
+                $('#reportContent').text("");
+                $('.tagBox').empty();
+                $(".reportConfirm").removeData();
             });
             $('.reportBtn').on('click', function(){
                 $('#detailPopup').show();
@@ -240,7 +245,9 @@
             <tr th:each="reportItem : ${reportItemList.getContent()}">
                 <td th:text="${reportItem.id}"></td>
                 <!-- 관리자나 작성자인 경우만 표시 -->
-                <td th:text="${reportItem.content}"></td>
+                <td><a th:href="'/report/itemdetail/'+${reportItem.id}">
+                    <span th:text="${reportItem.content}"></span>
+                </a></td>
                 <td th:text="${reportItem.reporterMemberEmail}"></td>
                 <td th:text="${#temporals.format(reportItem.regdate, 'yyyy-MM-dd HH:mm:ss')}"></td>
                 <td th:switch="${#strings.toString(reportItem.reportStatus)}">

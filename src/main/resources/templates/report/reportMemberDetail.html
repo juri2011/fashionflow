@@ -4,7 +4,7 @@
       layout:decorate="~{layouts/layout1}">
 <head>
     <meta charset="UTF-8">
-    <title>reportItemDetail</title>
+    <title>reportMemberDetail</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
         $(document).ready(function(){
@@ -15,7 +15,7 @@
                 if(selectedProcess === 'SUSPEND' ||
                     selectedProcess === 'DELETE' ||
                     selectedProcess === 'ETC' ){
-                    processItem(selectedProcess);
+                    processMember(selectedProcess);
                 }else{
                     alert('처리 항목을 선택해주세요.');
                 }
@@ -24,9 +24,9 @@
         const token = $("meta[name='_csrf']").attr("content");
         const header = $("meta[name='_csrf_header']").attr("content");
 
-        function processItem(command){
+        function processMember(command){
             const id = $('#reportId').val();
-            const url = "/report/process";
+            const url = "/report/processMember";
             const paramData={
                 id: id,
                 command: command
@@ -48,7 +48,7 @@
                 cache: false,
                 success: function (result, status) {
                     alert("신고처리 되었습니다.");
-                    location.href = '/report/item';
+                    location.href = '/report/member';
                 },
                 error: function (jqXHR, status, error) {
 
@@ -68,23 +68,20 @@
 <div layout:fragment="content">
     관리자만 접근 가능한 페이지입니다
 
-    <input type="hidden" name="reportId" id="reportId" th:value="${reportItem.id}">
-    리뷰번호 : <span th:text="${reportItem.id}"></span>
-    리뷰작성자 : <span th:text="${reportItem.reporterMemberEmail}"></span>
-    상품번호 : <span th:text="${reportItem.reportedItemId}"></span>
-    상품이름 : <a th:href="'/item/'+${reportItem.reportedItemId}"><span th:text="${reportItem.reportedItem.itemName}"></span></a>
-    판매자 : <span th:text="${reportItem.reportedItem.memberId}"></span>
-    대표사진 : <img th:src="'/test_images/'+${reportItem.reportedItem.itemRepImgDTO.oriImgName}" alt="대표사진">
-    신고내용 : <span th:text="${reportItem.content}"></span>
-    신고상태 : <span th:text="${reportItem.reportStatus.getDescription()}"></span>
+    <input type="hidden" name="reportId" id="reportId" th:value="${reportMember.id}">
+    리뷰번호 : <span th:text="${reportMember.id}"></span>
+    리뷰작성자 : <span th:text="${reportMember.reporterMemberEmail}"></span>
+    신고대상 : <span th:text="${reportMember.reportedMember.nickname}
+                            +'('+${reportMember.reportedMember.email}+')'"></span>
+    신고내용 : <span th:text="${reportMember.content}"></span>
+    신고상태 : <span th:text="${reportMember.reportStatus.getDescription()}"></span>
     신고태그 :
-    <p th:each="reportTag, status: ${reportItem.reportItemTagDTOList}">
+    <p th:each="reportTag, status: ${reportMember.reportMemberTagDTOList}">
         <span th:text="${reportTag.reportTagDesc}"></span>
     </p>
     <select name="processSelect" id="processSelect">
         <option value="default">---선택---</option>
-        <option value="SUSPEND">판매중지</option>
-        <option value="DELETE">삭제</option>
+        <option value="SUSPEND">중지</option>
         <option value="ETC">직접처리</option>
     </select>
 

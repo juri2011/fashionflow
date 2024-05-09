@@ -16,9 +16,13 @@ public class ReportMemberTagDTO {
 
     private ReportTagMember reportTagMember;
 
+    private String reportTagDesc;
+
     private static ModelMapper modelMapper = new ModelMapper();
 
     public static ReportMemberTagDTO entityToDTO(ReportMemberTag reportMemberTag){
-        return modelMapper.map(reportMemberTag, ReportMemberTagDTO.class);
+        ReportMemberTagDTO reportMemberTagDTO = modelMapper.map(reportMemberTag, ReportMemberTagDTO.class);
+        reportMemberTagDTO.setReportTagDesc(reportMemberTagDTO.getReportTagMember().getDescription());
+        return reportMemberTagDTO;
     }
 }

@@ -195,7 +195,7 @@
     <span th:each="itemImg, status: ${itemFormDTO.itemImgDTOList}">
                 <img style="width: 100px; height:100px;"
                      th:if="${itemImg.repimgYn} == 'Y'"
-                     th:src="'/test_images/'+${itemImg.oriImgName}">
+                     th:src="'/images/'+${itemImg.imgName}">
             </span>
     <span th:text="${itemFormDTO.itemName}"></span>
     <textarea id="reportContent" name="reportContent" placeholder="내용을 입력하세요"></textarea>

@@ -18,7 +18,7 @@ public class BuyerDTO {
 
     private int price;
 
-    private String oriImgName;
+    private String imgName;
 
     private LocalDateTime buyDate;
 

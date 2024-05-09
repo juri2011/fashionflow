@@ -268,7 +268,21 @@
         찜한 횟수 : <span th:text="${heartCount}"></span>
     </div>
 
-        <div>
+    <div>
+        태그 :
+        <span th:each="itemTag, status: ${itemFormDTO.itemTagDTOList}">
+            <span th:switch="${#strings.toString(itemTag.itemTagName)}">
+                <span th:case="DIRECT_TRADE">직거래</span>
+                <span th:case="DELIVERY_TRADE">택배거래</span>
+                <span th:case="SAME_DAY_DELIVERY">당일배송</span>
+                <span th:case="INTERNATIONAL_DELIVERY">해외배송</span>
+            </span>
+        </span>
+    </div>
+
+
+
+    <div>
             카테고리 :
             <span th:if="${itemFormDTO.categoryDTO.parent != null}"
                   th:text="${itemFormDTO.categoryDTO.parent.name}+' &gt'"></span>

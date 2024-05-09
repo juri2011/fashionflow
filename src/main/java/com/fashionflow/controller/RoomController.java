@@ -26,7 +26,7 @@ import java.util.Map;
 @RequestMapping("/chat")
 @Slf4j
 public class RoomController {
-    
+
     private final ChatRoomRepository chatRoomRepository;
 
     private final MemberService memberService;

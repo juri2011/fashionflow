@@ -9,6 +9,11 @@
         .error {
             color: #bd2130;
         }
+        input[readonly] {
+            background-color: #f4f4f4; /* 배경색 */
+            color: #555; /* 텍스트 색상 */
+            cursor: not-allowed; /* 커서 모양 변경 */
+        }
     </style>
 </th:block>
 
@@ -52,12 +57,12 @@
         <div class="form-row">
             <div class="form-group col-md-3 mb-3">
                 <label for="sample6_postcode">우편번호</label>
-                <input type="text" name="userStnum" id="sample6_postcode" class="form-control" placeholder="우편번호" th:value="${memberFormDTO.userStnum}">
+                <input type="text" name="userStnum" id="sample6_postcode" class="form-control" placeholder="우편번호" th:value="${memberFormDTO.userStnum}" readonly>
                 <input type="button" onclick="sample6_execDaumPostcode()" value="우편번호 찾기"><br>
             </div>
             <div class="form-group col-md-6 mb-3">
                 <label for="sample6_address">주소</label>
-                <input type="text" name="userAddr" id="sample6_address" class="form-control" placeholder="주소" th:value="${memberFormDTO.userAddr}">
+                <input type="text" name="userAddr" id="sample6_address" class="form-control" placeholder="주소" th:value="${memberFormDTO.userAddr}" readonly>
             </div>
             <div class="form-group col-md-3 mb-3">
                 <label for="sample6_detailAddress">상세주소</label>

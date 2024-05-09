@@ -30,10 +30,17 @@
         }
 
         /* 리뷰 입력 텍스트 박스 스타일 */
-    .review-textbox {
-        display: none;
-        margin-top: 10px;
-    }
+        .review-textbox {
+            display: none;
+            margin-top: 10px;
+        }
+
+        /* 점수 선택 바 너비 조정 */
+        .score-range {
+            width: 50%;
+            margin: 0 auto;
+        }
+
     </style>
 </head>
 <body>
@@ -62,12 +69,10 @@
 
                 <!-- 리뷰 입력 텍스트 박스 -->
                 <textarea class="review-textbox" name="content" placeholder="리뷰를 작성해주세요"></textarea>
-                <!-- 점수 선택 드롭다운 -->
-                <select class="score-dropdown" name="score" style="display: none;">
-                    <option value="">점수를 선택하세요</option>
-                    <option th:each="num : ${#numbers.sequence(1,100)}" th:value="${num}" th:text="${num}" name="score"></option>
-                </select>
-
+                <!-- 리뷰 입력 텍스트 박스 아래에 추가 -->
+                <label for="scoreRange" class="form-label" style="display: none;">점수 선택:</label>
+                <input type="range" class="form-range score-range" id="scoreRange" name="score" min="1" max="100" value="50" style="display: none;">
+                <span id="scoreValue" style="display: none;">50 점</span> <!-- 점수 표시 -->
                 <button type="submit" class="submit-review" style="display: none;">제출</button>
 
                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
@@ -81,7 +86,7 @@
 </div>
 </body>
 </html>
-
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script>
     document.querySelectorAll('.review-button').forEach(function(button) {
         button.addEventListener('click', function(event) {
@@ -89,29 +94,39 @@
 
             var form = this.closest('.purchase-form');
             var reviewTextbox = form.querySelector('.review-textbox');
-            var scoreDropdown = form.querySelector('.score-dropdown');
+            var scoreRange = form.querySelector('.score-range');
+            var scoreLabel = form.querySelector('.form-label');
+            var scoreValue = form.querySelector('#scoreValue'); // 점수 표시
             var submitButton = form.querySelector('.submit-review');
 
-            // 리뷰 입력 텍스트 박스와 점수 선택 드롭다운을 표시/숨김
+            // 표시/숨김 토글
             if (reviewTextbox.style.display === 'none') {
                 reviewTextbox.style.display = 'block';
-                scoreDropdown.style.display = 'block';
+                scoreRange.style.display = 'block';
+                scoreLabel.style.display = 'block';
+                scoreValue.style.display = 'block';
                 submitButton.style.display = 'block';
             } else {
                 reviewTextbox.style.display = 'none';
-                scoreDropdown.style.display = 'none';
+                scoreRange.style.display = 'none';
+                scoreLabel.style.display = 'none';
+                scoreValue.style.display = 'none';
                 submitButton.style.display = 'none';
             }
+
+            // 점수 표시 업데이트
+            scoreRange.oninput = function() {
+                scoreValue.textContent = this.value + " 점";
+            };
         });
     });
 
     document.querySelectorAll('.submit-review').forEach(function(submitButton) {
         submitButton.addEventListener('click', function(event) {
             var form = this.closest('.purchase-form');
-            var scoreDropdown = form.querySelector('.score-dropdown');
-            var selectedScore = scoreDropdown.value;
+            var scoreRange = form.querySelector('.score-range');
+            var selectedScore = scoreRange.value;
 
-            // 선택된 점수가 없는 경우 경고 표시
             if (selectedScore === "") {
                 alert("점수를 선택하세요.");
                 event.preventDefault(); // 제출 중지

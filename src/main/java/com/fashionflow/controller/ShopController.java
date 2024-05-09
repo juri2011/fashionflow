@@ -5,7 +5,6 @@ import com.fashionflow.dto.CategoryDTO;
 import com.fashionflow.dto.ItemFormDTO;
 import com.fashionflow.service.CategoryService;
 import com.fashionflow.service.ItemService;
-import com.fashionflow.service.ReviewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +29,7 @@ public class ShopController {
 
     private final CategoryService categoryService;
 
-    private final ReviewService reviewService;
+    //private final ReviewService reviewService;
 
 
     @GetMapping("/members/item/new")
@@ -51,7 +50,7 @@ public class ShopController {
 
 
     @GetMapping("/getSubcategories/{parentId}")
-    public ResponseEntity<List<CategoryDTO>> getSubcategories(@PathVariable Long parentId) {
+    public ResponseEntity<List<CategoryDTO>> getSubcategories(@PathVariable("parentId") Long parentId) {
         List<CategoryDTO> subcategories = categoryService.findSubcategoriesByParentId(parentId);
         return ResponseEntity.ok(subcategories);
     }

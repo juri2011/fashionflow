@@ -16,7 +16,7 @@ import java.nio.file.Paths;
 public class ImageController {
 
     @GetMapping("/images/{filename:.+}")
-    public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
+    public ResponseEntity<Resource> serveFile(@PathVariable("filename") String filename) {
         Path file = Paths.get("C:/shop/item").resolve(filename);
         try {
             Resource resource = new UrlResource(file.toUri());

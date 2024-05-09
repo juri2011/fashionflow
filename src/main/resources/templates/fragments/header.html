@@ -13,21 +13,15 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item" sec:authorize="isAuthenticated()">
-                            <a class="nav-link active" aria-current="page" href="/members/item/new">상품등록</a>
-                        </li>
-                        <li class="nav-item" sec:authorize="isAuthenticated()">
-                            <a class="nav-link active" aria-current="page" href="/members/items">상품관리</a>
-                        </li>
-                        <li class="nav-item" sec:authorize="isAuthenticated()">
-                            <a class="nav-link active" aria-current="page" href="/cart">장바구니</a>
-                        </li>
-                        <li class="nav-item" sec:authorize="isAnonymous()">
+
+                        <li class="nav-item" sec:authorize="isAnonymous()" >
                             <a class="nav-link active" aria-current="page" href="/members/login">로그인</a>
                         </li>
                         <li class="nav-item" sec:authorize="isAnonymous()">
                             <a class="nav-link active" aria-current="page" href="/members/register">회원가입</a>
                         </li>
+                    </ul>
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0" style="margin-right:200px">
 
                         <li class="nav-item" sec:authorize="isAuthenticated()">
                             <!-- 로그아웃 form -->
@@ -40,9 +34,6 @@
                             </form>
                         </li>
 
-
-                    </ul>
-                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                         <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 마이페이지
@@ -57,10 +48,6 @@
                             </ul>
                         </li>
                     </ul>
-                    <form class="d-flex" role="search">
-                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                        <button class="btn btn-outline-success" type="submit">Search</button>
-                    </form>
                 </div>
             </div>
         </nav>

@@ -6,7 +6,12 @@
       최근 본 상품
     </div>
     <ul class="list-group list-group-flush">
-
+      <li class="list-group-item" th:each="item : ${session.recentViewedItems}">
+        <a th:href="@{'/item/' + ${item.itemId}}">
+          <img th:src="'/images/'+${item.imgName}" alt="상품 이미지" />
+          <span th:text="${item.itemName}">상품명</span>
+        </a>
+      </li>
     </ul>
   </div>
   <style>

@@ -44,7 +44,7 @@ public class BuyerService {
             ItemImg img = itemImgRepository.findByItemIdAndRepimgYn(itemBuy.getItem().getId(), "Y")
                     .orElse(null); // 대표 이미지가 없는 경우를 대비한 처리
 
-            BuyerDTO dto = new BuyerDTO(itemBuy.getItem().getId(), itemBuy.getItem().getItemName(), itemBuy.getItem().getPrice(), img.getOriImgName(), itemBuy.getBuyDate(), itemBuy.isReviewExists());
+            BuyerDTO dto = new BuyerDTO(itemBuy.getItem().getId(), itemBuy.getItem().getItemName(), itemBuy.getItem().getPrice(), img.getImgName(), itemBuy.getBuyDate(), itemBuy.isReviewExists());
             buyerDTO.add(dto);
         }
 

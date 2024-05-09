@@ -177,7 +177,7 @@
 
         <div class="form-group">
             <label for="tagSelect" class="form-group-text">태그(선택)</label>
-            <select id="tagSelect" class="custom-select" style="width: 100%; max-width: 400px;" onchange="addTag()">
+            <select id="tagSelect" class="custom-select" style="width: 100%; max-width: 400px;" name="tagSelect" onchange="addTag()">
                 <option value="">태그를 선택해 주세요</option>
                 <option th:each="tag : ${T(com.fashionflow.constant.ItemTagName).values()}"
                         th:value="${tag.code}" th:text="${tag.description}">

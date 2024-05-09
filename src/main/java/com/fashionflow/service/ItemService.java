@@ -1,5 +1,6 @@
 package com.fashionflow.service;
 
+import com.fashionflow.constant.ItemTagName;
 import com.fashionflow.dto.ItemFormDTO;
 import com.fashionflow.dto.ItemImgDTO;
 import com.fashionflow.dto.ItemTagDTO;
@@ -12,12 +13,20 @@ import com.fashionflow.repository.ItemImgRepository;
 import com.fashionflow.repository.ItemRepository;
 import com.fashionflow.repository.ItemTagRepository;
 import com.fashionflow.repository.MemberRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,25 +44,44 @@ public class ItemService {
 
     private final MemberRepository memberRepository;
 
+    private final ObjectMapper objectMapper;
+
     @Transactional
-    public void saveItem(ItemFormDTO ItemFormDTO, List<MultipartFile> itemImgFileList, String userEmail) throws Exception {
+    public void saveItem(ItemFormDTO itemFormDTO, List<MultipartFile> itemImgFileList, String tagSelect, String userEmail) throws Exception {
         Member member = memberRepository.findByEmail(userEmail);
         if (member == null) {
             throw new RuntimeException("회원 정보를 찾을 수 없습니다.");
         }
 
-        Item item = ItemFormDTO.createItem();
+        Item item = itemFormDTO.createItem();
         item.setMember(member);
-        itemRepository.save(item);
+        itemRepository.save(item); // 상품 저장
 
+        // 이미지 파일 처리
         if (itemImgFileList != null && !itemImgFileList.isEmpty()) {
-            for (MultipartFile file : itemImgFileList) {
+            for (int i = 0; i < itemImgFileList.size(); i++) {
+                MultipartFile file = itemImgFileList.get(i);
                 if (!file.isEmpty()) {
                     ItemImg itemImg = new ItemImg();
                     itemImg.setItem(item);
+                    itemImg.setRepimgYn(i == 0 ? "Y" : "N"); // 첫 번째 이미지를 대표 이미지로 설정
                     itemImgService.saveItemImg(itemImg, file);
                 }
             }
+        }
+
+        // 태그 저장
+        try {
+            if (tagSelect != null && !tagSelect.isEmpty()) {
+                ItemTag itemTag = new ItemTag();
+                itemTag.setItem(item);
+                itemTag.setItemTagName(ItemTagName.valueOf(tagSelect));
+                itemTagRepository.save(itemTag);
+            }
+        } catch (IllegalArgumentException e) {
+            // 로그 출력 및 적절한 예외 처리
+            System.out.println("잘못된 태그 이름이 입력되었습니다: " + tagSelect);
+            // 예외 처리 로직, 필요한 경우 사용자에게 메시지 전달 등
         }
     }
 
@@ -132,11 +160,39 @@ public class ItemService {
         recentViewItemDTO.setItemId(item.getId());
         recentViewItemDTO.setItemName(item.getItemName());
         if (repImg != null) {
-            recentViewItemDTO.setOriImgName(repImg.getOriImgName());
+            recentViewItemDTO.setImgName(repImg.getImgName());
         }
 
         return recentViewItemDTO;
     }
 
+    // 쿠키에서 최근 본 상품 목록 불러오기
+    public List<RecentViewItemDTO> getRecentViewedItems(HttpServletRequest request) throws IOException {
+
+        //모든 쿠키 가져오기
+        Cookie[] cookies = request.getCookies();
+        String recentViewedItemsJson = null;
+
+        // "recentViewedItems" 쿠키 조회
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                // 존재할시 JSON URL 디코딩
+                if ("recentViewedItems".equals(cookie.getName())) {
+                    recentViewedItemsJson = URLDecoder.decode(cookie.getValue(), "UTF-8");
+                    break;
+                }
+            }
+        }
+
+        List<RecentViewItemDTO> recentViewedItems;
+        // JSON 문자열 null이 아니라면, RecentViewItemDTO 객체 리스트로 변환
+        if (recentViewedItemsJson != null) {
+            recentViewedItems = objectMapper.readValue(recentViewedItemsJson, new TypeReference<List<RecentViewItemDTO>>() {});
+        } else {
+            // 또는 빈 리스트를 생성
+            recentViewedItems = new ArrayList<>();
+        }
+        return recentViewedItems;
+    }
 
 }

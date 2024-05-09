@@ -33,7 +33,8 @@ public class ItemFormDTO {
     @Builder.Default // Builder로 인스턴스 생성 시 초기값 지정
     private LocalDateTime regdate = LocalDateTime.now(); // 등록일을 현재 시간으로 초기화
 
-    private Integer viewCount; //조회수
+    @Builder.Default // Builder로 인스턴스 생성 시 초기값 지정
+    private Integer viewCount = 0; //조회수
 
     //private Category category; //카테고리
     private CategoryDTO categoryDTO;

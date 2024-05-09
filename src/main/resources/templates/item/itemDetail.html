@@ -182,7 +182,7 @@
 <h2>판매중인 다른 상품</h2>
 사용자가 판매중인 다른 상품
 <div th:each="otherItem, status: ${shopMember.itemFormDTOList}">
-    <img th:src="'/test_images/'+${otherItem.itemRepImgDTO.oriImgName}" alt="사진">
+    <img th:src="'/images/'+${otherItem.itemRepImgDTO.ImgName}" alt="사진">
     <p th:text="${otherItem.itemName}"></p>
     <p th:text="${otherItem.price}"></p>
     <p th:text="${#temporals.format(otherItem.regdate, 'yyyy-MM-dd')}"></p>

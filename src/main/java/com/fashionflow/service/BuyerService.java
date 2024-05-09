@@ -1,5 +1,6 @@
 package com.fashionflow.service;
 
+import com.fashionflow.constant.ReviewTagContent;
 import com.fashionflow.dto.BuyerDTO;
 import com.fashionflow.dto.ReviewDTO;
 import com.fashionflow.entity.*;
@@ -26,6 +27,7 @@ public class BuyerService {
     private final MemberService memberService;
     private final ItemImgRepository itemImgRepository;
     private final MemberRepository memberRepository;
+    private final ReviewTagRepository reviewTagRepository;
 
 
 
@@ -51,7 +53,8 @@ public class BuyerService {
         return buyerDTO;
     }
 
-    //리뷰 등록 메소드
+
+    @Transactional //리뷰 등록 메소드
     public void registerReview(ReviewDTO reviewDTO){
 
 
@@ -67,7 +70,21 @@ public class BuyerService {
                 .regdate(LocalDateTime.now())
                 .build();
 
-        reviewRepository.save(review);
+        review = reviewRepository.save(review);
+
+        // ReviewDTO에서 리뷰 태그 리스트를 가져옴
+        List<ReviewTagContent> reviewTags = reviewDTO.getReviewTags();
+
+        if (reviewTags != null && !reviewTags.isEmpty()) {
+            for (ReviewTagContent tagContent : reviewTags) {
+                ReviewTag reviewTag = new ReviewTag();
+                reviewTag.setReview(review); // 저장된 리뷰 객체 설정
+                reviewTag.setReviewTagContent(tagContent); // 태그 내용 설정
+
+                reviewTagRepository.save(reviewTag); // ReviewTag 저장
+            }
+        }
+
 
 
         //아이템 리뷰 여부 변경

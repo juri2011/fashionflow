@@ -139,7 +139,7 @@ public class ItemService {
         recentViewItemDTO.setItemId(item.getId());
         recentViewItemDTO.setItemName(item.getItemName());
         if (repImg != null) {
-            recentViewItemDTO.setOriImgName(repImg.getOriImgName());
+            recentViewItemDTO.setImgName(repImg.getImgName());
         }
 
         return recentViewItemDTO;

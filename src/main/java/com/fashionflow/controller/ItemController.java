@@ -12,10 +12,15 @@ import com.fashionflow.service.CategoryService;
 import com.fashionflow.service.HeartService;
 import com.fashionflow.service.ItemService;
 import com.fashionflow.service.MemberService;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,11 +34,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
+@ControllerAdvice
 @Controller
 @RequiredArgsConstructor
 public class ItemController {
@@ -46,11 +53,13 @@ public class ItemController {
 
     private final CategoryService categoryService;
 
+    private final ObjectMapper objectMapper;
+
 
 
     //상품 리스트 출력
     @GetMapping("/item/{itemId}")
-    public String itemDetail(Model model, @PathVariable("itemId") Long itemId, HttpSession session){
+    public String itemDetail(Model model, @PathVariable("itemId") Long itemId, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         ItemFormDTO itemFormDTO = itemService.getItemDetail(itemId); //상품 상세정보(이미지, 태그, 카테고리 포함)
         Long heartCount = heartService.countHeartById(itemId); //상품 찜한 갯수
@@ -70,12 +79,8 @@ public class ItemController {
         model.addAttribute("shopMember", shopMember);
         //model.addAttribute("currentMemberEmail", currentMemberEmail);
 
-
-        // 최근 본 상품 리스트 세션 불러오기
-        List<RecentViewItemDTO> recentViewedItems = (List<RecentViewItemDTO>) session.getAttribute("recentViewedItems");
-        if (recentViewedItems == null) {
-            recentViewedItems = new ArrayList<>();
-        }
+        // 최근 본 목록 불러오기
+        List<RecentViewItemDTO> recentViewedItems = itemService.getRecentViewedItems(request);
 
         // 현재 상품이 이미 목록에 있는 경우 제거
         recentViewedItems.removeIf(item -> item.getItemId().equals(itemId));
@@ -89,8 +94,17 @@ public class ItemController {
             recentViewedItems.remove(5);
         }
 
-        // 업데이트된 목록을 세션에 저장
-        session.setAttribute("recentViewedItems", recentViewedItems);
+        // 업데이트된 최근 본 상품 목록을 JSON 문자열로 변환한 후, URL 인코딩을 적용
+        String updatedRecentItemsJson = objectMapper.writeValueAsString(recentViewedItems);
+        String encodedJson = URLEncoder.encode(updatedRecentItemsJson, "UTF-8");
+
+        // 변환된 JSON 문자열을 쿠키에 저장
+        Cookie recentItemsCookie = new Cookie("recentViewedItems", encodedJson);
+        recentItemsCookie.setPath("/");
+        recentItemsCookie.setMaxAge(7 * 24 * 60 * 60); // 쿠키 유효기간 1주
+        response.addCookie(recentItemsCookie);
+        model.addAttribute("recentViewedItems", recentViewedItems);
+
 
         return "item/itemDetail";
     }

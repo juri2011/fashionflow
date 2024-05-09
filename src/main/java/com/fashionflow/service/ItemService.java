@@ -12,12 +12,20 @@ import com.fashionflow.repository.ItemImgRepository;
 import com.fashionflow.repository.ItemRepository;
 import com.fashionflow.repository.ItemTagRepository;
 import com.fashionflow.repository.MemberRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +42,8 @@ public class ItemService {
     private final ItemTagRepository itemTagRepository;
 
     private final MemberRepository memberRepository;
+
+    private final ObjectMapper objectMapper;
 
     @Transactional
     public void saveItem(ItemFormDTO ItemFormDTO, List<MultipartFile> itemImgFileList, String userEmail) throws Exception {
@@ -127,5 +137,33 @@ public class ItemService {
         return recentViewItemDTO;
     }
 
+    // 쿠키에서 최근 본 상품 목록 불러오기
+    public List<RecentViewItemDTO> getRecentViewedItems(HttpServletRequest request) throws IOException {
+
+        //모든 쿠키 가져오기
+        Cookie[] cookies = request.getCookies();
+        String recentViewedItemsJson = null;
+
+        // "recentViewedItems" 쿠키 조회
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                // 존재할시 JSON URL 디코딩
+                if ("recentViewedItems".equals(cookie.getName())) {
+                    recentViewedItemsJson = URLDecoder.decode(cookie.getValue(), "UTF-8");
+                    break;
+                }
+            }
+        }
+
+        List<RecentViewItemDTO> recentViewedItems;
+        // JSON 문자열 null이 아니라면, RecentViewItemDTO 객체 리스트로 변환
+        if (recentViewedItemsJson != null) {
+            recentViewedItems = objectMapper.readValue(recentViewedItemsJson, new TypeReference<List<RecentViewItemDTO>>() {});
+        } else {
+            // 또는 빈 리스트를 생성
+            recentViewedItems = new ArrayList<>();
+        }
+        return recentViewedItems;
+    }
 
 }

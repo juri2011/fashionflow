@@ -1,11 +1,13 @@
 package com.fashionflow.controller;
 
 
+import com.fashionflow.dto.chat.ChatMessageDTO;
 import com.fashionflow.dto.chat.ChatRoomDTO;
 import com.fashionflow.entity.ChatRoom;
 import com.fashionflow.entity.Member;
 import com.fashionflow.repository.ChatRoomRepository;
 import com.fashionflow.repository.ChatRoomRepositoryImpl;
+import com.fashionflow.service.ChatService;
 import com.fashionflow.service.MemberService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +32,8 @@ public class RoomController {
     private final ChatRoomRepository chatRoomRepository;
 
     private final MemberService memberService;
+
+    private final ChatService chatService;
 
     //채팅방 목록 조회
     @GetMapping("/rooms")
@@ -84,5 +88,22 @@ public class RoomController {
         }catch(NullPointerException e){
             return new ResponseEntity<String>("로그인 후 이용해주세요", HttpStatus.UNAUTHORIZED);
         }
+    }
+
+
+
+    /* 채팅 내역 불러오기 */
+    @GetMapping("/getChatHistory/{uuid}")
+    public @ResponseBody ResponseEntity getChatHistory(@PathVariable("uuid") String uuid){
+        System.out.println(uuid);
+        try {
+            List<ChatMessageDTO> chatHistory = chatService.getChatHistory(uuid);
+            return new ResponseEntity<List<ChatMessageDTO>>(chatHistory, HttpStatus.OK);
+        }catch (EntityNotFoundException e){
+            return new ResponseEntity<String>("채팅방이 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
+        }catch (Exception e){
+            return new ResponseEntity<String>("대화내용을 불러오는데 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
     }
 }

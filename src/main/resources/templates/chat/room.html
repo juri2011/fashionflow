@@ -40,6 +40,10 @@
 
                     username = response;
                     console.log(roomName + ", " + roomId + ", " + response.username);
+
+                    //사용자 이름을 받아왔으면 채팅 기록 출력
+                    loadChatHistory();
+                    //채팅기록을 받아왔으면 WebSocket 연결
                     connectToWebSocket();
                 },
                 error: function(xhr, status, error) {
@@ -48,6 +52,50 @@
                     location.href = '/';
                 }
             });
+
+            function loadChatHistory(){
+
+                $.ajax({
+                    url: "/chat/getChatHistory/"+roomId, // 사용자 이름을 반환하는 엔드포인트
+                    method: "GET",
+                    success: function(response) {
+                        console.log(response);
+                        response.forEach((chat) => {
+                            showChat(chat);
+                        });
+
+
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("대화내용을 불러오는데 실패했습니다.", error);
+                        alert(xhr.responseText);
+                        location.href = '/';
+                    }
+                });
+            }
+
+            function showChat(content){
+                const writer = content.writer;
+                let str = '';
+                const message = content.message;
+
+                if(writer === username){
+                str = "<div class='col-6'>";
+                str += "<div class='alert alert-secondary'>";
+                str += "<b>" + writer + " : " + message + "</b>";
+                str += "</div></div>";
+                //$("#msgArea").append(str);
+                }
+                else{
+                str = "<div class='col-6'>";
+                str += "<div class='alert alert-warning'>";
+                str += "<b>" + writer + " : " + message + "</b>";
+                str += "</div></div>";
+                //$("#msgArea").append(str);
+                }
+
+                $("#msgArea").append(str);
+            }
 
 
             console.log(roomName + ", " + roomId + ", " + username);
@@ -66,26 +114,7 @@
                    stomp.subscribe("/sub/chat/room/" + roomId, function (chat) {
                        var content = JSON.parse(chat.body);
 
-                       var writer = content.writer;
-                       var str = '';
-                       var message = content.message;
-
-                       if(writer === username){
-                           str = "<div class='col-6'>";
-                           str += "<div class='alert alert-secondary'>";
-                           str += "<b>" + writer + " : " + message + "</b>";
-                           str += "</div></div>";
-                           //$("#msgArea").append(str);
-                       }
-                       else{
-                           str = "<div class='col-6'>";
-                           str += "<div class='alert alert-warning'>";
-                           str += "<b>" + writer + " : " + message + "</b>";
-                           str += "</div></div>";
-                           //$("#msgArea").append(str);
-                       }
-
-                       $("#msgArea").append(str);
+                       showChat(content);
                    });
 
                    //3. send(path, header, message)로 메세지를 보낼 수 있음

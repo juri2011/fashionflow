@@ -22,6 +22,12 @@ public class ChatRoom {
 
     private String name; //채팅방 이름
 
+    //private Member sellerMember;
+
+    //private Member buyerMember;
+
+    //private Item item;
+
     public static ChatRoom createChatRoom(ChatRoomDTO chatRoomDTO){
         return ChatRoom.builder()
                 .uuid(chatRoomDTO.getRoomId())

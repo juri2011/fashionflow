@@ -1,5 +1,6 @@
 package com.fashionflow.service;
 
+import com.fashionflow.constant.ItemTagName;
 import com.fashionflow.dto.ItemFormDTO;
 import com.fashionflow.dto.ItemImgDTO;
 import com.fashionflow.dto.ItemTagDTO;
@@ -36,24 +37,41 @@ public class ItemService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public void saveItem(ItemFormDTO ItemFormDTO, List<MultipartFile> itemImgFileList, String userEmail) throws Exception {
+    public void saveItem(ItemFormDTO itemFormDTO, List<MultipartFile> itemImgFileList, String tagSelect, String userEmail) throws Exception {
         Member member = memberRepository.findByEmail(userEmail);
         if (member == null) {
             throw new RuntimeException("회원 정보를 찾을 수 없습니다.");
         }
 
-        Item item = ItemFormDTO.createItem();
+        Item item = itemFormDTO.createItem();
         item.setMember(member);
-        itemRepository.save(item);
+        itemRepository.save(item); // 상품 저장
 
+        // 이미지 파일 처리
         if (itemImgFileList != null && !itemImgFileList.isEmpty()) {
-            for (MultipartFile file : itemImgFileList) {
+            for (int i = 0; i < itemImgFileList.size(); i++) {
+                MultipartFile file = itemImgFileList.get(i);
                 if (!file.isEmpty()) {
                     ItemImg itemImg = new ItemImg();
                     itemImg.setItem(item);
+                    itemImg.setRepimgYn(i == 0 ? "Y" : "N"); // 첫 번째 이미지를 대표 이미지로 설정
                     itemImgService.saveItemImg(itemImg, file);
                 }
             }
+        }
+
+        // 태그 저장
+        try {
+            if (tagSelect != null && !tagSelect.isEmpty()) {
+                ItemTag itemTag = new ItemTag();
+                itemTag.setItem(item);
+                itemTag.setItemTagName(ItemTagName.valueOf(tagSelect));
+                itemTagRepository.save(itemTag);
+            }
+        } catch (IllegalArgumentException e) {
+            // 로그 출력 및 적절한 예외 처리
+            System.out.println("잘못된 태그 이름이 입력되었습니다: " + tagSelect);
+            // 예외 처리 로직, 필요한 경우 사용자에게 메시지 전달 등
         }
     }
 

@@ -247,14 +247,15 @@ public class ItemController {
     @PostMapping("/members/item/new")
     public String saveItem(@Valid ItemFormDTO itemFormDTO, BindingResult bindingResult,
                            @RequestParam("itemImgFile") List<MultipartFile> itemImgFileList,
+                           @RequestParam("tagSelect") String tagSelect, // 태그 선택 정보 추가
                            Principal principal, Model model) {
         if (bindingResult.hasErrors()) {
             return "/item/itemForm";  // 입력 폼으로 리턴
         }
 
         try {
-            String email = principal.getName();
-            itemService.saveItem(itemFormDTO, itemImgFileList, email);
+            String email = principal.getName(); // 사용자 이메일 가져오기
+            itemService.saveItem(itemFormDTO, itemImgFileList, tagSelect, email); // 태그 정보도 함께 저장
             return "redirect:/";
         } catch (Exception e) {
             model.addAttribute("errorMessage", "상품 등록 실패");

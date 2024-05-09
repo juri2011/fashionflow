@@ -7,16 +7,113 @@
 <head>
     <meta charset="UTF-8">
     <title>내상점페이지</title>
+    <style>
+        /* 탭 메뉴 스타일링 */
+        .tab {
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+        }
+        .tab button {
+            background-color: inherit;
+            float: left;
+            width: 33.33%; /* 각 탭 버튼 너비를 균일하게 설정 */
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+            font-size: 17px;
+        }
+        .tab button:hover {
+            background-color: #ddd;
+        }
+        .tab button.active {
+            background-color: #ccc;
+        }
+        .tabcontent {
+            display: none;
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            border-top: none;
+        }
+    </style>
 </head>
 <body>
 <h1>상점페이지 입니다.</h1>
 
-<!-- 상품 등록 버튼 -->
 <div layout:fragment="content">
+    <!-- 상품 등록 버튼 -->
     <form th:action="@{/members/item/new}" method="get">
         <button type="submit" class="btn btn-primary">내 상품 등록</button>
     </form>
+    <!-- 탭 메뉴 -->
+    <div class="tab">
+        <button class="tablinks" onclick="openTab(event, 'Home')">상품 관리</button>
+        <button class="tablinks" onclick="openTab(event, 'Items')">상품 후기</button>
+        <button class="tablinks" onclick="openTab(event, 'Register')">찜</button>
+    </div>
+
+    <!-- 탭 내용 -->
+    <div id="Home" class="tabcontent" style="display:block;">
+        <h3>상품 관리</h3>
+        <table>
+            <thead>
+            <tr>
+                <th>이미지</th>
+                <th>상품명</th>
+                <th>상태</th>
+                <th>가격</th>
+                <th>거래지역</th>
+                <th>판매상태</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${items}">
+                <td><img th:src="@{'/img/' + ${item.image}}" alt="Product Image" style="width:100px; height:auto;"/></td>
+                <td th:text="${item.name}">상품명</td>
+                <td th:text="${item.status}">상태</td>
+                <td th:text="${item.price}">가격</td>
+                <td th:text="${item.location}">거래지역</td>
+                <td th:text="${item.sellStatus}">판매상태</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="Items" class="tabcontent">
+        <h3>상품 후기</h3>
+        <p>여기는 상품 후기 탭의 내용입니다.</p>
+    </div>
+
+    <div id="Register" class="tabcontent">
+        <h3>찜</h3>
+        <p>여기는 찜 탭의 내용입니다.</p>
+    </div>
 </div>
+
+
 
 </body>
 </html>
+
+<script>
+    function openTab(evt, cityName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        document.getElementById(cityName).style.display = "block";
+        evt.currentTarget.className += " active";
+    }
+
+    // 페이지 로드 시 기본적으로 '상품 관리' 탭을 활성화
+    document.addEventListener('DOMContentLoaded', function () {
+        openTab(new Event('click'), 'Home');
+    });
+</script>

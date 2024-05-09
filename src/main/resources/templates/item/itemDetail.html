@@ -17,13 +17,6 @@
             position: fixed;
             background-color: yellow;
         }
-
-        .tagBlock{
-            display: inline-block;
-            background-color:white;
-            margin-right: 5px;
-            padding: 5px;
-        }
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </head>
@@ -39,243 +32,180 @@
             reportItem();
             $('#detailPopup').hide();
         });
-        $('#tagSelect').on('input', function(){
-            let selectedOption = $('#tagSelect option:selected').val();
-            let selectedText = $('#tagSelect option:selected').text();
-            let tagBlock = '<span class="tagBlock" data-tag="'+selectedOption+'">'+ selectedText +'</span>';
-            if(selectedOption !== 'default'){
-                if($('.tagBox').find('.tagBlock[data-tag="'+selectedOption+'"]').length>0){alert('존재함')}
-                else $('.tagBox').append(tagBlock);
-            }
-            $('#tagSelect option:eq(0)').prop('selected', true);
-
-        });
-
-        $('.tagBox').on('click', '.tagBlock', function() {
-            // 클릭된 동적으로 생성된 버튼에 대한 처리를 여기에 작성합니다.
-            console.log($(event.target).text());
-            $(event.target).remove();
-
-        });
-
-        //찜하기
-        $('.heartBtn').on('click', function(){
-            heartItem();
-        });
-
     });
-
-    //찜하기
-    function heartItem(){
-        const token = $("meta[name='_csrf']").attr("content");
-        const header = $("meta[name='_csrf_header']").attr("content");
-        const url = "/heart/addHeart";
-        const paramData = {id: $('#itemId').val()};
-        console.log(paramData);
-        const param = JSON.stringify(paramData);
-        $.ajax({
-            url: url,
-            type: "POST",
-            contentType: "application/json",
-            data: param,
-            beforeSend: function (xhr) {
-                /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
-                xhr.setRequestHeader(header, token);
-            },
-            dataType: "json",
-            cache: false,
-            success: function (result, status) {
-                alert("찜 상품에 추가되었습니다.");
-                //location.href = '/';
-            },
-            error: function (jqXHR, status, error) {
-
-                if (jqXHR.status == '401') {
-                    alert('로그인 후 이용해주세요');
-                    //location.href = '/members/login';
-                } else {
-                    alert(jqXHR.responseText);
-                }
-
-            }
-        });
-    }
-
     function reportItem(){
         const token = $("meta[name='_csrf']").attr("content");
         const header = $("meta[name='_csrf_header']").attr("content");
         const url = "/reportItem";
-        const tagArray = $('.tagBlock').map(function(){
-            return $(this).data('tag');
-        }).get();
 
         const paramData = {
-            reportedItemId:$('#itemId').val(),
-            content: $('#reportContent').val(),
-            reportTagItemList: tagArray
+            reported_item_id:$('#itemId').val(),
+            reporter_member_email:$('#currentMemberEmail').val(),
+            content: $('#reportContent').val()
         };
 
-            console.log(paramData);
+        console.log(paramData);
 
-            const param = JSON.stringify(paramData);
+        const param = JSON.stringify(paramData);
 
-            $.ajax({
-                    url: url,
-                    type: "POST",
-                    contentType: "application/json",
-                    data: param,
-                    beforeSend: function (xhr) {
-                        /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
-                        xhr.setRequestHeader(header, token);
-                    },
-                    dataType: "json",
-                    cache: false,
-                    success: function (result, status) {
-                        alert("신고처리 되었습니다.");
-                        location.href = '/';
-                    },
-                    error: function (jqXHR, status, error) {
+        $.ajax({
+                url: url,
+                type: "POST",
+                contentType: "application/json",
+                data: param,
+                beforeSend: function (xhr) {
+                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                    xhr.setRequestHeader(header, token);
+                },
+                dataType: "json",
+                cache: false,
+                success: function (result, status) {
+                    alert("신고처리 되었습니다.");
+                    location.href = '/';
+                },
+                error: function (jqXHR, status, error) {
 
-                        if (jqXHR.status == '401') {
-                            alert('로그인 후 이용해주세요');
-                            //location.href = '/members/login';
-                        } else {
-                            alert(jqXHR.responseText);
-                        }
-
+                    if (jqXHR.status == '401') {
+                        alert('로그인 후 이용해주세요');
+                        //location.href = '/members/login';
+                    } else {
+                        alert(jqXHR.responseText);
                     }
-                });
-            }
-    </script>
-    <body>
-        <input type="hidden" id="itemId" th:value="${itemFormDTO.id}">
-        <input type="hidden" id="currentMemberEmail" th:value="${currentMemberEmail}">
 
                 }
             });
         }
 </script>
 <body>
-    <input type="hidden" id="itemId" th:value="${itemFormDTO.id}">
+<input type="hidden" id="itemId" th:value="${itemFormDTO.id}">
+<input type="hidden" id="currentMemberEmail" th:value="${currentMemberEmail}">
 
-    <h1>상품 데이터 출력 예제</h1>
-    <h2>상품 데이터</h2>
-    <button type="button" class="reportBtn">신고하기</button>
-    <button type="button" class="heartBtn">찜하기</button>
-    <div>
-        상품명 : <span th:text="${itemFormDTO.itemName}"></span>
-    </div>
-    <div>
-        상세설명 : <span th:text="${itemFormDTO.content}"></span>
-    </div>
-    <div>
-        가격 : <span th:text="${itemFormDTO.price}"></span>
-    </div>
-    <div>
-        배송비 : <span th:text="${itemFormDTO.delivery}"></span>
-    </div>
-    <div>
-        주소 : <span th:text="${itemFormDTO.address}"></span>
-    </div>
-    <div>
-        등록일 :
-        <span th:text="${#temporals.format(itemFormDTO.regdate, 'yyyy-MM-dd HH:mm:ss')}"></span>
-    </div>
-    <div>
-        상품상태 :
-        <span th:switch="${#strings.toString(itemFormDTO.itemStatus)}">
-            <span th:case="NEW">새상품</span>
-            <span th:case="NO_SIGNS_OF_USE">사용감 없음</span>
-            <span th:case="SOME_SIGNS_OF_USE">사용감 적음</span>
-            <span th:case="SIGNIFICANT_SIGNS_OF_USE">사용감 많음</span>
-            <span th:case="FAULTY">파손/고장</span>
-        </span>
-        <!--<span th:text="${item.itemStatus}"></span>-->
-    </div>
-    <div th:switch="${#strings.toString(itemFormDTO.sellStatus)}">
-        판매상태 :
-        <span th:case="SELLING">판매중</span>
-        <span th:case="SUSPENDED">판매중단</span>
-        <span th:case="SOLD_OUT">판매완료</span>
-    </div>
-    <div>
-        조회수 : <span th:text="${itemFormDTO.viewCount}"></span> <br>
-        찜한 횟수 : <span th:text="${heartCount}"></span>
-    </div>
+<h1>상품 데이터 출력 예제</h1>
+<h2>상품 데이터</h2>
+<button type="button" class="reportBtn">신고하기</button>
+<div>
+    상품명 : <span th:text="${itemFormDTO.itemName}"></span>
+</div>
+<div>
+    상세설명 : <span th:text="${itemFormDTO.content}"></span>
+</div>
+<div>
+    가격 : <span th:text="${itemFormDTO.price}"></span>
+</div>
+<div>
+    배송비 : <span th:text="${itemFormDTO.delivery}"></span>
+</div>
+<div>
+    주소 : <span th:text="${itemFormDTO.address}"></span>
+</div>
+<div>
+    등록일 :
+    <span th:text="${#temporals.format(itemFormDTO.regdate, 'yyyy-MM-dd HH:mm:ss')}"></span>
+</div>
+<div>
+    상품상태 :
+    <span th:switch="${#strings.toString(itemFormDTO.itemStatus)}">
+                <span th:case="NEW">새상품</span>
+                <span th:case="NO_SIGNS_OF_USE">사용감 없음</span>
+                <span th:case="SOME_SIGNS_OF_USE">사용감 적음</span>
+                <span th:case="SIGNIFICANT_SIGNS_OF_USE">사용감 많음</span>
+                <span th:case="FAULTY">파손/고장</span>
+            </span>
+    <!--<span th:text="${item.itemStatus}"></span>-->
+</div>
+<div th:switch="${#strings.toString(itemFormDTO.sellStatus)}">
+    판매상태 :
+    <span th:case="SELLING">판매중</span>
+    <span th:case="SUSPENDED">판매중단</span>
+    <span th:case="SOLD_OUT">판매완료</span>
+</div>
+<div>
+    조회수 : <span th:text="${itemFormDTO.viewCount}"></span> <br>
+    찜한 횟수 : <span th:text="${heartCount}"></span>
+</div>
 
-        <div>
-            카테고리 :
-            <span th:if="${itemFormDTO.categoryDTO.parent != null}"
-                  th:text="${itemFormDTO.categoryDTO.parent.name}+' &gt'"></span>
-            <span th:text="${itemFormDTO.categoryDTO.name}"></span>
-        </div>
-        <!--<img src="/test_images/clothes1_1.png" alt="상품사진">-->
-        <hr/>
+<div th:each="itemTag, status: ${itemFormDTO.itemTagDTOList}">
+    태그 :
+    <span th:switch="${#strings.toString(itemTag.itemTagName)}">
+                <span th:case="DIRECT_TRADE">직거래</span>
+                <span th:case="DELIVERY_TRADE">택배거래</span>
+                <span th:case="SAME_DAY_DELIVERY">당일배송</span>
+                <span th:case="INTERNATIONAL_DELIVERY">해외배송</span>
+            </span>
+</div>
 
-        <h2>판매 상품 이미지</h2>
-        <!-- 판매중인 상품 이미지 -->
-        <div th:each="itemImg, status: ${itemFormDTO.itemImgDTOList}">
-            <img th:src="'/test_images/'+${itemImg.oriImgName}">
-        </div>
+<div>
+    카테고리 :
+    <span th:if="${itemFormDTO.categoryDTO.parent != null}"
+          th:text="${itemFormDTO.categoryDTO.parent.name}+' &gt'"></span>
+    <span th:text="${itemFormDTO.categoryDTO.name}"></span>
+</div>
+<!--<img src="/test_images/clothes1_1.png" alt="상품사진">-->
+<hr/>
 
+<h2>판매 상품 이미지</h2>
+<!-- 판매중인 상품 이미지 -->
+<div th:each="itemImg, status: ${itemFormDTO.itemImgDTOList}">
+    <img th:src="'/test_images/'+${itemImg.oriImgName}">
+</div>
+
+<hr>
+
+<h2>판매자 정보</h2>
+<div>
+    판매자 닉네임 : <span th:text="${shopMember.nickname}"></span>
+</div>
+<div>
+    판매자 매너점수 : <span th:text="${shopMember.mannerScore}"></span>
+</div>
+<div>
+    판매자 가입일 :
+    <span th:text="${#temporals.format(shopMember.regdate, 'yyyy-MM-dd')}"></span>
+</div>
+<div>
+    판매자 프로필사진 :
+    <img th:if="${shopMember.profileImageDTO}==null" src="/img/profile_default.png">
+    <!-- 테스트를 위해 임시 경로를 지정했지만 파일업로드 기능이 구현되면 변경될 수 있습니다.
+    view에서 null인지 조건을 검사하는 것보다 회원가입할 때 사용자가 프로필 사진을 따로 설정하지 않았으면
+     기본 사진의 경로와 이미지 이름으로 지정하는 것이 더 깔끔해 보임 -->
+
+    <img th:if="${shopMember.profileImageDTO}!=null"
+         th:src="${shopMember.profileImageDTO.uploadPath}+${shopMember.profileImageDTO.filename}">
+</div>
+<div>
+    판매자 판매수 : <span th:text="${sellCount}"></span>
+</div>
+<div>
+    판매자 소개 : <span th:text="${shopMember.intro}"></span>
+</div>
+<hr/>
+<h2>판매중인 다른 상품</h2>
+사용자가 판매중인 다른 상품
+<div th:each="otherItem, status: ${shopMember.itemFormDTOList}">
+    <img th:src="'/test_images/'+${otherItem.itemRepImgDTO.oriImgName}" alt="사진">
+    <p th:text="${otherItem.itemName}"></p>
+    <p th:text="${otherItem.price}"></p>
+    <p th:text="${#temporals.format(otherItem.regdate, 'yyyy-MM-dd')}"></p>
     <hr>
+</div>
 
-        <h2>판매자 정보</h2>
-        <div>
-            판매자 닉네임 : <span th:text="${shopMember.nickname}"></span>
-        </div>
-        <div>
-            판매자 매너점수 : <span th:text="${shopMember.mannerScore}"></span>
-        </div>
-        <div>
-            판매자 가입일 :
-            <span th:text="${#temporals.format(shopMember.regdate, 'yyyy-MM-dd')}"></span>
-        </div>
-        <div>
-            판매자 프로필사진 :
-            <img th:if="${shopMember.profileImageDTO}==null" src="/img/profile_default.png">
-            <!-- 테스트를 위해 임시 경로를 지정했지만 파일업로드 기능이 구현되면 변경될 수 있습니다.
-            view에서 null인지 조건을 검사하는 것보다 회원가입할 때 사용자가 프로필 사진을 따로 설정하지 않았으면
-             기본 사진의 경로와 이미지 이름으로 지정하는 것이 더 깔끔해 보임 -->
-
-            <img th:if="${shopMember.profileImageDTO}!=null"
-                 th:src="${shopMember.profileImageDTO.uploadPath}+${shopMember.profileImageDTO.filename}">
-        </div>
-        <div>
-            판매자 판매수 : <span th:text="${sellCount}"></span>
-        </div>
-        <div>
-            판매자 소개 : <span th:text="${shopMember.intro}"></span>
-        </div>
-        <hr/>
-          <h2>판매중인 다른 상품</h2>
-          사용자가 판매중인 다른 상품
-          <div th:each="otherItem, status: ${shopMember.itemFormDTOList}">
-              <img th:src="'/test_images/'+${otherItem.itemRepImgDTO.oriImgName}" alt="사진">
-              <p th:text="${otherItem.itemName}"></p>
-              <p th:text="${otherItem.price}"></p>
-              <p th:text="${#temporals.format(otherItem.regdate, 'yyyy-MM-dd')}"></p>
-              <hr>
-          </div>
-
-    <div id="detailPopup">
-        <h2>신고 상세</h2>
-        <span th:each="itemImg, status: ${itemFormDTO.itemImgDTOList}">
-            <img style="width: 100px; height:100px;"
-                 th:if="${itemImg.repimgYn} == 'Y'"
-                 th:src="'/test_images/'+${itemImg.oriImgName}">
-        </span>
-        <span th:text="${itemFormDTO.itemName}"></span>
-        <textarea id="reportContent" name="reportContent" placeholder="내용을 입력하세요"></textarea>
-        태그선택
-        <select name="tagSelect" id="tagSelect">
-            <option value="default">--선택--</option>
-            <option value="VIOLATION">규정위반</option>
-            <option value="test">test</option>
-        </select>
-        <div class="tagBox"></div>
-        <button type="button" class="reportConfirm">신고하기</button>
-        <button type="button" class="closePopup">취소</button>
-    </div>
+<div id="detailPopup">
+    <h2>신고 상세</h2>
+    <p>신고자: </p>
+    <span th:each="itemImg, status: ${itemFormDTO.itemImgDTOList}">
+                <img style="width: 100px; height:100px;"
+                     th:if="${itemImg.repimgYn} == 'Y'"
+                     th:src="'/test_images/'+${itemImg.oriImgName}">
+            </span>
+    <span th:text="${itemFormDTO.itemName}"></span>
+    <textarea id="reportContent" name="reportContent" placeholder="내용을 입력하세요"></textarea>
+    태그선택
+    <select name="" id="">
+        <option value="규정위반">규정위반</option>
+    </select>
+    <div class="tagBox"></div>
+    <button type="button" class="reportConfirm">신고하기</button>
+    <button type="button" class="closePopup">취소</button>
+</div>
 </body>
 </html>

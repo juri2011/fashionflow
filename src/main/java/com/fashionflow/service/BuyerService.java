@@ -82,7 +82,7 @@ public class BuyerService {
         // 모든 판매자 아이템 리스트
         List<Item> sellerItemList = itemRepository.findByMemberId(seller.getId());
         // 현재 매너점수
-        int currentScore = seller.getMannerScore();
+        Double currentScore = seller.getMannerScore();
 
         // 리뷰된 판매자 아이템 리스트
         List<Item> reviewedSellerItemList = new ArrayList<>();
@@ -94,10 +94,10 @@ public class BuyerService {
         }
         // 평균 매너점수 연산
         if(reviewedSellerItemList.size()==1){
-            int avgScore = (currentScore + reviewDTO.getScore()) / 2;
+            Double avgScore = (currentScore + reviewDTO.getScore()) / 2;
             seller.updateMannerScore(avgScore);
         } else{
-            int avgScore = ((currentScore*(reviewedSellerItemList.size())) + reviewDTO.getScore()) / (reviewedSellerItemList.size()+1);
+            Double avgScore = ((currentScore*(reviewedSellerItemList.size())) + reviewDTO.getScore()) / (reviewedSellerItemList.size()+1);
             seller.updateMannerScore(avgScore);
         }
     }

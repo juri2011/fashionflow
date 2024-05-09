@@ -29,7 +29,7 @@ public class QMember extends EntityPathBase<Member> {
 
     public final StringPath intro = createString("intro");
 
-    public final NumberPath<Integer> mannerScore = createNumber("mannerScore", Integer.class);
+    public final NumberPath<Double> mannerScore = createNumber("mannerScore", Double.class);
 
     public final StringPath name = createString("name");
 

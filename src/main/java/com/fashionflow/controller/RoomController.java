@@ -2,9 +2,12 @@ package com.fashionflow.controller;
 
 
 import com.fashionflow.dto.chat.ChatRoomDTO;
+import com.fashionflow.entity.ChatRoom;
 import com.fashionflow.entity.Member;
 import com.fashionflow.repository.ChatRoomRepository;
+import com.fashionflow.repository.ChatRoomRepositoryImpl;
 import com.fashionflow.service.MemberService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -14,13 +17,17 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/chat")
 @Slf4j
 public class RoomController {
-
-    private final ChatRoomRepository repository;
+    
+    private final ChatRoomRepository chatRoomRepository;
 
     private final MemberService memberService;
 
@@ -29,7 +36,11 @@ public class RoomController {
     public String rooms(Model model){
 
         log.info("# All Chat Rooms");
-        model.addAttribute("list", repository.findAllRooms());
+        List<ChatRoomDTO> rooms = new ArrayList<>();
+        for(ChatRoom chatRoom : chatRoomRepository.findAllByOrderByIdDesc()){
+            rooms.add(ChatRoomDTO.entityToDto(chatRoom));
+        }
+        model.addAttribute("list", rooms);
 
         return "chat/rooms";
     }
@@ -39,7 +50,11 @@ public class RoomController {
     public String create(@RequestParam("name") String name, RedirectAttributes rttr){
 
         log.info("# Create Chat Room , name: " + name);
-        rttr.addFlashAttribute("roomName", repository.createChatRoomDTO(name));
+        ChatRoomDTO chatRoomDTO = ChatRoomDTO.create(name);
+        ChatRoom chatRoom = ChatRoom.createChatRoom(chatRoomDTO);
+        System.out.println(chatRoom);
+        chatRoomRepository.save(chatRoom);
+        rttr.addFlashAttribute("roomName", chatRoomDTO);
         return "redirect:/chat/rooms";
     }
 
@@ -49,10 +64,12 @@ public class RoomController {
 
         log.info("# get Chat Room, roomID : " + roomId);
 
-        ChatRoomDTO chatRoomDTO =repository.findRoomById(roomId);
-        log.info("{}",chatRoomDTO);
+        ChatRoom chatRoom = chatRoomRepository.findByUuid(roomId).orElseThrow(() ->
+                new EntityNotFoundException("방이 존재하지 않습니다. roomId = " + roomId));
 
-        model.addAttribute("room", repository.findRoomById(roomId));
+        ChatRoomDTO chatRoomDTO = ChatRoomDTO.entityToDto(chatRoom);
+
+        model.addAttribute("room", chatRoomDTO);
     }
 
 

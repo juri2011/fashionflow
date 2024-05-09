@@ -1,39 +1,13 @@
 package com.fashionflow.repository;
 
-import com.fashionflow.dto.chat.ChatRoomDTO;
-import jakarta.annotation.PostConstruct;
-import org.springframework.stereotype.Repository;
+import com.fashionflow.entity.ChatRoom;
+import org.springframework.data.repository.CrudRepository;
 
-import java.util.*;
-import java.util.stream.Stream;
+import java.util.List;
+import java.util.Optional;
 
-/* DB로 수정할 예정 */
-@Repository
-public class ChatRoomRepository {
+public interface ChatRoomRepository extends CrudRepository<ChatRoom, Long> {
+    public List<ChatRoom> findAllByOrderByIdDesc();
 
-    private Map<String, ChatRoomDTO> chatRoomDTOMap;
-
-    @PostConstruct
-    private void init(){
-        chatRoomDTOMap = new LinkedHashMap<>();
-    }
-
-    public List<ChatRoomDTO> findAllRooms(){
-        //채팅방 생성 순서 최근 순으로 반환
-        List<ChatRoomDTO> result = new ArrayList<>(chatRoomDTOMap.values());
-        Collections.reverse(result);
-
-        return result;
-    }
-
-    public ChatRoomDTO findRoomById(String id){
-        return chatRoomDTOMap.get(id);
-    }
-
-    public ChatRoomDTO createChatRoomDTO(String name){
-        ChatRoomDTO room = ChatRoomDTO.create(name);
-        chatRoomDTOMap.put(room.getRoomId(), room);
-
-        return room;
-    }
+    public Optional<ChatRoom> findByUuid(String uuid);
 }

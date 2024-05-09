@@ -66,9 +66,9 @@ public class ItemController {
         model.addAttribute("heartCount", heartCount);
         model.addAttribute("shopMember", shopMember);
 
-        res.setHeader("Pragma", "no-cache"); // HTTP 1.0.
+        /*res.setHeader("Pragma", "no-cache"); // HTTP 1.0.
         res.setHeader("Expires", "Sat, 6 May 1995 12:00:00 GMT");
-        res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1.
+        res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate"); // HTTP 1.1.*/
         //model.addAttribute("currentMemberEmail", currentMemberEmail);
 
 

@@ -60,16 +60,7 @@ public class Item {
     private SellStatus sellStatus; //판매 상태
 
 
-   /* public void updateItem(ItemFormDTO itemFormDto){
-        this.itemName = itemFormDto.getItemName();
-        this.content = itemFormDto.getContent();
-        this.price = itemFormDto.getPrice();
-        this.delivery = itemFormDto.getDelivery();
-        this.address = itemFormDto.getAddress();
-        this.category = itemFormDto.createItem().getCategory();
-        this.itemStatus = itemFormDto.getItemStatus();
-        this.sellStatus = itemFormDto.getSellStatus();
-    }*/
+
 
 
 }

@@ -47,7 +47,7 @@ public class ItemService {
     private final ObjectMapper objectMapper;
 
     @Transactional
-    public void saveItem(ItemFormDTO itemFormDTO, List<MultipartFile> itemImgFileList, String tagSelect, String userEmail) throws Exception {
+    public void saveItem(ItemFormDTO itemFormDTO, List<MultipartFile> itemImgFileList, List<String> tagSelect, String userEmail) throws Exception {
         Member member = memberRepository.findByEmail(userEmail);
         if (member == null) {
             throw new RuntimeException("회원 정보를 찾을 수 없습니다.");
@@ -71,19 +71,55 @@ public class ItemService {
         }
 
         // 태그 저장
-        try {
-            if (tagSelect != null && !tagSelect.isEmpty()) {
-                ItemTag itemTag = new ItemTag();
-                itemTag.setItem(item);
-                itemTag.setItemTagName(ItemTagName.valueOf(tagSelect));
-                itemTagRepository.save(itemTag);
+        if(tagSelect != null && !tagSelect.isEmpty()){
+            for(String tag : tagSelect){
+                try {
+                    ItemTag itemTag = new ItemTag();
+                    itemTag.setItem(item);
+                    itemTag.setItemTagName(ItemTagName.valueOf(tag));
+                    itemTagRepository.save(itemTag);
+                } catch (IllegalArgumentException e) {
+                    // 로그 출력 및 적절한 예외 처리
+                    System.out.println("잘못된 태그 이름이 입력되었습니다: " + tag);
+                    // 예외 처리 로직, 필요한 경우 사용자에게 메시지 전달 등
+                }
             }
-        } catch (IllegalArgumentException e) {
-            // 로그 출력 및 적절한 예외 처리
-            System.out.println("잘못된 태그 이름이 입력되었습니다: " + tagSelect);
-            // 예외 처리 로직, 필요한 경우 사용자에게 메시지 전달 등
         }
+
+
     }
+
+    // 상품관리 정보 가져오기
+    @Transactional(readOnly = true)
+    public List<ItemFormDTO> getItemsWithImagesByUserEmail(String email) {
+        // 회원을 이메일로 조회
+        Member member = memberRepository.findByEmail(email);
+        if (member == null) {
+            throw new EntityNotFoundException("회원 정보를 찾을 수 없습니다.");
+        }
+
+        // 회원이 등록한 상품 목록 조회 (최신 등록 순)
+        List<Item> items = itemRepository.findByMemberOrderByRegdateDesc(member);
+
+        // 상품 DTO와 각 상품의 대표 이미지 정보를 저장할 리스트 생성
+        List<ItemFormDTO> itemFormDTOs = new ArrayList<>();
+        for (Item item : items) {
+            ItemFormDTO dto = ItemFormDTO.of(item);
+
+            // 해당 상품의 대표 이미지 조회
+            ItemImg repImg = itemImgRepository.findFirstByItemIdAndRepimgYn(item.getId(), "Y").orElse(null);
+            if (repImg != null) {
+                List<ItemImgDTO> imgDTOList = new ArrayList<>();
+                imgDTOList.add(ItemImgDTO.entityToDto(repImg));
+                dto.setItemImgDTOList(imgDTOList); // DTO에 이미지 정보 설정
+            }
+
+            itemFormDTOs.add(dto);
+        }
+
+        return itemFormDTOs;
+    }
+
 
 
     /* 상품 상세정보 + 이미지 가져오기 */

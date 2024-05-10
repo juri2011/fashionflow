@@ -177,16 +177,17 @@
 
         <div class="form-group">
             <label for="tagSelect" class="form-group-text">태그(선택)</label>
-            <select id="tagSelect" class="custom-select" style="width: 100%; max-width: 400px;" name="tagSelect" onchange="addTag()">
+            <select id="tagSelect" class="custom-select" style= "width: 100%; max-width: 400px;" name="tagSelect" onchange="addTag()">
                 <option value="">태그를 선택해 주세요</option>
                 <option th:each="tag : ${T(com.fashionflow.constant.ItemTagName).values()}"
-                        th:value="${tag.code}" th:text="${tag.description}">
+                        th:value="${#strings.toString(tag)}" th:text="${tag.description}">
                 </option>
             </select>
         </div>
         <div class="form-group">
             <div id="selectedTagsDisplay" class="alert alert-info"></div>
         </div>
+
 
 
         <p class="h2">가격 및 배송비</p>
@@ -220,7 +221,6 @@
             <button type="button" onclick="setNoRegion()" class="btn btn-secondary">지역설정안함</button>
         </div>
         <div id="map" style="width:300px; height:300px; margin-top:10px; display:none"></div> <!-- 지도를 표시할 div -->
-
 
 
         <div th:if="${#strings.isEmpty(itemFormDTO.id)}" style="text-align: center">
@@ -333,7 +333,7 @@
     // 선택된 태그 출력, 추가
    var selectedTags = [];  // 선택된 태그의 코드를 저장하는 배열
 
-    function addTag() {
+     function addTag() {
         var tagSelect = document.getElementById('tagSelect');
         var selectedOption = tagSelect.options[tagSelect.selectedIndex];
         // 선택된 옵션을 확인하고 배열에 없으면 추가
@@ -341,8 +341,12 @@
             selectedTags.push(selectedOption.value); // 배열에 태그 코드 추가
             updateTagsDisplay();  // 화면에 선택된 태그들을 업데이트
             tagSelect.selectedIndex = 0;  // 셀렉트 박스를 초기화
+
+            str = '<input type="hidden" name="tagSelectList" value="'+ selectedOption.value +'"/>';
+            $('#RegistForm').append(str);
         }
     }
+
 
     function updateTagsDisplay() {
         var displayText = selectedTags.map(code => {

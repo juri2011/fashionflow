@@ -3,22 +3,26 @@ package com.fashionflow.controller;
 import com.fashionflow.constant.ItemTagName;
 import com.fashionflow.dto.CategoryDTO;
 import com.fashionflow.dto.ItemFormDTO;
+import com.fashionflow.entity.Item;
+import com.fashionflow.repository.ItemRepository;
 import com.fashionflow.service.CategoryService;
 import com.fashionflow.service.ItemService;
+import com.fashionflow.service.ReviewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -27,9 +31,10 @@ public class ShopController {
 
     private final ItemService itemService;
 
+    private final ItemRepository itemRepository;
+
     private final CategoryService categoryService;
 
-    //private final ReviewService reviewService;
 
 
     @GetMapping("/members/item/new")
@@ -59,21 +64,37 @@ public class ShopController {
     @PostMapping("/members/item/new")
     public String saveItem(@Valid ItemFormDTO itemFormDTO, BindingResult bindingResult,
                            @RequestParam("itemImgFile") List<MultipartFile> itemImgFileList,
-                           @RequestParam("tagSelect") String tagSelect, // 태그 선택 정보 추가
+                           @RequestParam("tagSelectList") List<String> tagSelectList, // 태그 선택 정보 추가
                            Principal principal, Model model) {
+
+        tagSelectList.forEach(tag -> System.out.println("========================="+tag));
+
         if (bindingResult.hasErrors()) {
             return "/item/itemForm";  // 입력 폼으로 리턴
         }
 
         try {
             String email = principal.getName(); // 사용자 이메일 가져오기
-            itemService.saveItem(itemFormDTO, itemImgFileList, tagSelect, email); // 태그 정보도 함께 저장
+            itemService.saveItem(itemFormDTO, itemImgFileList, tagSelectList, email); // 태그 정보도 함께 저장
             return "redirect:/";
         } catch (Exception e) {
             model.addAttribute("errorMessage", "상품 등록 실패");
             return "/item/itemForm";
         }
     }
+
+
+
+    @GetMapping("/myshop")
+    public String showMyShop(@AuthenticationPrincipal User user, Model model) {
+        String userEmail = user.getUsername(); // 현재 로그인한 사용자의 이메일을 가져옴
+        List<ItemFormDTO> items = itemService.getItemsWithImagesByUserEmail(userEmail);
+        model.addAttribute("items", items);
+        return "myshop"; // HTML 파일 이름과 일치
+    }
+
+
+
 
 
 }

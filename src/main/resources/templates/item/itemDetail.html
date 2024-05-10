@@ -293,9 +293,16 @@
 
 <h2>판매 상품 이미지</h2>
 <!-- 판매중인 상품 이미지 -->
-<div th:each="itemImg, status: ${itemFormDTO.itemImgDTOList}">
-    <img th:src="'/images/'+${itemImg.imgName}">
+<div th:if="${not #lists.isEmpty(itemFormDTO.itemImgDTOList)}">
+    <div th:each="itemImg, status: ${itemFormDTO.itemImgDTOList}">
+        <img th:src="'/images/' + ${itemImg.imgName}">
+    </div>
 </div>
+
+<div th:if="${#lists.isEmpty(itemFormDTO.itemImgDTOList)}">
+    <img src="/img/default.PNG" alt="대체사진">
+</div>
+
 
 <hr>
 
@@ -332,7 +339,8 @@
 <h2>판매중인 다른 상품</h2>
 사용자가 판매중인 다른 상품
 <div th:each="otherItem, status: ${shopMember.itemFormDTOList}">
-    <img th:src="'/images/'+${otherItem.itemRepImgDTO.imgName}" alt="사진">
+    <img th:if="${otherItem.itemRepImgDTO} != null" th:src="'/images/'+${otherItem.itemRepImgDTO.imgName}" alt="사진">
+    <img th:if="${otherItem.itemRepImgDTO} == null" src="/img/default.PNG" alt="대체사진">
     <p th:text="${otherItem.itemName}"></p>
     <p th:text="${otherItem.price}"></p>
     <p th:text="${#temporals.format(otherItem.regdate, 'yyyy-MM-dd')}"></p>

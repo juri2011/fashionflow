@@ -72,25 +72,25 @@ public class RoomController {
                              @RequestParam("shopMemberEmail")
                              String shopMemberEmail,
                              RedirectAttributes rttr){
-
-        /* 상품, 판매자, 구매자 - 이미 있는지 확인 */
-
-        ItemFormDTO item = itemService.getItemDetail(itemId);
-        String currentMember = null;
-        try {
-            currentMember = memberService.currentMemberEmail();
-        }catch(Exception e){
-            log.info("현재 사용자 정보를 불러오는 중에 에러가 발생했습니다. : "+e.getMessage());
-            return "redirect:/";
-
-        }
         try{
+            // 상품 정보
+            ItemFormDTO item = itemService.getItemDetail(itemId);
+            // 구매자 정보
+            String currentMember = memberService.currentMemberEmail();
             MemberFormDTO buyer = memberService.getMemberFormDTOByEmail(currentMember);
+            // 판매자 정보
             MemberFormDTO seller = memberService.getMemberFormDTOByEmail(shopMemberEmail);
 
+            // 자신이 등록한 상품이면
             if(buyer.getEmail().equals(seller.getEmail())){
                 log.info("판매자 정보가 구매자 정보와 일치합니다.");
                 return "redirect:/";
+            }
+
+            //이미 있는 채팅방인지 확인
+            if(chatService.checkDuplicateRoom(item, buyer, seller)){
+                log.info("이미 존재하는 채팅방");
+                return "redirect:/chat/rooms";
             }
 
             //상품 이름으로 채팅방 개설
@@ -104,7 +104,7 @@ public class RoomController {
             return "redirect:/chat/rooms";
 
         }catch(EntityNotFoundException e){
-            log.info("사용자 정보를 불러오는 중에 에러가 발생했습니다. : "+e.getMessage());
+            log.info("정보를 불러오는 중에 에러가 발생했습니다. : "+e.getMessage());
             return "redirect:/";
 
         }catch(Exception e){

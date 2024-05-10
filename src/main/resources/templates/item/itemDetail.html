@@ -92,7 +92,13 @@
             e.preventDefault();
 
             const currentMemberEmail = $('#currentMemberEmail').val();
+            console.log(currentMemberEmail);
             const shopMemberEmail = $('#shopMemberEmail').val();
+
+            if(currentMemberEmail === 'anonymousUser' || !currentMemberEmail){
+                alert('로그인이 필요합니다.');
+                location.href = "/members/login";
+            }
 
             if(currentMemberEmail === shopMemberEmail){
                 alert('구매자 정보가 판매자 정보와 일치합니다.');

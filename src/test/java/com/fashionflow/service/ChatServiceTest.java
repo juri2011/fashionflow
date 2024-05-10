@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -47,5 +48,21 @@ class ChatServiceTest {
         String uuid = "44a48077-5719-4563-88b8-c80828e54f00";
         List<ChatMessageDTO> chatHistory = getChatHistory(uuid);
         chatHistory.forEach(chat -> System.out.println("================" + chat));
+    }
+
+    @Test
+    public void checkDuplicateRoom(){
+        Long itemId = 2L;
+        String buyerEmail = "1@1";
+        String sellerEmail = "ojl98@naver.com";
+
+        Optional<ChatRoom> chatRoom =
+                chatRoomRepository.findByItemIdAndBuyerEmailAndSellerEmail(itemId, buyerEmail, sellerEmail);
+
+        if(chatRoom.isPresent()){
+            System.out.println("채팅방 존재함 : " + chatRoom);
+        }else{
+            System.out.println("채팅방 없음 : " + chatRoom);
+        }
     }
 }

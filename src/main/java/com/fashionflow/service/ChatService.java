@@ -1,6 +1,9 @@
 package com.fashionflow.service;
 
+import com.fashionflow.dto.ItemFormDTO;
+import com.fashionflow.dto.MemberFormDTO;
 import com.fashionflow.dto.chat.ChatMessageDTO;
+import com.fashionflow.dto.chat.ChatRoomDTO;
 import com.fashionflow.entity.ChatMessage;
 import com.fashionflow.entity.ChatRoom;
 import com.fashionflow.repository.ChatMessageRepository;
@@ -11,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -33,5 +37,18 @@ public class ChatService {
         }
 
         return chatHistory;
+    }
+
+    public boolean checkDuplicateRoom(ItemFormDTO itemFormDTO,
+                                      MemberFormDTO buyer,
+                                      MemberFormDTO seller){
+
+        Long itemId = itemFormDTO.getId();
+        String buyerEmail = buyer.getEmail();
+        String sellerEmail = seller.getEmail();
+
+        Optional<ChatRoom> chatRoom =
+                chatRoomRepository.findByItemIdAndBuyerEmailAndSellerEmail(itemId, buyerEmail, sellerEmail);
+        return chatRoom.isPresent();
     }
 }

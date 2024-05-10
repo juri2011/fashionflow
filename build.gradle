@@ -70,6 +70,10 @@ dependencies {
 
 	//websocket(채팅)
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+	// 잭슨 LocalDateTime 변환
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
 }
 
 tasks.named('test') {

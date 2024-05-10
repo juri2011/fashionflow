@@ -5,32 +5,55 @@
       layout:decorate="~{layouts/layout1}">
 
 <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+
+        let currentPage = 8; // 8개 다음 페이지부터 로드
+        let isLoading = false;
+        let isLastPage = false;
+        const bufferHeight = 300; // 스크롤 끝에서 300px 전에 다음 페이지 로드
+
+        function loadMoreProducts() {
+            if(isLoading || isLastPage) return;
+
+            isLoading = true;
+
+            // 요청 지연 추가
+            setTimeout(() => {
+                fetch(`/list/more?page=${currentPage}`)
+                    .then(response => response.json())
+                    .then(products => {
+                        if(products.length === 0) {
+                            isLastPage = true;
+                        }
+                        products.forEach(product => {
+                            const productElement = document.createElement("div");
+                            productElement.classList.add("product-item");
+                            productElement.innerHTML = `
+                                <p>${product.id}</p>
+                                <!-- 여기에 product의 다른 속성을 기반으로 한 HTML 추가 -->
+                            `;
+                            document.querySelector('.product-list').appendChild(productElement);
+                        });
+                        currentPage++; // 다음 페이지로
+                        isLoading = false;
+                    })
+                    .catch(error => {
+                        console.error('Error loading more products:', error);
+                        isLoading = false;
+                    });
+            }, 200); // 200ms 지연
+        }
+
+        window.onscroll = function() {
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - bufferHeight) {
+                loadMoreProducts();
+            }
+        };
+    </script>
+
     <style>
-        .header-container {
-            display: flex;
-            justify-content: space-between; /* 검색 폼과 메뉴를 양쪽 끝으로 분배 */
-            align-items: center; /* 세로 중앙 정렬 */
-            padding: 20px; /* 여백 추가 */
-        }
-        .search-form {
-            display: flex;
-            margin-right: 10px; /* 오른쪽으로의 여백을 줄임 */
-        }
-        .search-input {
-            width: 500px; /* input의 가로 크기 조절 */
-        }
-        .search-button {
-            margin-left: 5px; /* 버튼과 input 사이의 간격 */
-        }
-        .menu-links {
-            margin-left: 10px; /* 메뉴 사이의 간격을 줄임 */
-        }
-        .menu-links a {
-            text-decoration: none;
-            color: black; /* 링크 색상 설정 */
-            margin-left: 15px; /* 링크들 사이의 간격 */
-            padding: 8px; /* 클릭 영역 확장 */
-        }
+
 
         .sidebar {
             position: fixed;
@@ -51,6 +74,7 @@
 
         .product-item {
             width: calc(25% - 40px); /* 한 줄에 4개씩, 양쪽 여백을 고려하여 조정 */
+            height: 400px;
             margin: 10px; /* 상품 간 여백 */
             border: 1px solid #ddd; /* 사각형 박스 형태의 보더 추가 */
             box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* 상품에 그림자 효과 추가 */
@@ -67,18 +91,7 @@
 
 <body>
 <div layout:fragment="content">
-    <div class="header-container">
-        <h1>상품 리스트 페이지</h1>
-        <form class="search-form" role="search">
-            <input class="form-control me-2 search-input" type="search" placeholder="Search" aria-label="Search">
-            <button class="btn btn-outline-success search-button" type="submit">검색</button>
-        </form>
-        <div class="menu-links">
-            <a href="/sell">판매하기</a>
-            <a href="/myshop">내상점</a>
-            <a href="/flowtalk">플로우톡</a>
-        </div>
-    </div>
+
     <div class="sidebar">
         <h3>카테고리</h3>
 

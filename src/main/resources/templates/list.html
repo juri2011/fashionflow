@@ -31,6 +31,36 @@
             margin-left: 15px; /* 링크들 사이의 간격 */
             padding: 8px; /* 클릭 영역 확장 */
         }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 30%;
+            width: 200px;
+            height: 100px;
+            background-color: #f0f0f0;
+            padding: 20px;
+        }
+
+        .product-list {
+            margin-left: 220px; /* 사이드바 너비 + 여백 */
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+
+        .product-item {
+            width: calc(25% - 40px); /* 한 줄에 4개씩, 양쪽 여백을 고려하여 조정 */
+            margin: 10px; /* 상품 간 여백 */
+            border: 1px solid #ddd; /* 사각형 박스 형태의 보더 추가 */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* 상품에 그림자 효과 추가 */
+            background-color: #f9f9f9;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column; /* 상품 내용을 세로로 정렬 */
+            align-items: center; /* 상품 내용을 가운데 정렬 */
+        }
     </style>
 </head>
 
@@ -38,7 +68,7 @@
 <body>
 <div layout:fragment="content">
     <div class="header-container">
-        <h1>메인페이지입니다.</h1>
+        <h1>상품 리스트 페이지</h1>
         <form class="search-form" role="search">
             <input class="form-control me-2 search-input" type="search" placeholder="Search" aria-label="Search">
             <button class="btn btn-outline-success search-button" type="submit">검색</button>
@@ -49,8 +79,19 @@
             <a href="/flowtalk">플로우톡</a>
         </div>
     </div>
+    <div class="sidebar">
+        <h3>카테고리</h3>
 
+    </div>
+    <div class="product-list">
+        <!-- 각 상품을 나타내는 HTML 요소 -->
+        <div th:each="product : ${productLists}" class="product-item">
+            <!-- 상품 내용 -->
+            <p th:text="${product.id}"></p>
+        </div>
+    </div>
 </div>
+
 </body>
 
 </html>

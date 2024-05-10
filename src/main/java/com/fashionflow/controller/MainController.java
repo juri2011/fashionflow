@@ -25,4 +25,5 @@ public class MainController {
     public String myShop() {
         return "myshop";
     }
+
 }

@@ -55,6 +55,26 @@ public class RoomController {
         return "chat/rooms";
     }
 
+    //내가 속해있는 채팅방만
+    @GetMapping("/flowtalk")
+    public String myRoom(Model model){
+
+        log.info("# All Chat Rooms");
+        List<ChatRoomDTO> rooms = new ArrayList<>();
+        String currentMemberEmail = memberService.currentMemberEmail();
+        for(ChatRoom chatRoom : chatRoomRepository.findAllByOrderByIdDesc()){
+            if(chatRoom.getSellerEmail() == null || chatRoom.getBuyerEmail()==null) continue;
+            //사용자가 속해있는 채팅방만 표시
+            if(chatRoom.getSellerEmail().equals(currentMemberEmail) ||
+               chatRoom.getBuyerEmail().equals(currentMemberEmail)){
+                rooms.add(ChatRoomDTO.entityToDto(chatRoom));
+            }
+        }
+        model.addAttribute("list", rooms);
+
+        return "chat/rooms";
+    }
+
     //채팅방 개설
     /*@PostMapping("/room")
     public String create(@RequestParam("name") String name, RedirectAttributes rttr){
@@ -114,7 +134,7 @@ public class RoomController {
             return "redirect:/";
         }
     }
-
+    
     //채팅방 조회
     @GetMapping("/room")
     public String getRoom(@RequestParam("roomId") String roomId, Model model){

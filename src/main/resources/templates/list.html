@@ -85,6 +85,11 @@
             flex-direction: column; /* 상품 내용을 세로로 정렬 */
             align-items: center; /* 상품 내용을 가운데 정렬 */
         }
+
+        .product-image {
+            max-width: 100%; /* 이미지의 최대 너비를 상품 항목의 너비에 맞춤 */
+            height: auto; /* 이미지의 높이를 자동으로 조정하여 비율 유지 */
+        }
     </style>
 </head>
 
@@ -100,7 +105,10 @@
         <!-- 각 상품을 나타내는 HTML 요소 -->
         <div th:each="product : ${productLists}" class="product-item">
             <!-- 상품 내용 -->
-            <p th:text="${product.id}"></p>
+            <img th:if="${product.imgName}" th:src="'/images/'+${product.imgName}" alt="Product Image" class="product-image">
+            <span th:if="${product.itemName}" th:text="'상품명: ' + ${product.itemName}" ></span>
+            <span th:if="${product.price}" th:text="'가격: ' + ${product .price}" ></span>
+
         </div>
     </div>
 </div>

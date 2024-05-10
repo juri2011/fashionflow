@@ -1,6 +1,8 @@
 package com.fashionflow.dto.chat;
 
+import com.fashionflow.dto.ItemFormDTO;
 import com.fashionflow.dto.ItemImgDTO;
+import com.fashionflow.dto.MemberFormDTO;
 import com.fashionflow.entity.ChatRoom;
 import com.fashionflow.entity.ItemImg;
 import lombok.*;
@@ -20,14 +22,21 @@ import java.util.UUID;
 public class ChatRoomDTO {
     private String roomId;
     private String name;
+
+    private ItemFormDTO item;
+    private MemberFormDTO seller;
+    private MemberFormDTO buyer;
+
     private Set<WebSocketSession> sessions = new HashSet<>();
 
-    public static ChatRoomDTO create(String name){
-        ChatRoomDTO room = new ChatRoomDTO();
-
-        room.roomId = UUID.randomUUID().toString();
-        room.name = name;
-        return room;
+    public static ChatRoomDTO create(String name, ItemFormDTO item, MemberFormDTO buyer, MemberFormDTO seller){
+        return ChatRoomDTO.builder()
+                .name(name)
+                .item(item)
+                .buyer(buyer)
+                .seller(seller)
+                .roomId(UUID.randomUUID().toString())
+                .build();
     }
 
     public static ChatRoomDTO entityToDto(ChatRoom chatRoom){

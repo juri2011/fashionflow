@@ -255,4 +255,23 @@ public class MemberService implements UserDetailsService {
         return memberDetailDTO;
     }
 
+    public MemberFormDTO getMemberFormDTOByEmail(String email){
+
+        Member member = memberRepository.findByEmail(email);
+        if(member == null){
+            throw new EntityNotFoundException("존재하지 않는 사용자입니다. : " + email);
+        }
+
+        MemberFormDTO memberFormDTO = MemberFormDTO.entityToDTOSafe(member);
+
+        /* 프로필 사진 */
+        ProfileImage profileImage = profileImageRepository.findByMemberId(member.getId());
+        /* 프로필 사진이 있으면 DTO에 추가 */
+        if(profileImage != null){
+            memberFormDTO.setProfileImageDTO(ProfileImageDTO.entityToDTO(profileImage));
+        }
+
+        return memberFormDTO;
+    }
+
 }

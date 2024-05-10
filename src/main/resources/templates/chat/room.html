@@ -6,6 +6,25 @@
 <div layout:fragment="content">
 
     <div class="container">
+        <div>
+            <!-- 상품 이미지 불러오기 -->
+            <div th:if="${room.item} != null">
+                <span th:text="${room.item.itemName}">
+                </span>
+                <img style="width: 100px; height:100px;"
+                     th:src="'/images/'+${room.item.itemRepImgDTO.imgName}">
+            </div>
+            <div th:unless="${room.item} != null">
+                <span>존재하지 않는 상품입니다.</span>
+                <img style="width: 100px; height:100px;"
+                     src="/img/item_not_found.png">
+            </div>
+            <!-- 판매자 정보 -->
+
+        </div>
+
+        <!-- 셋중하나가 존재하지 않으면 웹소켓, 채팅 비활성화 -->
+
         <div class="col-6">
             <h1>[[${room.name}]]</h1>
         </div>
@@ -13,7 +32,7 @@
             <div id="msgArea" class="col"></div>
             <div class="col-6">
                 <div class="input-group mb-3">
-                    <input type="text" id="msg" class="form-control">
+                    <input type="text" id="msg" class="form-control" disabled>
                     <div class="input-group-append">
                         <button class="btn btn-outline-secondary" type="button" id="button-send">전송</button>
                     </div>
@@ -30,6 +49,7 @@
 
             var roomName = '[[${room.name}]]';
             var roomId = '[[${room.roomId}]]';
+            const enabled = [[${room.enabled}]];
             var username = 'null';
 
             $.ajax({
@@ -44,7 +64,13 @@
                     //사용자 이름을 받아왔으면 채팅 기록 출력
                     loadChatHistory();
                     //채팅기록을 받아왔으면 WebSocket 연결
-                    connectToWebSocket();
+                    console.log(enabled);
+                    if(enabled === true){
+                        connectToWebSocket();
+                        $("#msg").removeAttr("disabled");
+                    }else{
+                        $("#msg").val("사용할 수 없는 채팅방입니다.");
+                    }
                 },
                 error: function(xhr, status, error) {
                     console.error("Error fetching username:", error);
@@ -100,15 +126,27 @@
 
             console.log(roomName + ", " + roomId + ", " + username);
 
-            var sockJs = new SockJS("/stomp/chat");
-            //1. SockJS를 내부에 들고있는 stomp를 내어줌
-            var stomp = Stomp.over(sockJs);
+
 
 
             function connectToWebSocket(){
+                var sockJs = new SockJS("/stomp/chat");
+                //1. SockJS를 내부에 들고있는 stomp를 내어줌
+                var stomp = Stomp.over(sockJs);
+
+
+                $("#button-send").removeClass('disabled').on("click", function(e){
+                    var msg = document.getElementById("msg");
+
+                    console.log(username + ":" + msg.value);
+                    stomp.send('/pub/chat/message', {}, JSON.stringify({roomId: roomId, message: msg.value, writer: username}));
+                    msg.value = '';
+                });
+
                 //2. connection이 맺어지면 실행
                 stomp.connect({}, function (){
-                   console.log("STOMP Connection")
+                   console.log("STOMP Connection");
+
 
                    //4. subscribe(path, callback)으로 메세지를 받을 수 있음
                    stomp.subscribe("/sub/chat/room/" + roomId, function (chat) {
@@ -122,13 +160,6 @@
                 });
             }
 
-            $("#button-send").on("click", function(e){
-                var msg = document.getElementById("msg");
-
-                console.log(username + ":" + msg.value);
-                stomp.send('/pub/chat/message', {}, JSON.stringify({roomId: roomId, message: msg.value, writer: username}));
-                msg.value = '';
-            });
         });
     </script>
 </div>

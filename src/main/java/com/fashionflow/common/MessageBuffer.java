@@ -56,7 +56,7 @@ public class MessageBuffer {
 
     @Scheduled(fixedRate = FLUSH_INTERVAL_MS)
     public synchronized void flushBufferAtInterval() {
-        System.out.println("========================flushBufferAtInterval 실행");
+        //System.out.println("========================flushBufferAtInterval 실행");
         if (!buffer.isEmpty()) {
             flushBuffer();
         }

@@ -27,6 +27,8 @@ public class ChatRoomDTO {
     private MemberFormDTO seller;
     private MemberFormDTO buyer;
 
+    private boolean enabled;
+
     private Set<WebSocketSession> sessions = new HashSet<>();
 
     public static ChatRoomDTO create(String name, ItemFormDTO item, MemberFormDTO buyer, MemberFormDTO seller){

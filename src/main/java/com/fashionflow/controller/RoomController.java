@@ -122,7 +122,44 @@ public class RoomController {
         ChatRoom chatRoom = chatRoomRepository.findByUuid(roomId).orElseThrow(() ->
                 new EntityNotFoundException("방이 존재하지 않습니다. roomId = " + roomId));
 
+        /* entity -> DTO 변환 */
         ChatRoomDTO chatRoomDTO = ChatRoomDTO.entityToDto(chatRoom);
+
+        /* chatRoomDTO 활성화 */
+        chatRoomDTO.setEnabled(true);
+
+        /* 상품 정보 */
+        ItemFormDTO item;
+        MemberFormDTO seller;
+        MemberFormDTO buyer;
+
+        /* 상품 정보 */
+        try{
+            item = itemService.getItemDetail(chatRoom.getItemId());
+        }catch(EntityNotFoundException e){
+            item = null;
+            chatRoomDTO.setEnabled(false);
+        }
+
+        /* 판매자 정보  */
+        try{
+            seller = memberService.getMemberFormDTOByEmail(chatRoom.getSellerEmail());
+        }catch(EntityNotFoundException e){
+            seller = null;
+            chatRoomDTO.setEnabled(false);
+        }
+
+        /* 구매자 정보 */
+        try{
+            buyer = memberService.getMemberFormDTOByEmail(chatRoom.getBuyerEmail());
+        }catch(EntityNotFoundException e){
+            buyer = null;
+            chatRoomDTO.setEnabled(false);
+        }
+
+        chatRoomDTO.setItem(item);
+        chatRoomDTO.setBuyer(buyer);
+        chatRoomDTO.setSeller(seller);
 
         model.addAttribute("room", chatRoomDTO);
     }

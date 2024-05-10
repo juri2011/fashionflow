@@ -24,6 +24,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -115,7 +117,7 @@ public class RoomController {
 
     //채팅방 조회
     @GetMapping("/room")
-    public void getRoom(@RequestParam("roomId") String roomId, Model model){
+    public String getRoom(@RequestParam("roomId") String roomId, Model model){
 
         log.info("# get Chat Room, roomID : " + roomId);
 
@@ -157,28 +159,36 @@ public class RoomController {
             chatRoomDTO.setEnabled(false);
         }
 
+        /* 현재 접속한 사용자가 채팅방에 들어갈 수 있는지 확인 */
+        String currentMember = memberService.currentMemberEmail();
+        if(!currentMember.equals(chatRoom.getBuyerEmail()) &&
+                !currentMember.equals(chatRoom.getSellerEmail())){
+            log.info("허가되지 않은 사용자입니다.");
+            return "redirect:/";
+        }
+
         chatRoomDTO.setItem(item);
         chatRoomDTO.setBuyer(buyer);
         chatRoomDTO.setSeller(seller);
 
         model.addAttribute("room", chatRoomDTO);
+        model.addAttribute("currentMember", currentMember);
+
+        return "/chat/room";
     }
-
-
 
     @GetMapping("/getUsername")
     public @ResponseBody ResponseEntity getUsername(){
         try{
             Member member = memberService.findMemberByCurrentEmail();
             String username = member.getNickname();
+            String userEmail = member.getEmail();
             log.info(username);
             return new ResponseEntity<String>(username, HttpStatus.OK);
         }catch(NullPointerException e){
             return new ResponseEntity<String>("로그인 후 이용해주세요", HttpStatus.UNAUTHORIZED);
         }
     }
-
-
 
     /* 채팅 내역 불러오기 */
     @GetMapping("/getChatHistory/{uuid}")
@@ -188,10 +198,42 @@ public class RoomController {
             List<ChatMessageDTO> chatHistory = chatService.getChatHistory(uuid);
             return new ResponseEntity<List<ChatMessageDTO>>(chatHistory, HttpStatus.OK);
         }catch (EntityNotFoundException e){
-            return new ResponseEntity<String>("채팅방이 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<String>("채팅방이 존재하지 않습니다.", HttpStatus.NOT_FOUND);
         }catch (Exception e){
             return new ResponseEntity<String>("대화내용을 불러오는데 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
 
+    @PostMapping("/userValidate")
+    public @ResponseBody ResponseEntity userValidate(@RequestBody Map<String, String> requestData){
+        System.out.println("===========================validate 진입");
+
+        String roomId = requestData.get("roomId");
+        System.out.println(roomId);
+        String currentMemberEmail;
+        //현재 사용자 이메일
+        
+        /* 사용자가 로그인하지 않았을 시 예외처리 */
+        try{
+            currentMemberEmail = memberService.currentMemberEmail();
+            if(currentMemberEmail == null){
+                return new ResponseEntity<String>("로그인 후 이용해주세요", HttpStatus.UNAUTHORIZED);
+            }
+        }catch(Exception e){
+            return new ResponseEntity<String>("로그인 후 이용해주세요", HttpStatus.UNAUTHORIZED);
+        }
+
+        Optional<ChatRoom> chatRoom = chatRoomRepository.findByUuid(roomId);
+        System.out.println(chatRoom);
+        if(chatRoom.isEmpty()){
+            return new ResponseEntity<String>("채팅방을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
+        }
+
+        if(!currentMemberEmail.equals(chatRoom.get().getBuyerEmail()) &&
+                !currentMemberEmail.equals(chatRoom.get().getSellerEmail())){
+            return new ResponseEntity<String>("허가되지 않은 사용자입니다.", HttpStatus.UNAUTHORIZED);
+        }
+
+        return new ResponseEntity<String>("유효한 사용자 확인", HttpStatus.OK);
     }
 }

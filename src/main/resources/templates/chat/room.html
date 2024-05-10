@@ -13,6 +13,11 @@
                 </span>
                 <img style="width: 100px; height:100px;"
                      th:src="'/images/'+${room.item.itemRepImgDTO.imgName}">
+                <div th:switch="${#strings.toString(room.item.sellStatus)}">
+                    <span th:case="SELLING">판매중</span>
+                    <span th:case="SUSPENDED">판매중단</span>
+                    <span th:case="SOLD_OUT">판매완료</span>
+                </div>
             </div>
             <div th:unless="${room.item} != null">
                 <span>존재하지 않는 상품입니다.</span>
@@ -20,7 +25,24 @@
                      src="/img/item_not_found.png">
             </div>
             <!-- 판매자 정보 -->
+            <div th:if="${room.seller} != null">
+                <span th:text="${room.seller.nickname}">
+                </span>
+                <img style="width: 100px; height:100px;"
+                     th:if="${room.seller.profileImageDTO}==null" src="/img/profile_default.png">
+                <!-- 테스트를 위해 임시 경로를 지정했지만 파일업로드 기능이 구현되면 변경될 수 있습니다.
+                view에서 null인지 조건을 검사하는 것보다 회원가입할 때 사용자가 프로필 사진을 따로 설정하지 않았으면
+                 기본 사진의 경로와 이미지 이름으로 지정하는 것이 더 깔끔해 보임 -->
 
+                <img style="width: 100px; height:100px;"
+                     th:if="${room.seller.profileImageDTO}!=null"
+                     th:src="${room.seller.profileImageDTO.uploadPath}+${room.seller.profileImageDTO.filename}">
+            </div>
+            <div th:unless="${room.seller} != null">
+                <span>존재하지 않는 회원입니다.</span>
+                <img style="width: 100px; height:100px;"
+                     src="/img/member_not_found.png">
+            </div>
         </div>
 
         <!-- 셋중하나가 존재하지 않으면 웹소켓, 채팅 비활성화 -->
@@ -51,6 +73,8 @@
             var roomId = '[[${room.roomId}]]';
             const enabled = [[${room.enabled}]];
             var username = 'null';
+            const token = $("meta[name='_csrf']").attr("content");
+            const header = $("meta[name='_csrf_header']").attr("content");
 
             $.ajax({
                 url: "/chat/getUsername", // 사용자 이름을 반환하는 엔드포인트
@@ -59,8 +83,10 @@
                     //$("#username").text(response.username); // 받은 사용자 이름을 페이지에 표시
 
                     username = response;
-                    console.log(roomName + ", " + roomId + ", " + response.username);
+                    console.log(roomName + ", " + roomId + ", " + response);
 
+                    //사용자 이름을 받아왔으면 유효한 사용자인지 확인
+                    userValidate();
                     //사용자 이름을 받아왔으면 채팅 기록 출력
                     loadChatHistory();
                     //채팅기록을 받아왔으면 WebSocket 연결
@@ -78,6 +104,31 @@
                     location.href = '/';
                 }
             });
+
+            function userValidate(){
+                const paramData={
+                    roomId: roomId
+                };
+                const param = JSON.stringify(paramData);
+                $.ajax({
+                    url: "/chat/userValidate", // 사용자 이름을 반환하는 엔드포인트
+                    method: "POST",
+                    contentType: "application/json",
+                    data: param,
+                    beforeSend: function (xhr) {
+                        /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                        xhr.setRequestHeader(header, token);
+                    },
+                    success: function(response) {
+                        console.log(response);
+                    },
+                    error: function(xhr, status, error) {
+                        console.log("validate fail");
+                        alert(xhr.responseText);
+                        //location.href = '/';
+                    }
+                });
+            }
 
             function loadChatHistory(){
 
@@ -156,7 +207,7 @@
                    });
 
                    //3. send(path, header, message)로 메세지를 보낼 수 있음
-                   stomp.send('/pub/chat/enter', {}, JSON.stringify({roomId: roomId, writer: username}))
+                   //stomp.send('/pub/chat/enter', {}, JSON.stringify({roomId: roomId, writer: username}))
                 });
             }
 

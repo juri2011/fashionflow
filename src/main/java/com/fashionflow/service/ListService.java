@@ -37,7 +37,7 @@ public class ListService {
             ItemImg img = itemImgRepository.findByItemIdAndRepimgYn(listingItem.getId(), "Y")
                     .orElse(null); // 대표 이미지가 없는 경우를 대비한 처리
 
-            // 대표 이미지가 없는 경우를 대비해 imgName을 조건부로 설정합니다.
+            // 임시 기본 이미지
             String imgName = img != null ? img.getImgName() : "defaultImg.png";
 
 

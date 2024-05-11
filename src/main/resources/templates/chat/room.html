@@ -4,8 +4,7 @@
       layout:decorate="~{layouts/layout1}">
 
 <div layout:fragment="content">
-
-    <div class="container">
+    <div class="container" style="min-width: 500px;">
         <div>
             <!-- 상품 이미지 불러오기 -->
             <div th:if="${room.item} != null">
@@ -51,8 +50,8 @@
             <h1>[[${room.name}]]</h1>
         </div>
         <div>
-            <div id="msgArea" class="col"></div>
-            <div class="col-6">
+            <div id="msgArea" class="col" style="height: 500px; overflow-y: scroll;"></div>
+            <div>
                 <div class="input-group mb-3">
                     <input type="text" id="msg" class="form-control" disabled>
                     <div class="input-group-append">
@@ -141,7 +140,7 @@
                             showChat(chat);
                         });
 
-
+                        $('#msgArea').scrollTop($('#msgArea')[0].scrollHeight);
                     },
                     error: function(xhr, status, error) {
                         console.error("대화내용을 불러오는데 실패했습니다.", error);
@@ -158,8 +157,8 @@
                 const msgDateFormat = content.msgDateFormat;
 
                 if(writer === username){
-                str = "<div class='col-6'>";
-                str += "<div class='alert alert-secondary message-mine'>";
+                str = "<div class='col-6' style='margin-left:auto;'>";
+                str += "<div class='alert alert-warning  message-mine'>";
                 str += "<b>" + writer + " : " + message + "</b>";
                 str += "<div>"+ msgDateFormat +"</div>";
                 str += "</div></div>";
@@ -167,7 +166,7 @@
                 }
                 else{
                 str = "<div class='col-6'>";
-                str += "<div class='alert alert-warning message-others'>";
+                str += "<div class='alert alert-secondary message-others'>";
                 str += "<b>" + writer + " : " + message + "</b>";
                 str += "<div>"+ msgDateFormat +"</div>";
                 str += "</div></div>";

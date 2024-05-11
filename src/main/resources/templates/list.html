@@ -36,11 +36,19 @@
                                 const productElement = document.createElement("div");
                                 productElement.classList.add("product-item");
                                 productElement.innerHTML = `
-                                    <img src="/images/${product.imgName}" alt="Product Image" class="product-image">
-                                    <span>상품명: ${product.itemName}</span>
+                                    <img src="/images/${product.imgName}" alt="Product Image" class="product-image clickable">
+                                    <span>상품명: <span class="product-name clickable">${product.itemName}</span></span>
                                     <span>가격: ${formatPrice(product.price)}</span>
                                 `;
                                 document.querySelector('.product-list').appendChild(productElement);
+
+                                // 이미지와 상품명에 클릭 이벤트 리스너 추가
+                                const clickableItems = productElement.querySelectorAll('.clickable');
+                                clickableItems.forEach(item => {
+                                    item.addEventListener('click', () => {
+                                        window.location.href = `/item/${product.id}`;
+                                    });
+                                });
                             });
                             currentPage++;
                             isLoading = false;
@@ -105,12 +113,16 @@
             box-sizing: border-box;
             display: flex;
             flex-direction: column; /* 상품 내용을 세로로 정렬 */
-            align-items: center; /* 상품 내용을 가운데 정렬 */
+            align-items: center;  
         }
 
         .product-image {
             max-width: 100%;
             height: auto;
+        }
+
+        .clickable {
+            cursor: pointer;
         }
     </style>
 </head>

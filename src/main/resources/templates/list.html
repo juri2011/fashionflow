@@ -7,49 +7,71 @@
 <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
+            let currentPage = 0;
+            let isLoading = false;
+            let isLastPage = false;
+            const bufferHeight = 300;
+            const initialSize = 12;
+            const scrollSize = 4;
 
-        let currentPage = 8; // 8개 다음 페이지부터 로드
-        let isLoading = false;
-        let isLastPage = false;
-        const bufferHeight = 300; // 스크롤 끝에서 300px 전에 다음 페이지 로드
-
-        function loadMoreProducts() {
-            if(isLoading || isLastPage) return;
-
-            isLoading = true;
-
-            // 요청 지연 추가
-            setTimeout(() => {
-                fetch(`/list/more?page=${currentPage}`)
-                    .then(response => response.json())
-                    .then(products => {
-                        if(products.length === 0) {
-                            isLastPage = true;
-                        }
-                        products.forEach(product => {
-                            const productElement = document.createElement("div");
-                            productElement.classList.add("product-item");
-                            productElement.innerHTML = `
-                                <p>${product.id}</p>
-                                <!-- 여기에 product의 다른 속성을 기반으로 한 HTML 추가 -->
-                            `;
-                            document.querySelector('.product-list').appendChild(productElement);
-                        });
-                        currentPage++; // 다음 페이지로
-                        isLoading = false;
-                    })
-                    .catch(error => {
-                        console.error('Error loading more products:', error);
-                        isLoading = false;
-                    });
-            }, 200); // 200ms 지연
-        }
-
-        window.onscroll = function() {
-            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - bufferHeight) {
-                loadMoreProducts();
+            // 가격 출력
+            function formatPrice(price) {
+                return price.toLocaleString();
             }
-        };
+
+            function loadMoreProducts(size, isInitialLoad = false) {
+
+                // 마지막 페이지 or 로딩중 true일시 리턴을 통한 중단
+                if(isLoading || isLastPage) return;
+                isLoading = true;
+
+                setTimeout(() => {
+                    fetch(`/list/more?page=${currentPage}&size=${size}`)
+                        .then(response => response.json())
+                        .then(products => {
+                            if(products.length === 0) {
+                                isLastPage = true;
+                            }
+                            products.forEach(product => {
+                                const productElement = document.createElement("div");
+                                productElement.classList.add("product-item");
+                                productElement.innerHTML = `
+                                    <img src="/images/${product.imgName}" alt="Product Image" class="product-image">
+                                    <span>상품명: ${product.itemName}</span>
+                                    <span>가격: ${formatPrice(product.price)}</span>
+                                `;
+                                document.querySelector('.product-list').appendChild(productElement);
+                            });
+                            currentPage++;
+                            isLoading = false;
+
+                            if(isInitialLoad) {
+                                // 초기 로딩이후 페이지 변경
+                                currentPage = Math.ceil(initialSize / scrollSize);
+                                // 초기 로딩이 완료된 후, 스크롤 이벤트 리스너 추가
+                                attachScrollListener();
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error loading more products:', error);
+                            isLoading = false;
+                        });
+                }, 100);
+            }
+
+            function attachScrollListener() {
+                window.addEventListener('scroll', function() {
+                    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - bufferHeight) {
+                        // 스크롤시 사이즈 정의
+                        loadMoreProducts(scrollSize);
+                    }
+                });
+            }
+
+            // 초기 페이지 로드
+            document.addEventListener('DOMContentLoaded', function() {
+                loadMoreProducts(initialSize, true); // 초기 상품 로딩
+            });
     </script>
 
     <style>
@@ -87,8 +109,8 @@
         }
 
         .product-image {
-            max-width: 100%; /* 이미지의 최대 너비를 상품 항목의 너비에 맞춤 */
-            height: auto; /* 이미지의 높이를 자동으로 조정하여 비율 유지 */
+            max-width: 100%;
+            height: auto;
         }
     </style>
 </head>
@@ -102,14 +124,7 @@
 
     </div>
     <div class="product-list">
-        <!-- 각 상품을 나타내는 HTML 요소 -->
-        <div th:each="product : ${productLists}" class="product-item">
-            <!-- 상품 내용 -->
-            <img th:if="${product.imgName}" th:src="'/images/'+${product.imgName}" alt="Product Image" class="product-image">
-            <span th:if="${product.itemName}" th:text="'상품명: ' + ${product.itemName}" ></span>
-            <span th:if="${product.price}" th:text="'가격: ' + ${product .price}" ></span>
 
-        </div>
     </div>
 </div>
 

@@ -33,31 +33,18 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ListController {
 
-    private final ItemRepository itemRepository;
     private final ListService listService;
 
-
-    /*@GetMapping("/list")
-    public String listPage(Model model){
-
-        Pageable firstPageWithEightItems = PageRequest.of(0, 8); // 첫 페이지, 항목 8개
-        model.addAttribute("productLists", goods(firstPageWithEightItems).getContent());
-
-        return "/list";
-    }*/
     @GetMapping("/list")
-    public String listPage(Model model, @PageableDefault(size = 8) Pageable pageable) {
-        Page<ListingItemDTO> goodsPage = listService.listingItemWithImg(pageable);
-        model.addAttribute("productLists", goodsPage.getContent());
+    public String listPage() {
         return "/list";
     }
-
     @GetMapping("/list/more")
     @ResponseBody
-    public ResponseEntity<List<Item>> listMoreProducts(@RequestParam("page") int currentPage){
-        Pageable pageable = PageRequest.of(currentPage, 1); // 페이지 번호와 페이지당 항목 수
-        List<Item> items = itemRepository.findAll(pageable).getContent();
+    public ResponseEntity<List<ListingItemDTO>> listMoreProducts(@RequestParam("page") int currentPage, @RequestParam("size") int size){
+        Pageable pageable = PageRequest.of(currentPage, size); // 페이지 번호와 페이지당 항목 수 설정
+        Page<ListingItemDTO> goodsPage = listService.listingItemWithImg(pageable);
 
-        return ResponseEntity.ok(items); // ResponseEntity를 통해 상품 목록을 JSON 형식으로 반환
+        return ResponseEntity.ok(goodsPage.getContent()); // ResponseEntity를 통해 ListingItemDTO 목록을 JSON 형식으로 반환
     }
 }

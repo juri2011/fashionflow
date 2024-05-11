@@ -51,7 +51,13 @@
 
 
             <input type="hidden" name="id" th:value="${purchase.id}" />
-            <img th:if="${purchase.imgName}" th:src="'/images/'+${purchase.imgName}" alt="Product Image" class="product-image">
+            <img th:if="${purchase.imgName != null}" th:src="@{'/images/' + ${purchase.imgName}}" alt="Product Image" class="product-image">
+            <img th:unless="${purchase.imgName != null}" src="/img/default.PNG" alt="대체 이미지" class="product-image">
+
+
+
+
+
             <span th:if="${purchase.itemName}" th:text="'상품명: ' + ${purchase.itemName}" ></span>
             <span th:if="${purchase.price}" th:text="'가격: ' + ${purchase.price}" ></span>
             <span th:if="${purchase.buyDate}" th:text="'거래일: ' + ${#temporals.format(purchase.buyDate, 'yyyy-MM-dd')}" ></span>

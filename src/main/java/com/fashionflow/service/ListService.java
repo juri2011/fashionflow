@@ -47,7 +47,6 @@ public class ListService {
                     .itemName(listingItem.getItemName())
                     .price(listingItem.getPrice())
                     .regdate(listingItem.getRegdate())
-                    .category(listingItem.getCategory())
                     .itemStatus(listingItem.getItemStatus())
                     .sellStatus(listingItem.getSellStatus())
                     .imgName(imgName)

@@ -1,5 +1,6 @@
 package com.fashionflow.dto.chat;
 
+import com.fashionflow.constant.ReadStatus;
 import com.fashionflow.entity.ChatMessage;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -26,6 +27,7 @@ public class ChatMessageDTO {
     @JsonIgnore
     private LocalDateTime msgDate;
     private String msgDateFormat;
+    private ReadStatus readStatus;
 
     public static ChatMessageDTO entityToDTO(ChatMessage chatMessage){
         return ChatMessageDTO.builder()
@@ -34,6 +36,7 @@ public class ChatMessageDTO {
                 .message(chatMessage.getMessage())
                 .msgDate(chatMessage.getSendDate())
                 .msgDateFormat(chatMessage.getSendDate().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")))
+                .readStatus(chatMessage.getReadStatus())
                 .build();
     }
 }

@@ -1,9 +1,11 @@
 package com.fashionflow.entity;
 
+import com.fashionflow.constant.ReadStatus;
 import com.fashionflow.dto.chat.ChatMessageDTO;
 import com.fashionflow.dto.chat.ChatRoomDTO;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -35,6 +37,9 @@ public class ChatMessage {
 
     private LocalDateTime sendDate;
 
+    @Enumerated(EnumType.STRING)
+    private ReadStatus readStatus;
+
     public static ChatMessage createChatMessage(ChatRoom chatRoom, ChatMessageDTO chatMessageDTO){
 
         return ChatMessage.builder()
@@ -42,6 +47,7 @@ public class ChatMessage {
                 .sender(chatMessageDTO.getWriter())
                 .message(chatMessageDTO.getMessage())
                 .sendDate(LocalDateTime.now())
+                .readStatus(ReadStatus.UNREAD)
                 .build();
     }
 

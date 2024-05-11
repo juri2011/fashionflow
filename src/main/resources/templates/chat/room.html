@@ -158,16 +158,20 @@
 
                 if(writer === username){
                 str = "<div class='col-6' style='margin-left:auto;'>";
+                str += "<div style='margin-left:auto; text-align: right; font-weight:800; font-size: 18px;'>" +
+                        writer +"</div>";
                 str += "<div class='alert alert-warning  message-mine'>";
-                str += "<b>" + writer + " : " + message + "</b>";
+                str += "<div>" + message + "</div>";
                 str += "<div>"+ msgDateFormat +"</div>";
                 str += "</div></div>";
                 //$("#msgArea").append(str);
                 }
                 else{
                 str = "<div class='col-6'>";
+                str += "<div style='margin-left:auto; text-align: right; font-weight:800; font-size: 18px;'>" +
+                        writer +"</div>";
                 str += "<div class='alert alert-secondary message-others'>";
-                str += "<b>" + writer + " : " + message + "</b>";
+                str += "<div>" + message + "</div>";
                 str += "<div>"+ msgDateFormat +"</div>";
                 str += "</div></div>";
                 //$("#msgArea").append(str);

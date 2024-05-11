@@ -26,16 +26,14 @@
     </style>
 
     <script>
-        // 사용자가 스크롤을 20px 이상 내리면 버튼 보이게 함
-        window.onscroll = function() {scrollFunction()};
-
-        function scrollFunction() {
-          if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
-            document.getElementById("topBtn").style.display = "block";
-          } else {
-            document.getElementById("topBtn").style.display = "none";
-          }
-        }
+        // 스크롤
+        window.addEventListener('scroll', function() {
+            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                document.getElementById("topBtn").style.display = "block";
+            } else {
+                document.getElementById("topBtn").style.display = "none";
+            }
+        });
 
         // 버튼 클릭 시 페이지 최상단으로 이동
         function topFunction() {

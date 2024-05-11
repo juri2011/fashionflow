@@ -23,6 +23,8 @@ public class ListingItemDTO {
 
     private LocalDateTime regdate;
 
+    private Long categoryId;
+
     private ItemStatus itemStatus;
 
     private SellStatus sellStatus;

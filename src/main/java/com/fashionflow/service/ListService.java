@@ -49,6 +49,7 @@ public class ListService {
                     .regdate(listingItem.getRegdate())
                     .itemStatus(listingItem.getItemStatus())
                     .sellStatus(listingItem.getSellStatus())
+                    .categoryId(listingItem.getCategory().getId())
                     .imgName(imgName)
                     .build();
 

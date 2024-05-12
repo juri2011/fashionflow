@@ -1,6 +1,7 @@
 package com.fashionflow.service;
 
 import com.fashionflow.constant.ItemStatus;
+import com.fashionflow.constant.SellStatus;
 import com.fashionflow.dto.BuyerDTO;
 import com.fashionflow.dto.ItemFormDTO;
 import com.fashionflow.dto.ListingItemDTO;
@@ -32,7 +33,6 @@ public class ListService {
 
         Page<Item> listingItems = itemRepository.findAll(withCategory(categoryList), pageable);
 
-
         List<ListingItemDTO> listingItemDTO = new ArrayList<>();
 
         for (Item listingItem : listingItems) {
@@ -40,7 +40,7 @@ public class ListService {
                     .orElse(null); // 대표 이미지가 없는 경우를 대비한 처리
 
             // 임시 기본 이미지
-            String imgName = img != null ? img.getImgName() : "defaultImg.png";
+            String imgName = img != null ? img.getImgName() : "/img/default.PNG";
 
 
             // listingItemDTO 생성자에 올바른 값 전달
@@ -55,7 +55,10 @@ public class ListService {
                     .imgName(imgName)
                     .build();
 
-            listingItemDTO.add(dto);
+            // 판매 상태가 SELLING(판매중)이거나 SOLD_OUT(판매완료)인 경우에만 리스트에 추가
+            if (SellStatus.SELLING.getCode().equals(dto.getSellStatus().getCode()) || SellStatus.SOLD_OUT.getCode().equals(dto.getSellStatus().getCode())) {
+                listingItemDTO.add(dto);
+            }
         }
 
         return new PageImpl<>(listingItemDTO, pageable, listingItems.getTotalElements());

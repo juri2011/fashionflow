@@ -13,20 +13,29 @@
             const bufferHeight = 300;
             const initialSize = 12;
             const scrollSize = 4;
+            let currentCategories = [];
 
             // 가격 출력
             function formatPrice(price) {
                 return price.toLocaleString();
             }
 
-            function loadMoreProducts(size, isInitialLoad = false) {
+            function loadMoreProducts(size, isInitialLoad = false, categories = []) {
+
+                if(isInitialLoad) {
+                    currentCategories = categories; // 초기 로딩 시 현재 카테고리 업데이트
+                } else {
+                    categories = currentCategories; // 스크롤 이벤트 시 현재 선택된 카테고리 사용
+                }
 
                 // 마지막 페이지 or 로딩중 true일시 리턴을 통한 중단
                 if(isLoading || isLastPage) return;
                 isLoading = true;
 
+                const categoriesQuery = categories.length ? `&categories=${categories.join(',')}` : '';
+
                 setTimeout(() => {
-                    fetch(`/list/more?page=${currentPage}&size=${size}`)
+                    fetch(`/list/more?page=${currentPage}&size=${size}${categoriesQuery}`)
                         .then(response => response.json())
                         .then(products => {
                             if(products.length === 0) {
@@ -79,7 +88,19 @@
             // 초기 페이지 로드
             document.addEventListener('DOMContentLoaded', function() {
                 loadMoreProducts(initialSize, true); // 초기 상품 로딩
+
+                // 카테고리 로드
+                document.getElementById('categorySelect').addEventListener('change', function() {
+                    currentPage = 0;
+                    isLastPage = false;
+                    document.querySelector('.product-list').innerHTML = ''; // 상품 리스트 초기화
+                    const selectedCategories = [...document.querySelectorAll('#categorySelect input:checked')].map(el => el.value);
+                    currentCategories = selectedCategories; // 현재 선택된 카테고리 업데이트
+                    loadMoreProducts(initialSize, true, selectedCategories); // 선택된 카테고리로 상품 로드
+                });
             });
+
+
     </script>
 
     <style>

@@ -1,5 +1,6 @@
 package com.fashionflow.service;
 
+import com.fashionflow.constant.ItemStatus;
 import com.fashionflow.dto.BuyerDTO;
 import com.fashionflow.dto.ItemFormDTO;
 import com.fashionflow.dto.ListingItemDTO;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -26,9 +28,9 @@ public class ListService {
     private final ItemImgRepository itemImgRepository;
 
 
-    public Page<ListingItemDTO> listingItemWithImg(Pageable pageable) {
+    public Page<ListingItemDTO> listingItemWithImgAndCategories(Pageable pageable, List<Long> categoryList) {
 
-        Page<Item> listingItems = itemRepository.findAll(pageable);
+        Page<Item> listingItems = itemRepository.findAll(withCategory(categoryList), pageable);
 
 
         List<ListingItemDTO> listingItemDTO = new ArrayList<>();
@@ -58,4 +60,21 @@ public class ListService {
 
         return new PageImpl<>(listingItemDTO, pageable, listingItems.getTotalElements());
     }
+
+    //조건 검색
+    public static Specification<Item> withCategory(List<Long> categories) {
+        return (root, query, criteriaBuilder) -> {
+            List<jakarta.persistence.criteria.Predicate> predicates = new ArrayList<>();
+            if (categories != null && !categories.isEmpty()) {
+                // ItemStatus enum의 code 값을 기준으로 검색 조건 추가
+                predicates.add(root.get("itemStatus").in(categories.stream()
+                        .map(category -> ItemStatus.values()[Integer.parseInt(category.toString()) - 1])
+                        .toArray()));
+            }
+            // 올바른 타입으로 배열 변환
+            jakarta.persistence.criteria.Predicate[] predicateArray = new jakarta.persistence.criteria.Predicate[predicates.size()];
+            return criteriaBuilder.and(predicates.toArray(predicateArray));
+        };
+    }
+
 }

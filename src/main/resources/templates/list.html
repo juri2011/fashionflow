@@ -113,7 +113,7 @@
             box-sizing: border-box;
             display: flex;
             flex-direction: column; /* 상품 내용을 세로로 정렬 */
-            align-items: center;  
+            align-items: center;
         }
 
         .product-image {
@@ -133,6 +133,15 @@
 
     <div class="sidebar">
         <h3>카테고리</h3>
+        <br/>
+        <p>상품 상태</p>
+        <div id="categorySelect">
+            <label><input type="checkbox" value="1"> 새상품(미개봉)</label><br>
+            <label><input type="checkbox" value="2"> 사용감 없음</label><br>
+            <label><input type="checkbox" value="3"> 사용감 적음</label><br>
+            <label><input type="checkbox" value="4"> 사용감 많음</label><br>
+            <label><input type="checkbox" value="5"> 파손, 고장 상품</label><br>
+        </div>
 
     </div>
     <div class="product-list">

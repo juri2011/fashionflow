@@ -14,18 +14,21 @@
             const initialSize = 12;
             const scrollSize = 4;
             let currentCategories = [];
+            let currentSaleStatus = [];
 
             // 가격 출력
             function formatPrice(price) {
                 return price.toLocaleString();
             }
 
-            function loadMoreProducts(size, isInitialLoad = false, categories = []) {
+            function loadMoreProducts(size, isInitialLoad = false, categories = [], saleStatus = []) {
 
                 if(isInitialLoad) {
                     currentCategories = categories; // 초기 로딩 시 현재 카테고리 업데이트
+                    currentSaleStatus = saleStatus; // 초기 로딩 시 현재 판매 상태 업데이트
                 } else {
                     categories = currentCategories; // 스크롤 이벤트 시 현재 선택된 카테고리 사용
+                    saleStatus = currentSaleStatus; // 스크롤 이벤트 시 현재 선택된 판매 상태 사용
                 }
 
                 // 마지막 페이지 or 로딩중 true일시 리턴을 통한 중단
@@ -33,9 +36,10 @@
                 isLoading = true;
 
                 const categoriesQuery = categories.length ? `&categories=${categories.join(',')}` : '';
+                const saleStatusQuery = saleStatus.length ? `&saleStatus=${saleStatus.join(',')}` : '';
 
                 setTimeout(() => {
-                    fetch(`/list/more?page=${currentPage}&size=${size}${categoriesQuery}`)
+                    fetch(`/list/more?page=${currentPage}&size=${size}${categoriesQuery}${saleStatusQuery}`)
                         .then(response => response.json())
                         .then(products => {
                             if(products.length === 0) {
@@ -95,12 +99,20 @@
                     isLastPage = false;
                     document.querySelector('.product-list').innerHTML = ''; // 상품 리스트 초기화
                     const selectedCategories = [...document.querySelectorAll('#categorySelect input:checked')].map(el => el.value);
+                    const selectedSaleStatus = [...document.querySelectorAll('#saleStatusSelect input:checked')].map(el => el.value);
                     currentCategories = selectedCategories; // 현재 선택된 카테고리 업데이트
-                    loadMoreProducts(initialSize, true, selectedCategories); // 선택된 카테고리로 상품 로드
+                    loadMoreProducts(initialSize, true, selectedCategories, selectedSaleStatus); // 선택된 카테고리로 상품 로드
+                });
+                document.getElementById('saleStatusSelect').addEventListener('change', function() {
+                    currentPage = 0;
+                    isLastPage = false;
+                    document.querySelector('.product-list').innerHTML = ''; // 상품 리스트 초기화
+                    const selectedCategories = [...document.querySelectorAll('#categorySelect input:checked')].map(el => el.value);
+                    const selectedSaleStatus = [...document.querySelectorAll('#saleStatusSelect input:checked')].map(el => el.value);
+                    currentCategories = selectedCategories; // 현재 선택된 카테고리와 판매 상태를 업데이트
+                    loadMoreProducts(initialSize, true, selectedCategories, selectedSaleStatus); // 선택된 카테고리와 판매 상태로 상품 로드
                 });
             });
-
-
     </script>
 
     <style>
@@ -163,7 +175,12 @@
             <label><input type="checkbox" value="4"> 사용감 많음</label><br>
             <label><input type="checkbox" value="5"> 파손, 고장 상품</label><br>
         </div>
-
+        <br/>
+        <p>상품 상태</p>
+        <div id="saleStatusSelect">
+            <label><input type="checkbox" name="saleStatus" value="1"> 판매중</label><br>
+            <label><input type="checkbox" name="saleStatus" value="3"> 판매완료</label><br>
+        </div>
     </div>
     <div class="product-list">
 

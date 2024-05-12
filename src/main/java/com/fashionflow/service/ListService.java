@@ -29,9 +29,9 @@ public class ListService {
     private final ItemImgRepository itemImgRepository;
 
 
-    public Page<ListingItemDTO> listingItemWithImgAndCategories(Pageable pageable, List<Long> categoryList) {
+    public Page<ListingItemDTO> listingItemWithImgAndCategories(Pageable pageable, List<Long> categoryList, List<Long> saleStatusList) {
 
-        Page<Item> listingItems = itemRepository.findAll(withCategory(categoryList), pageable);
+        Page<Item> listingItems = itemRepository.findAll(withCategoryAndSaleStatus(categoryList, saleStatusList), pageable);
 
         List<ListingItemDTO> listingItemDTO = new ArrayList<>();
 
@@ -65,7 +65,7 @@ public class ListService {
     }
 
     //조건 검색
-    public static Specification<Item> withCategory(List<Long> categories) {
+    public static Specification<Item> withCategoryAndSaleStatus(List<Long> categories, List<Long> saleStatuses) {
         return (root, query, criteriaBuilder) -> {
             List<jakarta.persistence.criteria.Predicate> predicates = new ArrayList<>();
             if (categories != null && !categories.isEmpty()) {
@@ -74,9 +74,14 @@ public class ListService {
                         .map(category -> ItemStatus.values()[Integer.parseInt(category.toString()) - 1])
                         .toArray()));
             }
+            if (saleStatuses != null && !saleStatuses.isEmpty()) {
+                // ItemStatus enum의 code 값을 기준으로 검색 조건 추가
+                predicates.add(root.get("sellStatus").in(saleStatuses.stream()
+                        .map(status -> SellStatus.values()[Integer.parseInt(status.toString()) - 1])
+                        .toArray()));
+            }
             // 올바른 타입으로 배열 변환
-            jakarta.persistence.criteria.Predicate[] predicateArray = new jakarta.persistence.criteria.Predicate[predicates.size()];
-            return criteriaBuilder.and(predicates.toArray(predicateArray));
+            return criteriaBuilder.and(predicates.toArray(new jakarta.persistence.criteria.Predicate[0]));
         };
     }
 

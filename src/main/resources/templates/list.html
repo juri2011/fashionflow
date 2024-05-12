@@ -48,10 +48,35 @@
                             products.forEach(product => {
                                 const productElement = document.createElement("div");
                                 productElement.classList.add("product-item");
+
+                                let dateDisplay;
+
+                                // 데이터 날짜 형식 재생성
+                                const productDate = new Date(product.regdate[0], product.regdate[1] - 1, product.regdate[2], product.regdate[3], product.regdate[4]);
+                                const now = new Date();
+
+                                // 현재 시간과 제품 등록 시간의 차이
+                                const diff = now - productDate;
+
+                                // 밀리초를 시간으로 변환
+                                const hoursDiff = diff / (1000 * 60 * 60);
+
+                                if (hoursDiff < 24) {
+                                    // 24시간 이내일 경우 시간으로 표시
+                                    dateDisplay = `${Math.floor(hoursDiff)}시간 전`;
+                                } else {
+                                    // 24시간을 초과할 경우 일수로 표시
+                                    const daysDiff = hoursDiff / 24;
+                                    dateDisplay = `${Math.floor(daysDiff)}일 전`;
+                                }
+
+
                                 productElement.innerHTML = `
                                     <img src="/images/${product.imgName}" alt="Product Image" class="product-image clickable">
                                     <span>상품명: <span class="product-name clickable">${product.itemName}</span></span>
                                     <span>가격: ${formatPrice(product.price)}</span>
+                                    <span>${dateDisplay}</span>
+
                                 `;
                                 document.querySelector('.product-list').appendChild(productElement);
 

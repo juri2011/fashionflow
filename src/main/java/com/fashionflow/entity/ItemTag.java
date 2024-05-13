@@ -29,4 +29,9 @@ public class ItemTag {
     @JoinColumn(name="item_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Item item;
+
+    public ItemTag(ItemTagName itemTagName, Item item) {
+        this.itemTagName = itemTagName;
+        this.item = item;
+    }
 }

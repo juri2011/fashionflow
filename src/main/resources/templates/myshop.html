@@ -97,7 +97,7 @@
                 </td>
                 <td>
                     <!-- 상품명을 클릭하면 상세 페이지로 이동 -->
-                    <a th:href="@{'/item/modify/' + ${item.id}}" th:text="${item.itemName}"></a>
+                    <a th:href="@{'/members/item/' + ${item.id}}" th:text="${item.itemName}"></a>
                 </td>
                 <td>
                     <span th:switch="${item.itemStatus.name()}">

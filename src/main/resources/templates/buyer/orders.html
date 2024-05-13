@@ -51,9 +51,7 @@
 
 
             <input type="hidden" name="id" th:value="${purchase.id}" />
-            <img th:if="${purchase.imgName != null}" th:src="@{'/images/' + ${purchase.imgName}}" alt="Product Image" class="product-image">
-            <img th:unless="${purchase.imgName != null}" src="/img/default.PNG" alt="대체 이미지" class="product-image">
-
+            <img th:if="${purchase.imgName != null}" th:src="${purchase.imgName}" alt="Product Image" class="product-image">
 
 
 

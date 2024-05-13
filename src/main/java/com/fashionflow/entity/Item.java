@@ -2,6 +2,7 @@ package com.fashionflow.entity;
 
 import com.fashionflow.constant.ItemStatus;
 import com.fashionflow.constant.SellStatus;
+import com.fashionflow.dto.CategoryDTO;
 import com.fashionflow.dto.ItemFormDTO;
 import jakarta.persistence.*;
 import lombok.*;
@@ -62,5 +63,15 @@ public class Item {
 
 
 
+    public void updateItemInfo(String itemName, Category category, SellStatus sellStatus, ItemStatus itemStatus, String content, int price, int delivery, String address) {
+        this.itemName = itemName;
+        this.category = category;
+        this.sellStatus = sellStatus;
+        this.itemStatus = itemStatus;
+        this.content = content;
+        this.price = price;
+        this.delivery = delivery;
+        this.address = address;
+    }
 
 }

@@ -5,6 +5,7 @@
 
 <div layout:fragment="content">
     <div class="container" style="min-width: 500px;">
+        <div id="btnContainer"></div>
         <div>
             <!-- 상품 이미지 불러오기 -->
             <div th:if="${room.item} != null">
@@ -72,16 +73,33 @@
             var roomId = '[[${room.roomId}]]';
             const enabled = [[${room.enabled}]];
             var username = 'null';
+            var userEmail = 'null';
             const token = $("meta[name='_csrf']").attr("content");
             const header = $("meta[name='_csrf_header']").attr("content");
+
+            const sellStatus = '[[${#strings.toString(room.item.sellStatus)}]]';
+
+            var sellBtnEnabled = false;
+
+            if(sellStatus === 'SOLD_OUT'){
+                $('#btnContainer').empty();
+                $('#btnContainer').append('<button class="btn btn-secondary">거래완료됨</button>');
+                sellBtnEnabled = true;
+            }
+
 
             $.ajax({
                 url: "/chat/getUsername", // 사용자 이름을 반환하는 엔드포인트
                 method: "GET",
+                contentType: "application/json",
                 success: function(response) {
                     //$("#username").text(response.username); // 받은 사용자 이름을 페이지에 표시
 
-                    username = response;
+                    console.log(response);
+
+
+                    username = response.nickname;
+                    userEmail = response.email;
                     console.log(roomName + ", " + roomId + ", " + response);
 
                     //사용자 이름을 받아왔으면 유효한 사용자인지 확인
@@ -150,14 +168,55 @@
                 });
             }
 
+            function sellBtnEnable(){
+                const sellerEmail = '[[${room.seller.email}]]';
+                console.log();
+                if(sellerEmail === userEmail){
+                    str = '<button class="btn btn-primary sell-btn">거래완료</button>';
+                    $('#btnContainer').append(str);
+                }
+            };
+
+            $('#btnContainer').on('click', '.sell-btn', function() {
+                if(confirm("거래완료 처리 하시겠습니까?")){
+                    const paramData={
+                        roomId: roomId
+                    };
+                    console.log(paramData);
+                    const param = JSON.stringify(paramData);
+                    $.ajax({
+                        url: "/chat/sell", // 사용자 이름을 반환하는 엔드포인트
+                        method: "POST",
+                        contentType: "application/json",
+                        data: param,
+                        beforeSend: function (xhr) {
+                            /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                            xhr.setRequestHeader(header, token);
+                        },
+                        success: function(response) {
+                            alert('성공적으로 처리되었습니다.');
+                            $('#btnContainer').empty();
+                            $('#btnContainer').append('<button class="btn btn-secondary">거래완료됨</button>');
+                        },
+                        error: function(xhr, status, error) {
+                            console.log("validate fail");
+                            //alert('오류가 발생했습니다.');
+                            alert(xhr.responseText);
+                            //location.href = '/';
+                        }
+                    });
+                }
+            });
+
             function showChat(content){
+
                 const writer = content.writer;
                 let str = '';
                 const message = content.message;
                 const msgDateFormat = content.msgDateFormat;
 
                 if(writer === username){
-                str = "<div class='col-6' style='margin-left:auto;'>";
+                str = "<div class='msgContainer col-6' style='margin-left:auto;'>";
                 str += "<div style='margin-left:auto; text-align: right; font-weight:800; font-size: 18px;'>" +
                         writer +"</div>";
                 str += "<div class='alert alert-warning  message-mine'>";
@@ -167,7 +226,7 @@
                 //$("#msgArea").append(str);
                 }
                 else{
-                str = "<div class='col-6'>";
+                str = "<div class='msgContainer col-6'>";
                 str += "<div style='margin-left:auto; text-align: left; font-weight:800; font-size: 18px;'>" +
                         writer +"</div>";
                 str += "<div class='alert alert-secondary message-others'>";
@@ -178,6 +237,17 @@
                 }
 
                 $("#msgArea").append(str);
+                $('#msgArea').scrollTop($('#msgArea')[0].scrollHeight);
+
+                console.log(sellBtnEnabled)
+                console.log($('.msgContainer').length)
+
+                if(!sellBtnEnabled){
+                    if($('.msgContainer').length > 5){
+                        sellBtnEnable();
+                        sellBtnEnabled = true;
+                    }
+                }
             }
 
 

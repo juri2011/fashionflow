@@ -207,8 +207,10 @@ public class RoomController {
             Member member = memberService.findMemberByCurrentEmail();
             String username = member.getNickname();
             String userEmail = member.getEmail();
-            log.info(username);
-            return new ResponseEntity<String>(username, HttpStatus.OK);
+            MemberFormDTO memberFormDTO = new MemberFormDTO();
+            memberFormDTO.setNickname(username);
+            memberFormDTO.setEmail(userEmail);
+            return new ResponseEntity<>(memberFormDTO, HttpStatus.OK);
         }catch(NullPointerException e){
             return new ResponseEntity<String>("로그인 후 이용해주세요", HttpStatus.UNAUTHORIZED);
         }
@@ -259,5 +261,20 @@ public class RoomController {
         }
 
         return new ResponseEntity<String>("유효한 사용자 확인", HttpStatus.OK);
+    }
+
+
+    @PostMapping("/sell")
+    public @ResponseBody ResponseEntity sell(@RequestBody Map<String, String> requestData){
+        String roomId = requestData.get("roomId");
+        try{
+            chatService.sell(roomId);
+            return new ResponseEntity<String>("성공적으로 처리되었습니다.", HttpStatus.OK);
+        }catch(EntityNotFoundException e){
+            return new ResponseEntity<String>("정보를 불러오는 도중 에러가 발생했습니다.", HttpStatus.NOT_FOUND);
+        }catch (Exception e){
+            return new ResponseEntity<String>("오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
     }
 }

@@ -112,7 +112,11 @@ public class RoomController {
             //이미 있는 채팅방인지 확인
             if(chatService.checkDuplicateRoom(item, buyer, seller)){
                 log.info("이미 존재하는 채팅방");
-                return "redirect:/chat/rooms";
+                ChatRoom chatRoom = chatRoomRepository.findByItemIdAndBuyerEmailAndSellerEmail(
+                        item.getId(),buyer.getEmail(), seller.getEmail()
+                ).orElseThrow(() ->
+                        new EntityNotFoundException("채팅방 정보를 찾을 수 없습니다."));
+                return "redirect:/chat/room?roomId="+chatRoom.getUuid();
             }
 
             //상품 이름으로 채팅방 개설
@@ -121,9 +125,9 @@ public class RoomController {
             ChatRoomDTO chatRoomDTO = ChatRoomDTO.create(item.getItemName(), item, buyer, seller);
             ChatRoom chatRoom = ChatRoom.createChatRoom(chatRoomDTO);
             System.out.println(chatRoom);
-            chatRoomRepository.save(chatRoom);
+            ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
             rttr.addFlashAttribute("roomName", chatRoomDTO);
-            return "redirect:/chat/rooms";
+            return "redirect:/chat/room?roomId="+savedChatRoom.getUuid();
 
         }catch(EntityNotFoundException e){
             log.info("정보를 불러오는 중에 에러가 발생했습니다. : "+e.getMessage());

@@ -29,9 +29,9 @@ public class ListService {
     private final ItemImgRepository itemImgRepository;
 
 
-    public Page<ListingItemDTO> listingItemWithImgAndCategories(Pageable pageable, List<Long> categoryList, List<Long> saleStatusList) {
+    public Page<ListingItemDTO> listingItemWithImgAndCategories(Pageable pageable, List<Long> categoryList, List<Long> saleStatusList, List<Long> productCategoryList) {
 
-        Page<Item> listingItems = itemRepository.findAll(withCategoryAndSaleStatus(categoryList, saleStatusList), pageable);
+        Page<Item> listingItems = itemRepository.findAll(withCategory(categoryList, saleStatusList, productCategoryList), pageable);
 
         List<ListingItemDTO> listingItemDTO = new ArrayList<>();
 
@@ -65,7 +65,7 @@ public class ListService {
     }
 
     //조건 검색
-    public static Specification<Item> withCategoryAndSaleStatus(List<Long> categories, List<Long> saleStatuses) {
+    public static Specification<Item> withCategory(List<Long> categories, List<Long> saleStatuses, List<Long> productCategories) {
         return (root, query, criteriaBuilder) -> {
             List<jakarta.persistence.criteria.Predicate> predicates = new ArrayList<>();
             if (categories != null && !categories.isEmpty()) {
@@ -79,6 +79,10 @@ public class ListService {
                 predicates.add(root.get("sellStatus").in(saleStatuses.stream()
                         .map(status -> SellStatus.values()[Integer.parseInt(status.toString()) - 1])
                         .toArray()));
+            }
+            if (productCategories != null && !productCategories.isEmpty()) {
+                predicates.add(root.join("category").get("id").in(productCategories));
+
             }
             // 올바른 타입으로 배열 변환
             return criteriaBuilder.and(predicates.toArray(new jakarta.persistence.criteria.Predicate[0]));

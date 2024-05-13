@@ -15,20 +15,23 @@
             const scrollSize = 4;
             let currentCategories = [];
             let currentSaleStatus = [];
+            let currentProductCategories = [];
 
             // 가격 출력
             function formatPrice(price) {
                 return price.toLocaleString();
             }
 
-            function loadMoreProducts(size, isInitialLoad = false, categories = [], saleStatus = []) {
+            function loadMoreProducts(size, isInitialLoad = false, categories = [], saleStatus = [], productCategories = []) {
 
                 if(isInitialLoad) {
-                    currentCategories = categories; // 초기 로딩 시 현재 카테고리 업데이트
+                    currentCategories = categories; // 초기 로딩 시 현재 상품 상태 업데이트
                     currentSaleStatus = saleStatus; // 초기 로딩 시 현재 판매 상태 업데이트
+                    currentProductCategories = productCategories; // 카테고리 상태
                 } else {
-                    categories = currentCategories; // 스크롤 이벤트 시 현재 선택된 카테고리 사용
+                    categories = currentCategories; // 스크롤 이벤트 시 현재 선택된 상품 상태 사용
                     saleStatus = currentSaleStatus; // 스크롤 이벤트 시 현재 선택된 판매 상태 사용
+                    productCategories = currentProductCategories ; // 카테고리 상태
                 }
 
                 // 마지막 페이지 or 로딩중 true일시 리턴을 통한 중단
@@ -37,9 +40,10 @@
 
                 const categoriesQuery = categories.length ? `&categories=${categories.join(',')}` : '';
                 const saleStatusQuery = saleStatus.length ? `&saleStatus=${saleStatus.join(',')}` : '';
+                const productCategoriesQuery = productCategories.length ? `&productCategories=${productCategories.join(',')}` : '';
 
                 setTimeout(() => {
-                    fetch(`/list/more?page=${currentPage}&size=${size}${categoriesQuery}${saleStatusQuery}`)
+                    fetch(`/list/more?page=${currentPage}&size=${size}${categoriesQuery}${saleStatusQuery}${productCategoriesQuery}`)
                         .then(response => response.json())
                         .then(products => {
                             if(products.length === 0) {
@@ -222,6 +226,36 @@
 
     <div class="sidebar">
         <h3>카테고리</h3>
+        <br/>
+        <div id="productSelect">
+            <br/>
+            <p>남성의류</p>
+            <div id="menSelect">
+                <label><input type="checkbox" name="category" value="4"> 아우터</label><br>
+                <label><input type="checkbox" name="category" value="5"> 상의</label><br>
+                <label><input type="checkbox" name="category" value="6"> 바지</label><br>
+                <label><input type="checkbox" name="category" value="7"> 셋업/세트</label><br>
+            </div>
+            <br/>
+            <p>여성의류</p>
+            <div id="womanSelect">
+                <label><input type="checkbox" name="category" value="8"> 아우터</label><br>
+                <label><input type="checkbox" name="category" value="9"> 상의</label><br>
+                <label><input type="checkbox" name="category" value="10"> 바지</label><br>
+                <label><input type="checkbox" name="category" value="11"> 치마</label><br>
+                <label><input type="checkbox" name="category" value="12"> 원피스</label><br>
+                <label><input type="checkbox" name="category" value="13"> 셋업/세트</label><br>
+            </div>
+            <br/>
+            <p>신발</p>
+            <div id="shoesSelect">
+                <label><input type="checkbox" name="category" value="14"> 스니커즈</label><br>
+                <label><input type="checkbox" name="category" value="15"> 남성화</label><br>
+                <label><input type="checkbox" name="category" value="16"> 여성화</label><br>
+                <label><input type="checkbox" name="category" value="17"> 스포츠화</label><br>
+            </div>
+            <br/>
+        </div>
         <br/>
         <p>상품 상태</p>
         <div id="categorySelect">

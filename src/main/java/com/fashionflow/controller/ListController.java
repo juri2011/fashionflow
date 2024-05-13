@@ -40,7 +40,8 @@ public class ListController {
     @ResponseBody
     public ResponseEntity<List<ListingItemDTO>> listMoreProducts(@RequestParam("page") int currentPage, @RequestParam("size") int size,
                                                                  @RequestParam(value = "categories", required = false) String categories,
-                                                                 @RequestParam(value = "saleStatus", required = false) String saleStatus){
+                                                                 @RequestParam(value = "saleStatus", required = false) String saleStatus,
+                                                                 @RequestParam(value = "productCategories", required = false) String productCategories){
         Pageable pageable = PageRequest.of(currentPage, size); // 페이지 번호와 페이지당 항목 수 설정
         List<Long> categoryList = new ArrayList<>();
         if(categories != null && !categories.isEmpty()) {
@@ -54,8 +55,15 @@ public class ListController {
                     .map(Long::parseLong)
                     .collect(Collectors.toList());
         }
+        List<Long> productCategoriesList = new ArrayList<>();
+        if(productCategories != null && !productCategories.isEmpty()) {
+            productCategoriesList = Arrays.stream(productCategories.split(","))
+                    .map(Long::parseLong)
+                    .collect(Collectors.toList());
+        }
 
-        Page<ListingItemDTO> goodsPage = listService.listingItemWithImgAndCategories(pageable, categoryList, saleStatusList);
+
+        Page<ListingItemDTO> goodsPage = listService.listingItemWithImgAndCategories(pageable, categoryList, saleStatusList, productCategoriesList);
 
         return ResponseEntity.ok(goodsPage.getContent()); // ResponseEntity를 통해 ListingItemDTO 목록을 JSON 형식으로 반환
     }

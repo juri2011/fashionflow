@@ -118,26 +118,48 @@
             document.addEventListener('DOMContentLoaded', function() {
                 loadMoreProducts(initialSize, true); // 초기 상품 로딩
 
-                // 카테고리 로드
+                // 상품 상태 로드
                 document.getElementById('categorySelect').addEventListener('change', function() {
                     currentPage = 0;
                     isLastPage = false;
                     document.querySelector('.product-list').innerHTML = ''; // 상품 리스트 초기화
                     const selectedCategories = [...document.querySelectorAll('#categorySelect input:checked')].map(el => el.value);
                     const selectedSaleStatus = [...document.querySelectorAll('#saleStatusSelect input:checked')].map(el => el.value);
+                    const selectedProductCategories = [...document.querySelectorAll('#productSelect input:checked')].map(el => el.value);
                     currentCategories = selectedCategories; // 현재 선택된 카테고리 업데이트
-                    loadMoreProducts(initialSize, true, selectedCategories, selectedSaleStatus); // 선택된 카테고리로 상품 로드
+                    loadMoreProducts(initialSize, true, selectedCategories, selectedSaleStatus, selectedProductCategories); // 선택된 카테고리로 상품 로드
                 });
+                // 판매 상태
                 document.getElementById('saleStatusSelect').addEventListener('change', function() {
                     currentPage = 0;
                     isLastPage = false;
                     document.querySelector('.product-list').innerHTML = ''; // 상품 리스트 초기화
                     const selectedCategories = [...document.querySelectorAll('#categorySelect input:checked')].map(el => el.value);
                     const selectedSaleStatus = [...document.querySelectorAll('#saleStatusSelect input:checked')].map(el => el.value);
+                    const selectedProductCategories = [...document.querySelectorAll('#productSelect input:checked')].map(el => el.value);
                     currentCategories = selectedCategories; // 현재 선택된 카테고리와 판매 상태를 업데이트
-                    loadMoreProducts(initialSize, true, selectedCategories, selectedSaleStatus); // 선택된 카테고리와 판매 상태로 상품 로드
+                    loadMoreProducts(initialSize, true, selectedCategories, selectedSaleStatus, selectedProductCategories); // 선택된 카테고리와 판매 상태로 상품 로드
+                });
+                // 카테고리
+                document.getElementById('productSelect').addEventListener('change', function() {
+                    currentPage = 0;
+                    isLastPage = false;
+                    document.querySelector('.product-list').innerHTML = '';
+                    const selectedCategories = [...document.querySelectorAll('#categorySelect input:checked')].map(el => el.value);
+                    const selectedSaleStatus = [...document.querySelectorAll('#saleStatusSelect input:checked')].map(el => el.value);
+                    const selectedProductCategories = [...document.querySelectorAll('#productSelect input:checked')].map(el => el.value);
+                    currentCategories = selectedCategories;
+                    loadMoreProducts(initialSize, true, selectedCategories, selectedSaleStatus, selectedProductCategories);
                 });
             });
+
+            // 사이드바 스크롤
+            window.addEventListener("scroll", function() {
+                var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                // 전체 페이지의 스크롤 위치에 따라 사이드바 내부의 스크롤 위치를 조정
+                document.querySelector('.sidebar').scrollTop = scrollTop;
+            });
+
     </script>
 
     <style>
@@ -145,12 +167,21 @@
 
         .sidebar {
             position: fixed;
+            top: 10%;
             left: 0;
-            top: 30%;
             width: 200px;
-            height: 100px;
-            background-color: #f0f0f0;
-            padding: 20px;
+            height: calc(100% - 10%);
+            background-color: #ffffff;
+            overflow-y: auto; /* 사이드바 내부의 스크롤을 활성화 */
+        }
+
+        /* 사이드바 내의 스크롤바를 숨기는 CSS */
+        .sidebar::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+        .sidebar {
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
         }
 
         .product-list {

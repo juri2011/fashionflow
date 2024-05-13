@@ -13,9 +13,27 @@
                 <li class="nav-item" sec:authorize="isAnonymous()">
                     <a class="nav-link active" aria-current="page" href="/members/register" th:href="@{/members/register}">회원가입</a>
                 </li>
-                <!-- 여기에 "내상점" 링크를 추가합니다. -->
-                <li class="nav-item">
-                    <a class="nav-link" href="/myshop" th:href="@{/myshop}">내상점</a>
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <!-- 로그아웃 form -->
+                    <form action="/members/logout" method="post" style="display:inline;">
+                        <!-- CSRF 토큰 포함 -->
+                        <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+                        <!-- 로그아웃 버튼 -->
+                        <button type="submit" aria-current="page" id="logout">로그아웃</button>
+                    </form>
+                </li>
+                <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        마이페이지
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li>
+                            <a class="dropdown-item" href="/members/memberEdit">회원정보수정</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="/buyer/orders">구매내역</a>
+                        </li>
+                    </ul>
                 </li>
             </ul>
         </div>
@@ -28,7 +46,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 20px;
+            padding: 0 80px;
         }
 
         .nav-item {
@@ -39,6 +57,14 @@
             color: white;
             text-decoration: none;
         }
+
+        #logout {
+            color: #fff;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+        }
+
     </style>
 </div>
 </html>

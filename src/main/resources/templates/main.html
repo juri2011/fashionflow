@@ -1,3 +1,4 @@
+<!--
 <!DOCTYPE html>
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org"
@@ -36,10 +37,97 @@
 
 
 <body>
-
 <div layout:fragment="content">
     <div class="header-container">
         <h1>메인페이지입니다.</h1>
+        <form class="search-form" role="search">
+            <input class="form-control me-2 search-input" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success search-button" type="submit">검색</button>
+        </form>
+        <div class="menu-links">
+            <a href="/sell">판매하기</a>
+            <a href="/myshop">내상점</a>
+            <a href="/flowtalk">플로우톡</a>
+        </div>
+    </div>
+
+</div>
+</body>
+
+</html>
+-->
+
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout1}">
+
+<head>
+    <style>
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+        }
+        .search-form {
+            display: flex;
+            margin-right: 10px;
+        }
+        .search-input {
+            width: 500px;
+        }
+        .search-button {
+            margin-left: 5px;
+        }
+        .menu-links {
+            margin-left: 10px;
+        }
+        .menu-links a {
+            text-decoration: none;
+            color: black;
+            margin-left: 15px;
+            padding: 8px;
+        }
+
+        .slide-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            width: 80%;
+            height: 400px;
+            margin: 20px auto;
+            background-color: #f0f0f0;
+        }
+        .slide {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* 이미지가 컨테이너를 꽉 채우도록 설정, 비율 유지 */
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div layout:fragment="content">
+    <div class="header-container">
+        <h1>메인 페이지</h1>
+    </div>
+
+    <div class="slide-container">
+        <div class="slide">
+            <img th:src="@{/img/logo.png}" alt="슬라이드 이미지">
+        </div>
     </div>
 
 </div>

@@ -29,8 +29,7 @@
 
     <div th:replace="~{fragments/top::top}"></div>
 
-    <!-- showHeader가 true일 때만 header를 표시 -->
-    <div th:replace="~{fragments/header::header}" th:if="${#httpServletRequest.requestURI == '/'}" ></div>
+    <div th:replace="~{fragments/header::header}"></div>
 
     <div layout:fragment="content" class="content">
 

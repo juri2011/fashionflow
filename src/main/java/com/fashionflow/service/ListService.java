@@ -18,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,9 +30,9 @@ public class ListService {
     private final ItemImgRepository itemImgRepository;
 
 
-    public Page<ListingItemDTO> listingItemWithImgAndCategories(Pageable pageable, List<Long> categoryList, List<Long> saleStatusList, List<Long> productCategoryList) {
+    public Page<ListingItemDTO> listingItemWithImgAndCategories(Pageable pageable, List<Long> categoryList, List<Long> saleStatusList, List<Long> productCategoryList, int minPrice, int maxPrice) {
 
-        Page<Item> listingItems = itemRepository.findAll(withCategory(categoryList, saleStatusList, productCategoryList), pageable);
+        Page<Item> listingItems = itemRepository.findAll(withCategory(categoryList, saleStatusList, productCategoryList, minPrice, maxPrice), pageable);
 
         List<ListingItemDTO> listingItemDTO = new ArrayList<>();
 
@@ -65,25 +66,39 @@ public class ListService {
     }
 
     //조건 검색
-    public static Specification<Item> withCategory(List<Long> categories, List<Long> saleStatuses, List<Long> productCategories) {
+    public static Specification<Item> withCategory(List<Long> categories, List<Long> saleStatuses, List<Long> productCategories, int minPrice, int maxPrice) {
         return (root, query, criteriaBuilder) -> {
             List<jakarta.persistence.criteria.Predicate> predicates = new ArrayList<>();
+            // 상품 상태
             if (categories != null && !categories.isEmpty()) {
                 // ItemStatus enum의 code 값을 기준으로 검색 조건 추가
                 predicates.add(root.get("itemStatus").in(categories.stream()
                         .map(category -> ItemStatus.values()[Integer.parseInt(category.toString()) - 1])
                         .toArray()));
             }
+            // 판매 상태
             if (saleStatuses != null && !saleStatuses.isEmpty()) {
                 // ItemStatus enum의 code 값을 기준으로 검색 조건 추가
                 predicates.add(root.get("sellStatus").in(saleStatuses.stream()
                         .map(status -> SellStatus.values()[Integer.parseInt(status.toString()) - 1])
                         .toArray()));
             }
+
+            //상품 카테고리
             if (productCategories != null && !productCategories.isEmpty()) {
                 predicates.add(root.join("category").get("id").in(productCategories));
-
             }
+
+            // minPrice 조건 추가
+            if (minPrice > 0) { // minPrice가 0보다 클 때만 조건을 적용
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("price"), minPrice));
+            }
+
+            // maxPrice 조건 추가
+            if (maxPrice > 0) { // maxPrice가 null이 아니고, 0보다 클 때만 조건을 적용
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("price"), maxPrice));
+            }
+
             // 올바른 타입으로 배열 변환
             return criteriaBuilder.and(predicates.toArray(new jakarta.persistence.criteria.Predicate[0]));
         };

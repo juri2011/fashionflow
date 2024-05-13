@@ -16,22 +16,28 @@
             let currentCategories = [];
             let currentSaleStatus = [];
             let currentProductCategories = [];
+            let currentMinPrice = 0;
+            let currentMaxPrice = 999999999;
 
             // 가격 출력
             function formatPrice(price) {
                 return price.toLocaleString();
             }
 
-            function loadMoreProducts(size, isInitialLoad = false, categories = [], saleStatus = [], productCategories = []) {
+            function loadMoreProducts(size, isInitialLoad = false, categories = [], saleStatus = [], productCategories = [], minPrice = 0, maxPrice = 999999999) {
 
                 if(isInitialLoad) {
                     currentCategories = categories; // 초기 로딩 시 현재 상품 상태 업데이트
                     currentSaleStatus = saleStatus; // 초기 로딩 시 현재 판매 상태 업데이트
                     currentProductCategories = productCategories; // 카테고리 상태
+                    currentMinPrice = minPrice;
+                    currentMaxPrice = maxPrice;
                 } else {
                     categories = currentCategories; // 스크롤 이벤트 시 현재 선택된 상품 상태 사용
                     saleStatus = currentSaleStatus; // 스크롤 이벤트 시 현재 선택된 판매 상태 사용
                     productCategories = currentProductCategories ; // 카테고리 상태
+                    minPrice = currentMinPrice;
+                    maxPrice = currentMaxPrice;
                 }
 
                 // 마지막 페이지 or 로딩중 true일시 리턴을 통한 중단
@@ -41,9 +47,10 @@
                 const categoriesQuery = categories.length ? `&categories=${categories.join(',')}` : '';
                 const saleStatusQuery = saleStatus.length ? `&saleStatus=${saleStatus.join(',')}` : '';
                 const productCategoriesQuery = productCategories.length ? `&productCategories=${productCategories.join(',')}` : '';
+                const priceQuery = `&minPrice=${minPrice}&maxPrice=${maxPrice}`;
 
                 setTimeout(() => {
-                    fetch(`/list/more?page=${currentPage}&size=${size}${categoriesQuery}${saleStatusQuery}${productCategoriesQuery}`)
+                    fetch(`/list/more?page=${currentPage}&size=${size}${categoriesQuery}${saleStatusQuery}${productCategoriesQuery}${priceQuery}`)
                         .then(response => response.json())
                         .then(products => {
                             if(products.length === 0) {
@@ -120,40 +127,33 @@
 
             // 초기 페이지 로드
             document.addEventListener('DOMContentLoaded', function() {
+
+                let minPrice = 0; // 가격 범위 최소값을 글로벌 변수로 관리
+                let maxPrice = 999999999; // 가격 범위 최대값을 글로벌 변수로 관리
+
                 loadMoreProducts(initialSize, true); // 초기 상품 로딩
 
-                // 상품 상태 로드
-                document.getElementById('categorySelect').addEventListener('change', function() {
+                // 공통 로직을 함수
+                function updateAndLoadProducts() {
                     currentPage = 0;
                     isLastPage = false;
                     document.querySelector('.product-list').innerHTML = ''; // 상품 리스트 초기화
                     const selectedCategories = [...document.querySelectorAll('#categorySelect input:checked')].map(el => el.value);
                     const selectedSaleStatus = [...document.querySelectorAll('#saleStatusSelect input:checked')].map(el => el.value);
                     const selectedProductCategories = [...document.querySelectorAll('#productSelect input:checked')].map(el => el.value);
-                    currentCategories = selectedCategories; // 현재 선택된 카테고리 업데이트
-                    loadMoreProducts(initialSize, true, selectedCategories, selectedSaleStatus, selectedProductCategories); // 선택된 카테고리로 상품 로드
-                });
-                // 판매 상태
-                document.getElementById('saleStatusSelect').addEventListener('change', function() {
-                    currentPage = 0;
-                    isLastPage = false;
-                    document.querySelector('.product-list').innerHTML = ''; // 상품 리스트 초기화
-                    const selectedCategories = [...document.querySelectorAll('#categorySelect input:checked')].map(el => el.value);
-                    const selectedSaleStatus = [...document.querySelectorAll('#saleStatusSelect input:checked')].map(el => el.value);
-                    const selectedProductCategories = [...document.querySelectorAll('#productSelect input:checked')].map(el => el.value);
-                    currentCategories = selectedCategories; // 현재 선택된 카테고리와 판매 상태를 업데이트
-                    loadMoreProducts(initialSize, true, selectedCategories, selectedSaleStatus, selectedProductCategories); // 선택된 카테고리와 판매 상태로 상품 로드
-                });
-                // 카테고리
-                document.getElementById('productSelect').addEventListener('change', function() {
-                    currentPage = 0;
-                    isLastPage = false;
-                    document.querySelector('.product-list').innerHTML = '';
-                    const selectedCategories = [...document.querySelectorAll('#categorySelect input:checked')].map(el => el.value);
-                    const selectedSaleStatus = [...document.querySelectorAll('#saleStatusSelect input:checked')].map(el => el.value);
-                    const selectedProductCategories = [...document.querySelectorAll('#productSelect input:checked')].map(el => el.value);
-                    currentCategories = selectedCategories;
-                    loadMoreProducts(initialSize, true, selectedCategories, selectedSaleStatus, selectedProductCategories);
+                    loadMoreProducts(initialSize, true, selectedCategories, selectedSaleStatus, selectedProductCategories, minPrice, maxPrice);
+                }
+
+                document.getElementById('categorySelect').addEventListener('change', updateAndLoadProducts);
+                document.getElementById('saleStatusSelect').addEventListener('change', updateAndLoadProducts);
+                document.getElementById('productSelect').addEventListener('change', updateAndLoadProducts);
+
+                // 가격 범위
+                document.getElementById('applyPriceFilter').addEventListener('click', function() {
+                    minPrice = document.getElementById('minPrice').value || 0;
+                    maxPrice = document.getElementById('maxPrice').value || 999999999;
+
+                    updateAndLoadProducts();
                 });
             });
 
@@ -163,6 +163,7 @@
                 // 전체 페이지의 스크롤 위치에 따라 사이드바 내부의 스크롤 위치를 조정
                 document.querySelector('.sidebar').scrollTop = scrollTop;
             });
+
 
     </script>
 
@@ -257,6 +258,12 @@
             <br/>
         </div>
         <br/>
+        <div id="priceRangeSelect">
+            <label>최소 가격: <input type="number" id="minPrice" name="minPrice" placeholder="0"></label><br>
+            <label>최대 가격: <input type="number" id="maxPrice" name="maxPrice" placeholder="0"></label><br>
+            <button id="applyPriceFilter">적용</button>
+        </div>
+        <br/>
         <p>상품 상태</p>
         <div id="categorySelect">
             <label><input type="checkbox" value="1"> 새상품(미개봉)</label><br>
@@ -271,6 +278,7 @@
             <label><input type="checkbox" name="saleStatus" value="1"> 판매중</label><br>
             <label><input type="checkbox" name="saleStatus" value="3"> 판매완료</label><br>
         </div>
+
     </div>
     <div class="product-list">
 

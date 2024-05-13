@@ -5,6 +5,8 @@ import com.fashionflow.dto.ListingItemDTO;
 import com.fashionflow.constant.ItemStatus;
 import com.fashionflow.entity.Item;
 import org.springframework.data.jpa.domain.Specification;
+
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import com.fashionflow.service.ListService;
@@ -41,7 +43,11 @@ public class ListController {
     public ResponseEntity<List<ListingItemDTO>> listMoreProducts(@RequestParam("page") int currentPage, @RequestParam("size") int size,
                                                                  @RequestParam(value = "categories", required = false) String categories,
                                                                  @RequestParam(value = "saleStatus", required = false) String saleStatus,
-                                                                 @RequestParam(value = "productCategories", required = false) String productCategories){
+                                                                 @RequestParam(value = "productCategories", required = false) String productCategories,
+                                                                 @RequestParam(value = "minPrice", required = false, defaultValue = "0") int minPrice,
+                                                                 @RequestParam(value = "maxPrice", required = false, defaultValue = "999999999") int maxPrice){
+
+
         Pageable pageable = PageRequest.of(currentPage, size); // 페이지 번호와 페이지당 항목 수 설정
         List<Long> categoryList = new ArrayList<>();
         if(categories != null && !categories.isEmpty()) {
@@ -63,7 +69,7 @@ public class ListController {
         }
 
 
-        Page<ListingItemDTO> goodsPage = listService.listingItemWithImgAndCategories(pageable, categoryList, saleStatusList, productCategoriesList);
+        Page<ListingItemDTO> goodsPage = listService.listingItemWithImgAndCategories(pageable, categoryList, saleStatusList, productCategoriesList, minPrice, maxPrice);
 
         return ResponseEntity.ok(goodsPage.getContent()); // ResponseEntity를 통해 ListingItemDTO 목록을 JSON 형식으로 반환
     }

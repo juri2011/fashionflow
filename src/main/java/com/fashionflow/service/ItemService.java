@@ -208,7 +208,7 @@ public class ItemService {
 
 
     @Transactional
-    public void updateItem(Long itemId, ItemFormDTO itemFormDTO) {
+    public void updateItem(Long itemId, ItemFormDTO itemFormDTO, List<MultipartFile> itemImgFileList) throws Exception {
         // Repository에서 상품 번호를 사용하여 Item 엔티티 가져오기
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 상품이 존재하지 않습니다. id = " + itemId));
@@ -219,7 +219,22 @@ public class ItemService {
                 itemFormDTO.getSellStatus(), itemFormDTO.getItemStatus(), itemFormDTO.getContent(),
                 itemFormDTO.getPrice(), itemFormDTO.getDelivery(), itemFormDTO.getAddress());
 
-        // ItemImgDTOList 업데이트
+        // 이미지 파일 처리
+        if (itemImgFileList != null && !itemImgFileList.isEmpty()) {
+            // 이전에 등록된 상품 이미지 삭제
+            itemImgRepository.deleteByItemId(itemId);
+            for (int i = 0; i < itemImgFileList.size(); i++) {
+                MultipartFile file = itemImgFileList.get(i);
+                if (!file.isEmpty()) {
+                    ItemImg itemImg = new ItemImg();
+                    itemImg.setItem(item);
+                    itemImg.setRepimgYn(i == 0 ? "Y" : "N"); // 첫 번째 이미지를 대표 이미지로 설정
+                    itemImgService.saveItemImg(itemImg, file);
+                }
+            }
+        }
+
+        /*// ItemImgDTOList 업데이트
         List<ItemImgDTO> itemImgDTOList = itemFormDTO.getItemImgDTOList();
         if (itemImgDTOList != null && !itemImgDTOList.isEmpty()) {
             // 이전에 등록된 상품 이미지 삭제
@@ -229,7 +244,7 @@ public class ItemService {
                     .map(imgDTO -> new ItemImg(imgDTO.getOriImgName(), imgDTO.getRepimgYn(), item))
                     .collect(Collectors.toList());
             itemImgRepository.saveAll(itemImgs);
-        }
+        }*/
 
         // ItemTagDTOList 업데이트
         List<ItemTagDTO> itemTagDTOList = itemFormDTO.getItemTagDTOList();

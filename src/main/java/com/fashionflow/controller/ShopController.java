@@ -5,10 +5,7 @@ import com.fashionflow.dto.*;
 import com.fashionflow.entity.Item;
 import com.fashionflow.entity.Review;
 import com.fashionflow.repository.ItemRepository;
-import com.fashionflow.service.BuyerService;
-import com.fashionflow.service.CategoryService;
-import com.fashionflow.service.ItemService;
-import com.fashionflow.service.ReviewService;
+import com.fashionflow.service.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -35,11 +32,11 @@ public class ShopController {
 
     private final ItemService itemService;
 
-    private final ItemRepository itemRepository;
-
     private final CategoryService categoryService;
 
     private final ReviewService reviewService;
+
+    private final HeartService heartService;
 
 
     @GetMapping("/members/item/new")
@@ -91,14 +88,20 @@ public class ShopController {
     public String showMyShop(@AuthenticationPrincipal User user, Model model) {
         String userEmail = user.getUsername(); // 현재 로그인한 사용자의 이메일을 가져옴
         List<ItemFormDTO> items = itemService.getItemsWithImagesByUserEmail(userEmail);
-        // 리뷰내역 리스트
-        List<ReviewDTO> getItemReviewListWithImg = reviewService.getItemReviewListWithImg();
+
+        // 현재 사용자의 이메일로 등록된 리뷰만 가져오도록 수정
+        List<ReviewDTO> getItemReviewListWithImg = reviewService.getItemReviewListWithImg(userEmail);
+
+        // 현재 사용자의 이메일로 등록된 리뷰만 가져오도록 수정
+        List<HeartDTO> getHeartItemsWithImagesByUserEmail = heartService.getHeartItemsWithImagesByUserEmail(userEmail);
 
 
-        model.addAttribute("getItemReviewListWithImg", getItemReviewListWithImg); // 리뷰가 이미 작성되었는지 여부를 모델에 추가
         model.addAttribute("items", items);
+        model.addAttribute("getItemReviewListWithImg", getItemReviewListWithImg); // 리뷰가 이미 작성되었는지 여부를 모델에 추가
+        model.addAttribute("getHeartItemsWithImagesByUserEmail", getHeartItemsWithImagesByUserEmail); // 리뷰가 이미 작성되었는지 여부를 모델에 추가
         return "myshop"; // HTML 파일 이름과 일치
     }
+
 
 
     @GetMapping("/members/item/{itemId}")
@@ -120,32 +123,44 @@ public class ShopController {
     @PostMapping("/members/item/{itemId}")
     public String updateItem(@PathVariable("itemId") Long itemId,
                              @ModelAttribute("itemFormDTO") ItemFormDTO itemFormDTO,
+                             @RequestParam("itemImgFile") List<MultipartFile> itemImgFileList,
+                             @RequestParam("tagSelectList") List<String> tagSelectList,
                              RedirectAttributes redirectAttributes) {
+        for(String tagSelect : tagSelectList){
+            ItemTagDTO itemTagDTO = new ItemTagDTO();
+            itemTagDTO.setItemTagName(ItemTagName.valueOf(tagSelect));
+
+            itemFormDTO.getItemTagDTOList().add(itemTagDTO);
+        }
+
         if (itemId == null) {
             // 아이템 ID가 null인 경우 처리
             redirectAttributes.addFlashAttribute("errorMessage", "상품 ID가 null입니다.");
+
             return "redirect:/myshop";
         }
 
         try {
-            itemService.updateItem(itemId, itemFormDTO);
+            itemService.updateItem(itemId, itemFormDTO, itemImgFileList);
             return "redirect:/myshop";
-        } catch (EntityNotFoundException e) {
+        } catch (Exception e) {
             redirectAttributes.addAttribute("itemId", itemId);
             return "forward:/members/item/{itemId}";
         }
     }
 
     @PostMapping("/members/item/delete/{itemId}")
-    public ResponseEntity<String> deleteItem(@PathVariable("itemId") Long itemId) {
+    public String deleteItem(@PathVariable("itemId") Long itemId, RedirectAttributes redirectAttributes) {
         try {
             // 상품을 삭제합니다.
             itemService.deleteItem(itemId);
-            // 상품 삭제에 성공하면 200 OK 응답을 반환합니다.
-            return ResponseEntity.ok("Item deleted successfully.");
+            // 상품 삭제에 성공하면 "해당 상품이 삭제 되었습니다" 메시지를 포함한 리다이렉트를 반환합니다.
+            redirectAttributes.addFlashAttribute("successMessage", "해당 상품이 삭제 되었습니다.");
+            return "redirect:/myshop";
         } catch (Exception e) {
-            // 상품 삭제에 실패하면 500 Internal Server Error 응답을 반환합니다.
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete item.");
+            // 상품 삭제에 실패하면 "상품 삭제에 실패했습니다" 메시지를 포함한 리다이렉트를 반환합니다.
+            redirectAttributes.addFlashAttribute("errorMessage", "상품 삭제에 실패했습니다.");
+            return "redirect:/myshop";
         }
     }
 

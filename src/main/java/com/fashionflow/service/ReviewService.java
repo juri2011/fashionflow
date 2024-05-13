@@ -21,20 +21,14 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final ItemImgRepository itemImgRepository;
 
-   /* public List<Review> getMyReviews() {
-        // 현재 로그인한 회원의 아이디 가져오기
-        String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        // 현재 로그인한 회원이 등록한 상품들의 리뷰를 가져옵니다.
-        List<Review> myReviews = reviewRepository.findReviewsByItemMemberEmail(currentUsername);
-
-        return myReviews;
-    }*/
-
-    public List<ReviewDTO> getItemReviewListWithImg() {
+    public List<ReviewDTO> getItemReviewListWithImg(String userEmail) {
         List<ReviewDTO> reviewDTOs = new ArrayList<>();
 
-        for (Review review : reviewRepository.findAll()) {
+        // 현재 사용자의 이메일로 등록된 리뷰를 최근에 작성된 순서로 가져옴
+        List<Review> reviews = reviewRepository.findReviewsByItemMemberEmailOrderByRegDateDesc(userEmail);
+
+        for (Review review : reviews) {
             ItemImg img = itemImgRepository.findByItemIdAndRepimgYn(review.getItem().getId(), "Y")
                     .orElse(null); // 대표 이미지가 없는 경우를 대비한 처리
 
@@ -54,5 +48,6 @@ public class ReviewService {
 
         return reviewDTOs;
     }
+
 
 }

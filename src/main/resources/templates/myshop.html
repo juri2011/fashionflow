@@ -7,6 +7,13 @@
 <head>
     <meta charset="UTF-8">
     <title>내상점페이지</title>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        function redirectToItemDetail(itemId) {
+            window.location.href = /*[[@{/item/}]]*/ + itemId;
+        }
+        /*]]>*/
+    </script>
     <style>
         /* 탭 메뉴 스타일링 */
         .tab {
@@ -141,7 +148,18 @@
 
     <div id="Register" class="tabcontent">
         <h3>찜</h3>
-        <p>여기는 찜 탭의 내용입니다.</p>
+        <hr>
+        <div th:each="heart : ${getHeartItemsWithImagesByUserEmail}" class="heart-box">
+            <form method="post" class="heart-box" th:action="@{/heart/removeHeart/{heartId}(heartId=${heart.id})}">
+                <input type="hidden" name="id" th:value="${heart.id}" />
+                <a th:href="'/item/' + ${heart.id}">
+                    <img th:if="${heart.imgName != null}" th:src="${heart.imgName}" alt="Product Image" class="product-image" style="width:100px;">
+                </a>
+                <span th:if="${heart.itemName}" th:text="'상품명: ' + ${heart.itemName}" ></span>
+                <span th:if="${heart.price}" th:text="'가격: ' + ${heart.price}" ></span>
+                <button type="submit">찜 삭제</button>
+            </form>
+        </div>
     </div>
 
 

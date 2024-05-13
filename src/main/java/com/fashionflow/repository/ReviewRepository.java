@@ -13,5 +13,5 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     Review findByMemberAndItem(Member member, Item item);
 
     // 아이템의 회원 이메일로 리뷰를 찾는 메소드 추가
-    List<Review> findReviewsByItemMemberEmail(String email);
+    List<Review> findReviewsByItemMemberEmailOrderByRegDateDesc(String email);
 }

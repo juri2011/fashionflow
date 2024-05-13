@@ -156,6 +156,25 @@
                     minPrice = document.getElementById('minPrice').value || 0;
                     maxPrice = document.getElementById('maxPrice').value || 999999999;
 
+                    // 가격 유효성
+                    // 최대 가격
+                    if (maxPrice > 999999999) {
+                        alert("최대가격은 999999999 입니다.");
+                        event.preventDefault();
+                    }
+
+                    // 최소 가격과 최대 가격이 양수인지 확인
+                    if (minPrice < 0 || maxPrice < 0) {
+                        alert("가격은 양수여야 합니다.");
+                        event.preventDefault();
+                    }
+
+                    // 최소 가격이 최대 가격보다 낮은지 확인
+                    if (parseInt(minPrice) > parseInt(maxPrice)) {
+                        alert("최대 가격은 최소 가격보다 커야 합니다.");
+                        event.preventDefault();
+                    }
+
                     updateAndLoadProducts();
                 });
 
@@ -187,6 +206,7 @@
                 // 전체 페이지의 스크롤 위치에 따라 사이드바 내부의 스크롤 위치를 조정
                 document.querySelector('.sidebar').scrollTop = scrollTop;
             });
+
     </script>
 
     <style>
@@ -282,7 +302,7 @@
         <br/>
         <div id="priceRangeSelect">
             <label>최소 가격: <input type="number" id="minPrice" name="minPrice" placeholder="0"></label><br>
-            <label>최대 가격: <input type="number" id="maxPrice" name="maxPrice" placeholder="0"></label><br>
+            <label>최대 가격: <input type="number" id="maxPrice" name="maxPrice" placeholder="999999999"></label><br>
             <button id="applyPriceFilter">적용</button>
         </div>
         <br/>

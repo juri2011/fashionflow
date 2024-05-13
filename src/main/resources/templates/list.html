@@ -18,6 +18,8 @@
             let currentProductCategories = [];
             let currentMinPrice = 0;
             let currentMaxPrice = 999999999;
+            let currentSort = 'regdate';
+            let currentDirection = 'DESC';
 
             // 가격 출력
             function formatPrice(price) {
@@ -50,7 +52,7 @@
                 const priceQuery = `&minPrice=${minPrice}&maxPrice=${maxPrice}`;
 
                 setTimeout(() => {
-                    fetch(`/list/more?page=${currentPage}&size=${size}${categoriesQuery}${saleStatusQuery}${productCategoriesQuery}${priceQuery}`)
+                    fetch(`/list/more?page=${currentPage}&size=${size}&sort=${currentSort}&direction=${currentDirection}${categoriesQuery}${saleStatusQuery}${productCategoriesQuery}${priceQuery}`)
                         .then(response => response.json())
                         .then(products => {
                             if(products.length === 0) {
@@ -142,6 +144,7 @@
                     const selectedSaleStatus = [...document.querySelectorAll('#saleStatusSelect input:checked')].map(el => el.value);
                     const selectedProductCategories = [...document.querySelectorAll('#productSelect input:checked')].map(el => el.value);
                     loadMoreProducts(initialSize, true, selectedCategories, selectedSaleStatus, selectedProductCategories, minPrice, maxPrice);
+
                 }
 
                 document.getElementById('categorySelect').addEventListener('change', updateAndLoadProducts);
@@ -155,6 +158,27 @@
 
                     updateAndLoadProducts();
                 });
+
+                document.getElementById('sortDate').addEventListener('click', function() {
+                    if (currentSort === 'regdate') {
+                        currentDirection = currentDirection === 'DESC' ? 'ASC' : 'DESC';
+                    } else {
+                        currentSort = 'regdate';
+                        currentDirection = 'DESC';
+                    }
+                    updateAndLoadProducts();
+                });
+
+                document.getElementById('sortPrice').addEventListener('click', function() {
+                    if (currentSort === 'price') {
+                        currentDirection = currentDirection === 'DESC' ? 'ASC' : 'DESC';
+                    } else {
+                        currentSort = 'price';
+                        currentDirection = 'DESC';
+                    }
+                    updateAndLoadProducts();
+                });
+
             });
 
             // 사이드바 스크롤
@@ -163,8 +187,6 @@
                 // 전체 페이지의 스크롤 위치에 따라 사이드바 내부의 스크롤 위치를 조정
                 document.querySelector('.sidebar').scrollTop = scrollTop;
             });
-
-
     </script>
 
     <style>
@@ -280,6 +302,8 @@
         </div>
 
     </div>
+    <button id="sortDate">등록일순</button>
+    <button id="sortPrice">가격순</button>
     <div class="product-list">
 
     </div>

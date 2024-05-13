@@ -11,10 +11,7 @@ import com.fashionflow.entity.ItemImg;
 import com.fashionflow.repository.ItemImgRepository;
 import com.fashionflow.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +28,7 @@ public class ListService {
 
 
     public Page<ListingItemDTO> listingItemWithImgAndCategories(Pageable pageable, List<Long> categoryList, List<Long> saleStatusList, List<Long> productCategoryList, int minPrice, int maxPrice) {
+
 
         Page<Item> listingItems = itemRepository.findAll(withCategory(categoryList, saleStatusList, productCategoryList, minPrice, maxPrice), pageable);
 

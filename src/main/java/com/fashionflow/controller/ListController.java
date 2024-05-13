@@ -4,6 +4,7 @@ import com.fashionflow.dto.BuyerDTO;
 import com.fashionflow.dto.ListingItemDTO;
 import com.fashionflow.constant.ItemStatus;
 import com.fashionflow.entity.Item;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
@@ -38,9 +39,13 @@ public class ListController {
     public String listPage() {
         return "/list";
     }
+
     @GetMapping("/list/more")
     @ResponseBody
-    public ResponseEntity<List<ListingItemDTO>> listMoreProducts(@RequestParam("page") int currentPage, @RequestParam("size") int size,
+    public ResponseEntity<List<ListingItemDTO>> listMoreProducts(@RequestParam("page") int currentPage,
+                                                                 @RequestParam("size") int size,
+                                                                 @RequestParam(value = "sort", required = false, defaultValue = "regdate") String sort,
+                                                                 @RequestParam(value = "direction", required = false, defaultValue = "DESC") String direction,
                                                                  @RequestParam(value = "categories", required = false) String categories,
                                                                  @RequestParam(value = "saleStatus", required = false) String saleStatus,
                                                                  @RequestParam(value = "productCategories", required = false) String productCategories,
@@ -48,7 +53,7 @@ public class ListController {
                                                                  @RequestParam(value = "maxPrice", required = false, defaultValue = "999999999") int maxPrice){
 
 
-        Pageable pageable = PageRequest.of(currentPage, size); // 페이지 번호와 페이지당 항목 수 설정
+
         List<Long> categoryList = new ArrayList<>();
         if(categories != null && !categories.isEmpty()) {
             categoryList = Arrays.stream(categories.split(","))
@@ -69,8 +74,13 @@ public class ListController {
         }
 
 
+        Sort.Direction sortDirection = "ASC".equalsIgnoreCase(direction) ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sortObj = Sort.by(sortDirection, sort);
+        Pageable pageable = PageRequest.of(currentPage, size, sortObj);
+
         Page<ListingItemDTO> goodsPage = listService.listingItemWithImgAndCategories(pageable, categoryList, saleStatusList, productCategoriesList, minPrice, maxPrice);
 
         return ResponseEntity.ok(goodsPage.getContent()); // ResponseEntity를 통해 ListingItemDTO 목록을 JSON 형식으로 반환
     }
+
 }

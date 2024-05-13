@@ -192,7 +192,12 @@
             </select>
         </div>
         <div class="form-group">
-            <div id="selectedTagsDisplay" class="alert alert-info"></div>
+
+            <div id="selectedTagsDisplay" class="alert alert-info">
+                <th:block th:each="itemTag : ${itemFormDTO.itemTagDTOList}">
+                    [[${#strings.toString(itemTag.itemTagName.description)}]]<th:block th:if="${itemTagStat.last} == false">,</th:block>
+                </th:block>
+            </div>
         </div>
 
         <p class="h2">가격 및 배송비</p>
@@ -236,7 +241,9 @@
             </button>
         </div>
 
-
+        <th:block th:each="itemTag : ${itemFormDTO.itemTagDTOList}">
+            <input class="loaded-item-tag" type="hidden" name="tagSelectList" th:value="${#strings.toString(itemTag.itemTagName)}">
+        </th:block>
 
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
     </form>
@@ -341,8 +348,15 @@
 
     // 선택된 태그 출력, 추가
    var selectedTags = [];  // 선택된 태그의 코드를 저장하는 배열
+   var isAddTagExecutedOnce = false;
 
      function addTag() {
+        if(!isAddTagExecutedOnce){
+            const loadedTag = $('.loaded-item-tag');
+            loadedTag.remove();
+            isAddTagExecutedOnce = true;
+        }
+
         var tagSelect = document.getElementById('tagSelect');
         var selectedOption = tagSelect.options[tagSelect.selectedIndex];
         // 선택된 옵션을 확인하고 배열에 없으면 추가
@@ -352,9 +366,11 @@
             tagSelect.selectedIndex = 0;  // 셀렉트 박스를 초기화
 
             str = '<input type="hidden" name="tagSelectList" value="'+ selectedOption.value +'"/>';
-            $('#RegistForm').append(str);
+            $('#ModifyForm').append(str);
         }
     }
+
+
 
 
     function updateTagsDisplay() {

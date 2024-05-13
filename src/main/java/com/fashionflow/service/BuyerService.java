@@ -25,7 +25,6 @@ public class BuyerService {
     private final ItemRepository itemRepository;
     private final MemberService memberService;
     private final ItemImgRepository itemImgRepository;
-    private final MemberRepository memberRepository;
 
 
 
@@ -68,7 +67,7 @@ public class BuyerService {
                 .member(member)
                 .content(reviewDTO.getContent())
                 .score(reviewDTO.getScore())
-                .regdate(LocalDateTime.now())
+                .regDate(LocalDateTime.now())
                 .build();
 
         reviewRepository.save(review);
@@ -105,4 +104,6 @@ public class BuyerService {
             seller.updateMannerScore(avgScore);
         }
     }
+
+
 }

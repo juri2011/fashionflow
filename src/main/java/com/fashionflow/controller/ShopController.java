@@ -1,11 +1,11 @@
 package com.fashionflow.controller;
 
 import com.fashionflow.constant.ItemTagName;
-import com.fashionflow.dto.CategoryDTO;
-import com.fashionflow.dto.ItemFormDTO;
-import com.fashionflow.dto.ItemTagDTO;
+import com.fashionflow.dto.*;
 import com.fashionflow.entity.Item;
+import com.fashionflow.entity.Review;
 import com.fashionflow.repository.ItemRepository;
+import com.fashionflow.service.BuyerService;
 import com.fashionflow.service.CategoryService;
 import com.fashionflow.service.ItemService;
 import com.fashionflow.service.ReviewService;
@@ -39,6 +39,7 @@ public class ShopController {
 
     private final CategoryService categoryService;
 
+    private final ReviewService reviewService;
 
 
     @GetMapping("/members/item/new")
@@ -90,6 +91,11 @@ public class ShopController {
     public String showMyShop(@AuthenticationPrincipal User user, Model model) {
         String userEmail = user.getUsername(); // 현재 로그인한 사용자의 이메일을 가져옴
         List<ItemFormDTO> items = itemService.getItemsWithImagesByUserEmail(userEmail);
+        // 리뷰내역 리스트
+        List<ReviewDTO> getItemReviewListWithImg = reviewService.getItemReviewListWithImg();
+
+
+        model.addAttribute("getItemReviewListWithImg", getItemReviewListWithImg); // 리뷰가 이미 작성되었는지 여부를 모델에 추가
         model.addAttribute("items", items);
         return "myshop"; // HTML 파일 이름과 일치
     }
@@ -142,9 +148,6 @@ public class ShopController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete item.");
         }
     }
-
-
-
 
 
 

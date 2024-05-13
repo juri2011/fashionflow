@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @ToString
@@ -13,6 +15,17 @@ import lombok.ToString;
 public class ReviewDTO {
 
     private Long id;
+
+    private String itemName;
+
     private String content;
+
+    private int price;
+
     private int score;
+
+    private String imgName;
+
+    private LocalDateTime regDate;
+
 }

@@ -1,10 +1,8 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="_csrf" th:content="${_csrf.token}"/>
-    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
-    <title>Title</title>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout1}">
+<th:block layout:fragment="css">
     <style>
         #detailPopup, #detailPopupMember{
             display: none;
@@ -13,9 +11,7 @@
             top: 0;
             left: 50%;
             transform: translateX(-50%);
-            padding: 20px;
             position: fixed;
-            background-color: yellow;
         }
 
         .tagBlock, .tagBlockMember{
@@ -25,382 +21,429 @@
             padding: 5px;
         }
     </style>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-</head>
-<script>
-    $(document).ready(function(){
-        $('.reportBtn').on('click', function(){
-            $('#detailPopup').show();
-        });
-        $('.closePopup').on('click', function(){
-            $('#detailPopup').hide();
-        });
-        $('.reportConfirm').on('click', function(){
-            reportItem();
-            $('#detailPopup').hide();
-        });
-        $('#tagSelect').on('input', function(){
-            let selectedOption = $('#tagSelect option:selected').val();
-            let selectedText = $('#tagSelect option:selected').text();
-            let tagBlock = '<span class="tagBlock" data-tag="'+selectedOption+'">'+ selectedText +'</span>';
-            if(selectedOption !== 'default'){
-                if($('.tagBox').find('.tagBlock[data-tag="'+selectedOption+'"]').length>0){alert('존재함')}
-                else $('.tagBox').append(tagBlock);
-            }
-            $('#tagSelect option:eq(0)').prop('selected', true);
-        });
+    </th:block>
 
-        $('.tagBox').on('click', '.tagBlock', function() {
-            // 클릭된 동적으로 생성된 버튼에 대한 처리를 여기에 작성합니다.
-            console.log($(event.target).text());
-            $(event.target).remove();
+<div layout:fragment="content">
+    <!--<input type="hidden" id="itemId" th:value="${itemFormDTO.id}">-->
+    <input type="hidden" id="currentMemberEmail" th:value="${currentMember}">
+
+    <!-- 채팅방 생성 및 입장을 위한 form -->
+    <form id="chat-form" th:action="@{/chat/room}" method="post">
+        <!--<input type="hidden" name="name" class="form-control">-->
+        <input type="hidden" id="itemId" name="itemId" th:value="${itemFormDTO.id}" class="form-control">
+        <input type="hidden" id="shopMemberEmail" name="shopMemberEmail" th:value="${shopMember.email}" class="form-control">
+        <!--<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">-->
+    </form>
+
+    <h1>상품 데이터 출력 예제</h1>
+    <h2>상품 데이터</h2>
+    <button type="button" class="reportBtn">신고하기</button>
+    <button type="button" class="heartBtn">찜하기</button>
+    <button type="button" class="chatBtn">플로우톡</button>
+    <div>
+        상품명 : <span th:text="${itemFormDTO.itemName}"></span>
+    </div>
+    <div>
+        상세설명 : <span th:text="${itemFormDTO.content}"></span>
+    </div>
+    <div>
+        가격 : <span th:text="${itemFormDTO.price}"></span>
+    </div>
+    <div>
+        배송비 : <span th:text="${itemFormDTO.delivery}"></span>
+    </div>
+    <div>
+        주소 : <span th:text="${itemFormDTO.address}"></span>
+    </div>
+    <div>
+        등록일 :
+        <span th:text="${#temporals.format(itemFormDTO.regdate, 'yyyy-MM-dd HH:mm:ss')}"></span>
+    </div>
+    <div>
+        상품상태 :
+        <span th:switch="${#strings.toString(itemFormDTO.itemStatus)}">
+                <span th:case="NEW">새상품</span>
+                <span th:case="NO_SIGNS_OF_USE">사용감 없음</span>
+                <span th:case="SOME_SIGNS_OF_USE">사용감 적음</span>
+                <span th:case="SIGNIFICANT_SIGNS_OF_USE">사용감 많음</span>
+                <span th:case="FAULTY">파손/고장</span>
+            </span>
+        <!--<span th:text="${item.itemStatus}"></span>-->
+    </div>
+    <div th:switch="${#strings.toString(itemFormDTO.sellStatus)}">
+        판매상태 :
+        <span th:case="SELLING">판매중</span>
+        <span th:case="SUSPENDED">판매중단</span>
+        <span th:case="SOLD_OUT">판매완료</span>
+    </div>
+    <div>
+        조회수 : <span th:text="${itemFormDTO.viewCount}"></span> <br>
+        찜한 횟수 : <span th:text="${heartCount}"></span>
+    </div>
+
+    <div>
+        태그 :
+        <span th:each="itemTag, status: ${itemFormDTO.itemTagDTOList}">
+                <span th:switch="${#strings.toString(itemTag.itemTagName)}">
+                    <span th:case="DIRECT_TRADE">직거래</span>
+                    <span th:case="DELIVERY_TRADE">택배거래</span>
+                    <span th:case="SAME_DAY_DELIVERY">당일배송</span>
+                    <span th:case="INTERNATIONAL_DELIVERY">해외배송</span>
+                </span>
+            </span>
+    </div>
+
+
+
+    <div>
+        카테고리 :
+        <span th:if="${itemFormDTO.categoryDTO.parent != null}"
+              th:text="${itemFormDTO.categoryDTO.parent.name}+' &gt'"></span>
+        <span th:text="${itemFormDTO.categoryDTO.name}"></span>
+    </div>
+    <!--<img src="/test_images/clothes1_1.png" alt="상품사진">-->
+    <hr/>
+
+    <h2>판매 상품 이미지</h2>
+    <!-- 판매중인 상품 이미지 -->
+    <div th:each="itemImg, status: ${itemFormDTO.itemImgDTOList}">
+        <img th:src="'/images/'+${itemImg.imgName}">
+    </div>
+
+    <hr>
+
+    <h2>판매자 정보</h2>
+
+    <button class="reportMemberBtn" type="button">사용자 신고하기</button>
+    <div>
+        판매자 닉네임 : <span th:text="${shopMember.nickname}"></span>
+    </div>
+    <div>
+        판매자 매너점수 : <span th:text="${shopMember.mannerScore}"></span>
+    </div>
+    <div>
+        판매자 가입일 :
+        <span th:text="${#temporals.format(shopMember.regdate, 'yyyy-MM-dd')}"></span>
+    </div>
+    <div>
+        판매자 프로필사진 :
+        <img th:if="${shopMember.profileImageDTO}==null" src="/img/profile_default.png">
+        <!-- 테스트를 위해 임시 경로를 지정했지만 파일업로드 기능이 구현되면 변경될 수 있습니다.
+        view에서 null인지 조건을 검사하는 것보다 회원가입할 때 사용자가 프로필 사진을 따로 설정하지 않았으면
+         기본 사진의 경로와 이미지 이름으로 지정하는 것이 더 깔끔해 보임 -->
+
+        <img th:if="${shopMember.profileImageDTO}!=null"
+             th:src="${shopMember.profileImageDTO.uploadPath}+${shopMember.profileImageDTO.filename}">
+    </div>
+    <div>
+        판매자 판매수 : <span th:text="${sellCount}"></span>
+    </div>
+    <div>
+        판매자 소개 : <span th:text="${shopMember.intro}"></span>
+    </div>
+    <hr/>
+    <h2>판매중인 다른 상품</h2>
+    사용자가 판매중인 다른 상품
+    <div th:each="otherItem, status: ${shopMember.itemFormDTOList}">
+        <img th:if="${otherItem.itemRepImgDTO} != null" th:src="'/images/'+${otherItem.itemRepImgDTO.imgName}" alt="사진">
+        <img th:if="${otherItem.itemRepImgDTO} == null" src="/img/item_not_found.png" alt="사진">
+        <p th:text="${otherItem.itemName}"></p>
+        <p th:text="${otherItem.price}"></p>
+        <p th:text="${#temporals.format(otherItem.regdate, 'yyyy-MM-dd')}"></p>
+        <hr>
+    </div>
+    <div id="detailPopup" class="modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">상품 신고</h5>
+                    <button type="button" class="btn-close closePopup" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <span th:each="itemImg, status: ${itemFormDTO.itemImgDTOList}">
+                            <img class="img-thumbnail" th:alt="${itemImg.imgName}" style="width:100px; height:100px;"
+                                 th:if="${itemImg.repimgYn} == 'Y'"
+                                 th:src="'/images/'+${itemImg.imgName}">
+                        </span>
+                            <span th:text="${itemFormDTO.itemName}"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="reportContent" class="form-label">신고 내용</label>
+                        <textarea class="form-control" id="reportContent" name="reportContent" placeholder="내용을 입력하세요"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="tagSelect" class="form-label">태그선택</label>
+                        <select class="form-select" name="tagSelect" id="tagSelect">
+                            <option value="default">--선택--</option>
+                            <option value="VIOLATION">규정위반</option>
+                            <option value="test">test</option>
+                        </select>
+                        <div class="tagBox"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary reportConfirm">신고하기</button>
+                    <button type="button" class="btn btn-secondary closePopup">취소</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="detailPopupMember" class="modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">사용자 신고</h5>
+                    <button type="button" class="btn-close closePopupMember" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <span th:text="${shopMember.nickname}"></span>
+                        <span th:text="'('+${shopMember.email}+')'"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="reportContent" class="form-label">신고 내용</label>
+                        <textarea class="form-control" id="reportContentMember" name="reportContentMember" placeholder="내용을 입력하세요"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="tagSelectMember" class="form-label">태그선택</label>
+                        <select name="tagSelectMember" id="tagSelectMember">
+                            <option value="default">--선택--</option>
+                            <option value="DISRESPECTFUL">비매너</option>
+                            <option value="FRAUD">사기</option>
+                        </select>
+                        <div class="tagBoxMember"></div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary reportConfirmMember">신고하기</button>
+                    <button type="button" class="btn btn-secondary closePopupMember">취소</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<th:block layout:fragment="script">
+    <script>
+        $(document).ready(function(){
+            $('.reportBtn').on('click', function(){
+                $('#detailPopup').show();
+            });
+            $('.closePopup').on('click', function(){
+                $('#detailPopup').hide();
+            });
+            $('.reportConfirm').on('click', function(){
+                reportItem();
+                $('#detailPopup').hide();
+            });
+            $('#tagSelect').on('input', function(){
+                let selectedOption = $('#tagSelect option:selected').val();
+                let selectedText = $('#tagSelect option:selected').text();
+                let tagBlock = '<span class="badge text-bg-secondary tagBlock" data-tag="'+selectedOption+'">' +
+                                selectedText +'</span>';
+                if(selectedOption !== 'default'){
+                    if($('.tagBox').find('.tagBlock[data-tag="'+selectedOption+'"]').length>0){alert('존재함')}
+                    else $('.tagBox').append(tagBlock);
+                }
+                $('#tagSelect option:eq(0)').prop('selected', true);
+            });
+
+            $('.tagBox').on('click', '.tagBlock', function() {
+                // 클릭된 동적으로 생성된 버튼에 대한 처리를 여기에 작성합니다.
+                console.log($(event.target).text());
+                $(event.target).remove();
+            });
+
+            //찜하기
+            $('.heartBtn').on('click', function(){
+                heartItem();
+            });
+
+            //사용자 신고
+            $('.reportMemberBtn').on('click', function(){
+                $('#detailPopupMember').show();
+            });
+            $('.reportConfirmMember').on('click', function(){
+                reportMember();
+                $('#detailPopupMember').hide();
+            });
+            $('.closePopupMember').on('click', function(){
+                $('#detailPopupMember').hide();
+            });
+            $('#tagSelectMember').on('input', function(){
+                let selectedOption = $('#tagSelectMember option:selected').val();
+                let selectedText = $('#tagSelectMember option:selected').text();
+                let tagBlock = '<span class="badge text-bg-secondary tagBlockMember" data-tag="'+selectedOption+'">'+
+                                selectedText +'</span>';
+                if(selectedOption !== 'default'){
+                    if($('.tagBoxMember').find('.tagBlockMember[data-tag="'+selectedOption+'"]').length>0){alert('존재함')}
+                    else $('.tagBoxMember').append(tagBlock);
+                }
+                $('#tagSelect option:eq(0)').prop('selected', true);
+            });
+            $('.tagBoxMember').on('click', '.tagBlockMember', function() {
+                // 클릭된 동적으로 생성된 버튼에 대한 처리를 여기에 작성합니다.
+                console.log($(event.target).text());
+                $(event.target).remove();
+            });
+
+            $(".chatBtn").on("click", function (e){
+                e.preventDefault();
+
+                const currentMemberEmail = $('#currentMemberEmail').val();
+                console.log(currentMemberEmail);
+                const shopMemberEmail = $('#shopMemberEmail').val();
+
+                if(currentMemberEmail === 'anonymousUser' || !currentMemberEmail){
+                    alert('로그인이 필요합니다.');
+                    location.href = "/members/login";
+                }
+
+                if(currentMemberEmail === shopMemberEmail){
+                    alert('구매자 정보가 판매자 정보와 일치합니다.');
+                }else{
+                    $("#chat-form").submit();
+                }
+            });
         });
 
         //찜하기
-        $('.heartBtn').on('click', function(){
-            heartItem();
-        });
+        function heartItem(){
+            const token = $("meta[name='_csrf']").attr("content");
+            const header = $("meta[name='_csrf_header']").attr("content");
+            const url = "/heart/addHeart";
+            const paramData = {id: $('#itemId').val()};
+            console.log(paramData);
+            const param = JSON.stringify(paramData);
+            $.ajax({
+                url: url,
+                type: "POST",
+                contentType: "application/json",
+                data: param,
+                beforeSend: function (xhr) {
+                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                    xhr.setRequestHeader(header, token);
+                },
+                dataType: "json",
+                cache: false,
+                success: function (result, status) {
+                    alert("찜 상품에 추가되었습니다.");
+                    //location.href = '/';
+                },
+                error: function (jqXHR, status, error) {
+
+                    if (jqXHR.status == '401') {
+                        alert('로그인 후 이용해주세요');
+                        //location.href = '/members/login';
+                    } else {
+                        alert(jqXHR.responseText);
+                    }
+
+                }
+            });
+        }
 
         //사용자 신고
-        $('.reportMemberBtn').on('click', function(){
-            $('#detailPopupMember').show();
-        });
-        $('.reportConfirmMember').on('click', function(){
-            reportMember();
-            $('#detailPopupMember').hide();
-        });
-        $('.closePopupMember').on('click', function(){
-            $('#detailPopupMember').hide();
-        });
-        $('#tagSelectMember').on('input', function(){
-            let selectedOption = $('#tagSelectMember option:selected').val();
-            let selectedText = $('#tagSelectMember option:selected').text();
-            let tagBlock = '<span class="tagBlockMember" data-tag="'+selectedOption+'">'+ selectedText +'</span>';
-            if(selectedOption !== 'default'){
-                if($('.tagBoxMember').find('.tagBlockMember[data-tag="'+selectedOption+'"]').length>0){alert('존재함')}
-                else $('.tagBoxMember').append(tagBlock);
-            }
-            $('#tagSelect option:eq(0)').prop('selected', true);
-        });
-        $('.tagBoxMember').on('click', '.tagBlockMember', function() {
-            // 클릭된 동적으로 생성된 버튼에 대한 처리를 여기에 작성합니다.
-            console.log($(event.target).text());
-            $(event.target).remove();
-        });
+        function reportMember(){
+            const token = $("meta[name='_csrf']").attr("content");
+            const header = $("meta[name='_csrf_header']").attr("content");
+            const url = "/report/reportMember";
+            const tagArray = $('.tagBlockMember').map(function(){
+                return $(this).data('tag');
+            }).get();
 
-        $(".chatBtn").on("click", function (e){
-            e.preventDefault();
-
-            const currentMemberEmail = $('#currentMemberEmail').val();
-            console.log(currentMemberEmail);
-            const shopMemberEmail = $('#shopMemberEmail').val();
-
-            if(currentMemberEmail === 'anonymousUser' || !currentMemberEmail){
-                alert('로그인이 필요합니다.');
-                location.href = "/members/login";
-            }
-
-            if(currentMemberEmail === shopMemberEmail){
-                alert('구매자 정보가 판매자 정보와 일치합니다.');
-            }else{
-                $("#chat-form").submit();
-            }
-        });
-    });
-
-    //찜하기
-    function heartItem(){
-        const token = $("meta[name='_csrf']").attr("content");
-        const header = $("meta[name='_csrf_header']").attr("content");
-        const url = "/heart/addHeart";
-        const paramData = {id: $('#itemId').val()};
-        console.log(paramData);
-        const param = JSON.stringify(paramData);
-        $.ajax({
-            url: url,
-            type: "POST",
-            contentType: "application/json",
-            data: param,
-            beforeSend: function (xhr) {
-                /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
-                xhr.setRequestHeader(header, token);
-            },
-            dataType: "json",
-            cache: false,
-            success: function (result, status) {
-                alert("찜 상품에 추가되었습니다.");
-                //location.href = '/';
-            },
-            error: function (jqXHR, status, error) {
-
-                if (jqXHR.status == '401') {
-                    alert('로그인 후 이용해주세요');
-                    //location.href = '/members/login';
-                } else {
-                    alert(jqXHR.responseText);
-                }
-
-            }
-        });
-    }
-
-    //사용자 신고
-    function reportMember(){
-        const token = $("meta[name='_csrf']").attr("content");
-        const header = $("meta[name='_csrf_header']").attr("content");
-        const url = "/report/reportMember";
-        const tagArray = $('.tagBlockMember').map(function(){
-            return $(this).data('tag');
-        }).get();
-
-        const paramData = {
-            reportedMemberEmail:$('#shopMemberEmail').val(),
-            content: $('#reportContentMember').val(),
-            reportMemberTagStringList: tagArray
-        };
-
-        console.log(paramData);
-
-        const param = JSON.stringify(paramData);
-
-        $.ajax({
-            url: url,
-            type: "POST",
-            contentType: "application/json",
-            data: param,
-            beforeSend: function (xhr) {
-                /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
-                xhr.setRequestHeader(header, token);
-            },
-            dataType: "json",
-            cache: false,
-            success: function (result, status) {
-                alert("신고처리 되었습니다.");
-                location.href = '/';
-            },
-            error: function (jqXHR, status, error) {
-
-                if (jqXHR.status == '401') {
-                    alert('로그인 후 이용해주세요');
-                    //location.href = '/members/login';
-                } else {
-                    alert(jqXHR.responseText);
-                }
-            }
-        });
-
-    }
-
-    //상품 신고
-    function reportItem(){
-        const token = $("meta[name='_csrf']").attr("content");
-        const header = $("meta[name='_csrf_header']").attr("content");
-        const url = "/report/reportItem";
-        const tagArray = $('.tagBlock').map(function(){
-            return $(this).data('tag');
-        }).get();
-
-        const paramData = {
-            reportedItemId:$('#itemId').val(),
-            content: $('#reportContent').val(),
-            reportTagItemList: tagArray
-        };
+            const paramData = {
+                reportedMemberEmail:$('#shopMemberEmail').val(),
+                content: $('#reportContentMember').val(),
+                reportMemberTagStringList: tagArray
+            };
 
             console.log(paramData);
 
             const param = JSON.stringify(paramData);
 
             $.ajax({
-                    url: url,
-                    type: "POST",
-                    contentType: "application/json",
-                    data: param,
-                    beforeSend: function (xhr) {
-                        /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
-                        xhr.setRequestHeader(header, token);
-                    },
-                    dataType: "json",
-                    cache: false,
-                    success: function (result, status) {
-                        alert("신고처리 되었습니다.");
-                        location.href = '/';
-                    },
-                    error: function (jqXHR, status, error) {
+                url: url,
+                type: "POST",
+                contentType: "application/json",
+                data: param,
+                beforeSend: function (xhr) {
+                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                    xhr.setRequestHeader(header, token);
+                },
+                dataType: "json",
+                cache: false,
+                success: function (result, status) {
+                    alert("신고처리 되었습니다.");
+                    location.href = '/';
+                },
+                error: function (jqXHR, status, error) {
 
-                        if (jqXHR.status == '401') {
-                            alert('로그인 후 이용해주세요');
-                            //location.href = '/members/login';
-                        } else {
-                            alert(jqXHR.responseText);
-                        }
-
+                    if (jqXHR.status == '401') {
+                        alert('로그인 후 이용해주세요');
+                        //location.href = '/members/login';
+                    } else {
+                        alert(jqXHR.responseText);
                     }
-                });
-            }
-</script>
-<body>
-<!--<input type="hidden" id="itemId" th:value="${itemFormDTO.id}">-->
-<input type="hidden" id="currentMemberEmail" th:value="${currentMember}">
+                }
+            });
 
-<!-- 채팅방 생성 및 입장을 위한 form -->
-<form id="chat-form" th:action="@{/chat/room}" method="post">
-    <!--<input type="hidden" name="name" class="form-control">-->
-    <input type="hidden" id="itemId" name="itemId" th:value="${itemFormDTO.id}" class="form-control">
-    <input type="hidden" id="shopMemberEmail" name="shopMemberEmail" th:value="${shopMember.email}" class="form-control">
-    <!--<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">-->
-</form>
+        }
 
-<h1>상품 데이터 출력 예제</h1>
-<h2>상품 데이터</h2>
-<button type="button" class="reportBtn">신고하기</button>
-<button type="button" class="heartBtn">찜하기</button>
-<button type="button" class="chatBtn">플로우톡</button>
-<div>
-    상품명 : <span th:text="${itemFormDTO.itemName}"></span>
-</div>
-<div>
-    상세설명 : <span th:text="${itemFormDTO.content}"></span>
-</div>
-<div>
-    가격 : <span th:text="${itemFormDTO.price}"></span>
-</div>
-<div>
-    배송비 : <span th:text="${itemFormDTO.delivery}"></span>
-</div>
-<div>
-    주소 : <span th:text="${itemFormDTO.address}"></span>
-</div>
-<div>
-    등록일 :
-    <span th:text="${#temporals.format(itemFormDTO.regdate, 'yyyy-MM-dd HH:mm:ss')}"></span>
-</div>
-<div>
-    상품상태 :
-    <span th:switch="${#strings.toString(itemFormDTO.itemStatus)}">
-            <span th:case="NEW">새상품</span>
-            <span th:case="NO_SIGNS_OF_USE">사용감 없음</span>
-            <span th:case="SOME_SIGNS_OF_USE">사용감 적음</span>
-            <span th:case="SIGNIFICANT_SIGNS_OF_USE">사용감 많음</span>
-            <span th:case="FAULTY">파손/고장</span>
-        </span>
-    <!--<span th:text="${item.itemStatus}"></span>-->
-</div>
-<div th:switch="${#strings.toString(itemFormDTO.sellStatus)}">
-    판매상태 :
-    <span th:case="SELLING">판매중</span>
-    <span th:case="SUSPENDED">판매중단</span>
-    <span th:case="SOLD_OUT">판매완료</span>
-</div>
-<div>
-    조회수 : <span th:text="${itemFormDTO.viewCount}"></span> <br>
-    찜한 횟수 : <span th:text="${heartCount}"></span>
-</div>
+        //상품 신고
+        function reportItem(){
+            const token = $("meta[name='_csrf']").attr("content");
+            const header = $("meta[name='_csrf_header']").attr("content");
+            const url = "/report/reportItem";
+            const tagArray = $('.tagBlock').map(function(){
+                return $(this).data('tag');
+            }).get();
 
-<div>
-    태그 :
-    <span th:each="itemTag, status: ${itemFormDTO.itemTagDTOList}">
-            <span th:switch="${#strings.toString(itemTag.itemTagName)}">
-                <span th:case="DIRECT_TRADE">직거래</span>
-                <span th:case="DELIVERY_TRADE">택배거래</span>
-                <span th:case="SAME_DAY_DELIVERY">당일배송</span>
-                <span th:case="INTERNATIONAL_DELIVERY">해외배송</span>
-            </span>
-        </span>
-</div>
+            const paramData = {
+                reportedItemId:$('#itemId').val(),
+                content: $('#reportContent').val(),
+                reportTagItemList: tagArray
+            };
 
+                console.log(paramData);
 
+                const param = JSON.stringify(paramData);
 
-<div>
-    카테고리 :
-    <span th:if="${itemFormDTO.categoryDTO.parent != null}"
-          th:text="${itemFormDTO.categoryDTO.parent.name}+' &gt'"></span>
-    <span th:text="${itemFormDTO.categoryDTO.name}"></span>
-</div>
-<!--<img src="/test_images/clothes1_1.png" alt="상품사진">-->
-<hr/>
+                $.ajax({
+                        url: url,
+                        type: "POST",
+                        contentType: "application/json",
+                        data: param,
+                        beforeSend: function (xhr) {
+                            /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                            xhr.setRequestHeader(header, token);
+                        },
+                        dataType: "json",
+                        cache: false,
+                        success: function (result, status) {
+                            alert("신고처리 되었습니다.");
+                            location.href = '/';
+                        },
+                        error: function (jqXHR, status, error) {
 
-<h2>판매 상품 이미지</h2>
-<!-- 판매중인 상품 이미지 -->
-<div th:each="itemImg, status: ${itemFormDTO.itemImgDTOList}">
-    <img th:src="'/images/'+${itemImg.imgName}">
-</div>
+                            if (jqXHR.status == '401') {
+                                alert('로그인 후 이용해주세요');
+                                //location.href = '/members/login';
+                            } else {
+                                alert(jqXHR.responseText);
+                            }
 
-<hr>
-
-<h2>판매자 정보</h2>
-
-<button class="reportMemberBtn" type="button">사용자 신고하기</button>
-<div>
-    판매자 닉네임 : <span th:text="${shopMember.nickname}"></span>
-</div>
-<div>
-    판매자 매너점수 : <span th:text="${shopMember.mannerScore}"></span>
-</div>
-<div>
-    판매자 가입일 :
-    <span th:text="${#temporals.format(shopMember.regdate, 'yyyy-MM-dd')}"></span>
-</div>
-<div>
-    판매자 프로필사진 :
-    <img th:if="${shopMember.profileImageDTO}==null" src="/img/profile_default.png">
-    <!-- 테스트를 위해 임시 경로를 지정했지만 파일업로드 기능이 구현되면 변경될 수 있습니다.
-    view에서 null인지 조건을 검사하는 것보다 회원가입할 때 사용자가 프로필 사진을 따로 설정하지 않았으면
-     기본 사진의 경로와 이미지 이름으로 지정하는 것이 더 깔끔해 보임 -->
-
-    <img th:if="${shopMember.profileImageDTO}!=null"
-         th:src="${shopMember.profileImageDTO.uploadPath}+${shopMember.profileImageDTO.filename}">
-</div>
-<div>
-    판매자 판매수 : <span th:text="${sellCount}"></span>
-</div>
-<div>
-    판매자 소개 : <span th:text="${shopMember.intro}"></span>
-</div>
-<hr/>
-<h2>판매중인 다른 상품</h2>
-사용자가 판매중인 다른 상품
-<div th:each="otherItem, status: ${shopMember.itemFormDTOList}">
-    <img th:src="'/images/'+${otherItem.itemRepImgDTO.imgName}" alt="사진">
-    <p th:text="${otherItem.itemName}"></p>
-    <p th:text="${otherItem.price}"></p>
-    <p th:text="${#temporals.format(otherItem.regdate, 'yyyy-MM-dd')}"></p>
-    <hr>
-</div>
-
-<div id="detailPopup">
-    <h2>신고 상세</h2>
-    <span th:each="itemImg, status: ${itemFormDTO.itemImgDTOList}">
-            <img style="width: 100px; height:100px;"
-                 th:if="${itemImg.repimgYn} == 'Y'"
-                 th:src="'/images/'+${itemImg.imgName}">
-        </span>
-    <span th:text="${itemFormDTO.itemName}"></span>
-    <textarea id="reportContent" name="reportContent" placeholder="내용을 입력하세요"></textarea>
-    태그선택
-    <select name="tagSelect" id="tagSelect">
-        <option value="default">--선택--</option>
-        <option value="VIOLATION">규정위반</option>
-        <option value="test">test</option>
-    </select>
-    <div class="tagBox"></div>
-    <button type="button" class="reportConfirm">신고하기</button>
-    <button type="button" class="closePopup">취소</button>
-</div>
-
-<div id="detailPopupMember">
-    <h2>신고 상세</h2>
-    <span th:text="${shopMember.nickname}"></span>
-    <span th:text="'('+${shopMember.email}+')'"></span>
-    <textarea id="reportContentMember" name="reportContentMember" placeholder="내용을 입력하세요"></textarea>
-    태그선택
-    <select name="tagSelectMember" id="tagSelectMember">
-        <option value="default">--선택--</option>
-        <option value="DISRESPECTFUL">비매너</option>
-        <option value="FRAUD">사기</option>
-    </select>
-    <div class="tagBoxMember"></div>
-    <button type="button" class="reportConfirmMember">신고하기</button>
-    <button type="button" class="closePopupMember">취소</button>
-</div>
-</body>
+                        }
+                    });
+                }
+    </script>
+</th:block>
 </html>

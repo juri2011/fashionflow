@@ -35,7 +35,7 @@
             $('#tagSelect').on('input', function(){
                 let selectedOption = $('#tagSelect option:selected').val();
                 let selectedText = $('#tagSelect option:selected').text();
-                let tagBlock = '<span class="tagBlock" data-tag="'+selectedOption+'">'+ selectedText +'</span>';
+                let tagBlock = '<span class="badge text-bg-secondary tagBlock" data-tag="'+selectedOption+'">'+ selectedText +'</span>';
                 if(selectedOption !== 'default'){
                     if($('.tagBox').find('.tagBlock[data-tag="'+selectedOption+'"]').length>0){alert('존재함')}
                     else $('.tagBox').append(tagBlock);
@@ -74,7 +74,7 @@
                     $('.memberName').text(report.reportedMember.nickname + '(' + report.reportedMemberEmail + ')');
                     $('#reportContent').text(report.content);
                     report.reportMemberTagDTOList.forEach((element) => {
-                        let tagBlock = '<span class="tagBlock" data-tag="'+element.reportTagMember+'">'+ element.reportTagDesc +'</span>';
+                        let tagBlock = '<span class="badge text-bg-secondary tagBlock" data-tag="'+element.reportTagMember+'">'+ element.reportTagDesc +'</span>';
                         $('.tagBox').append(tagBlock);
                     });
                     $(".reportConfirm").data('id', report.id);
@@ -207,10 +207,8 @@
             top: 0;
             left: 50%;
             transform: translateX(-50%);
-            padding: 20px;
             position: fixed;
             z-index:9999;
-            background-color: yellow;
         }
 
         .tagBlock{
@@ -288,24 +286,40 @@
 
         </ul>
     </div>
-    
-    <!-- 신고 상세보기 팝업창 출력 -->
-    <div id="detailPopup">
-        <h2>신고 상세</h2>
-        <span class="repimg-box">
-            <!--<img style="width: 100px; height:100px;">-->
-        </span>
-        <span class="memberName"></span>
-        <textarea id="reportContent" name="reportContent" placeholder="내용을 입력하세요"></textarea>
-        태그선택
-        <select name="tagSelect" id="tagSelect">
-            <option value="default">--선택--</option>
-            <option value="DISRESPECTFUL">비매너</option>
-            <option value="FRAUD">사기</option>
-        </select>
-        <div class="tagBox"></div>
-        <button type="button" class="reportConfirm">신고하기</button>
-        <button type="button" class="closePopup">취소</button>
+    <div id="detailPopup" class="modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">사용자 신고</h5>
+                    <button type="button" class="btn-close closePopup" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <span class="memberName"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="reportContent" class="form-label">신고 내용</label>
+                        <textarea class="form-control" id="reportContent" name="reportContent" placeholder="내용을 입력하세요"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="tagSelect" class="form-label">태그선택</label>
+                        <select name="tagSelect" id="tagSelect">
+                            <option value="default">--선택--</option>
+                            <option value="DISRESPECTFUL">비매너</option>
+                            <option value="FRAUD">사기</option>
+                        </select>
+                        <div class="tagBox"></div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary reportConfirm">신고하기</button>
+                    <button type="button" class="btn btn-secondary closePopup">취소</button>
+                </div>
+            </div>
+        </div>
     </div>
     <!-- 신고하기 팝업창(구현하려면 검색기능 있어야 함) -->
 </div>

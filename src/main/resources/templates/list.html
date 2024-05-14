@@ -27,7 +27,7 @@
                 return price.toLocaleString();
             }
 
-            function loadMoreProducts(size, isInitialLoad = false, categories = [], saleStatus = [], productCategories = [], minPrice = 0, maxPrice = 999999999, searchQuery) {
+            function loadMoreProducts(size, isInitialLoad = false, searchQuery, categories = [], saleStatus = [], productCategories = [], minPrice = 0, maxPrice = 999999999) {
 
                 if(isInitialLoad) {
                     currentCategories = categories; // 초기 로딩 시 현재 상품 상태 업데이트
@@ -136,11 +136,15 @@
 
                 const searchForm = document.querySelector('.search-form');
 
+                const urlParams = new URLSearchParams(window.location.search);
+                let searchQuery = urlParams.get('query') || ''; // 검색어가 없으면 빈 문자열로 초기화
+
 
                 let minPrice = 0; // 가격 범위 최소값을 글로벌 변수로 관리
                 let maxPrice = 999999999; // 가격 범위 최대값을 글로벌 변수로 관리
 
-                loadMoreProducts(initialSize, true); // 초기 상품 로딩
+                loadMoreProducts(initialSize, true, searchQuery); // 초기 상품 로딩
+                document.querySelector('.search-input').value = searchQuery; // 검색 입력 필드에 검색어 설정
 
                 // 공통 로직을 함수
                 function updateAndLoadProducts(isInitialLoad = false) {
@@ -150,7 +154,7 @@
                     const selectedCategories = [...document.querySelectorAll('#categorySelect input:checked')].map(el => el.value);
                     const selectedSaleStatus = [...document.querySelectorAll('#saleStatusSelect input:checked')].map(el => el.value);
                     const selectedProductCategories = [...document.querySelectorAll('#productSelect input:checked')].map(el => el.value);
-                    loadMoreProducts(initialSize, true, selectedCategories, selectedSaleStatus, selectedProductCategories, minPrice, maxPrice, searchQuery);
+                    loadMoreProducts(initialSize, true, searchQuery, selectedCategories, selectedSaleStatus, selectedProductCategories, minPrice, maxPrice);
                 }
 
                 document.getElementById('categorySelect').addEventListener('change', updateAndLoadProducts);
@@ -213,6 +217,9 @@
                     updateAndLoadProducts();
                 });
 
+                console.log(`Requesting: page=${currentPage}, size=${size}, sort=${currentSort}, direction=${currentDirection}, URL=/list/more?page=${currentPage}&size=${size}&sort=${currentSort}&direction=${currentDirection}${categoriesQuery}${saleStatusQuery}${productCategoriesQuery}${priceQuery}${searchQueryPart}`);
+
+
             });
 
             // 사이드바 스크롤
@@ -221,6 +228,8 @@
                 // 전체 페이지의 스크롤 위치에 따라 사이드바 내부의 스크롤 위치를 조정
                 document.querySelector('.sidebar').scrollTop = scrollTop;
             });
+
+
 
     </script>
 

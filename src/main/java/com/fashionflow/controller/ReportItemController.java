@@ -2,6 +2,7 @@ package com.fashionflow.controller;
 
 import com.fashionflow.dto.ReportCommandDTO;
 import com.fashionflow.dto.ReportItemDTO;
+import com.fashionflow.service.MemberService;
 import com.fashionflow.service.ReportItemService;
 import com.fashionflow.service.ReportMemberService;
 import jakarta.validation.Valid;
@@ -27,7 +28,7 @@ import java.util.Optional;
 public class ReportItemController {
 
     private final ReportItemService reportItemService;
-    private final ReportMemberService reportMemberService;
+    private final MemberService memberService;
 
     @GetMapping("/report/itemdetail/{id}")
     public String reportDetail(Model model, @PathVariable("id") Long id){
@@ -125,8 +126,7 @@ public class ReportItemController {
     }
 
     @PostMapping("/report/reportItem")
-    public @ResponseBody ResponseEntity reportItem(@RequestBody @Valid ReportItemDTO reportItemDTO, BindingResult bindingResult,
-                                                   Principal principal){
+    public @ResponseBody ResponseEntity reportItem(@RequestBody @Valid ReportItemDTO reportItemDTO, BindingResult bindingResult){
         System.out.println("=========================post 진입");
         if(bindingResult.hasErrors()){
             StringBuilder sb = new StringBuilder();
@@ -138,8 +138,9 @@ public class ReportItemController {
 
             return new ResponseEntity<String>(sb.toString(), HttpStatus.BAD_REQUEST);
         }
-        if(principal == null) return new ResponseEntity<String>("로그인이 필요합니다.", HttpStatus.BAD_REQUEST);
-        String email = principal.getName();
+
+        if(memberService.currentMemberEmail() == null) return new ResponseEntity<String>("로그인이 필요합니다.", HttpStatus.BAD_REQUEST);
+        String email = memberService.currentMemberEmail();
         //System.out.println(email);
 
         reportItemDTO.setReporterMemberEmail(email);

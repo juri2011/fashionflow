@@ -116,5 +116,16 @@
         <a href="/myshop" class="link">내상점</a>
         <a href="/flowtalk" class="link">플로우톡</a>
     </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchForm = document.querySelector('.search-form');
+            searchForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                let searchQuery = document.querySelector('.search-input').value;
+                window.location.href = `/list?query=${encodeURIComponent(searchQuery)}`; // 사용자를 검색어가 포함된 URL로 리디렉션
+            });
+        });
+    </script>
 </div>
 </html>

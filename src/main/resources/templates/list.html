@@ -76,14 +76,14 @@
                                 const diff = now - productDate;
 
                                 // 밀리초를 시간으로 변환
-                                const hoursDiff = diff / (1000 * 60 * 60);
+                                const minsDiff = diff / (1000 * 60);
 
-                                if (hoursDiff < 24) {
-                                    // 24시간 이내일 경우 시간으로 표시
-                                    dateDisplay = `${Math.floor(hoursDiff)}시간 전`;
+                                if (minsDiff < 60) {
+                                    dateDisplay = `${Math.floor(minsDiff)}분 전`;
+                                } else if (minsDiff >= 60 && minsDiff < (24*60)) {
+                                    dateDisplay = `${Math.floor(minsDiff/60)}시간 전`;
                                 } else {
-                                    // 24시간을 초과할 경우 일수로 표시
-                                    const daysDiff = hoursDiff / 24;
+                                    const daysDiff = minsDiff / (24 * 60);
                                     dateDisplay = `${Math.floor(daysDiff)}일 전`;
                                 }
 
@@ -216,10 +216,6 @@
 
                     updateAndLoadProducts();
                 });
-
-                console.log(`Requesting: page=${currentPage}, size=${size}, sort=${currentSort}, direction=${currentDirection}, URL=/list/more?page=${currentPage}&size=${size}&sort=${currentSort}&direction=${currentDirection}${categoriesQuery}${saleStatusQuery}${productCategoriesQuery}${priceQuery}${searchQueryPart}`);
-
-
             });
 
             // 사이드바 스크롤

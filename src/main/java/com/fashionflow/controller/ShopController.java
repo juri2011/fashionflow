@@ -29,8 +29,6 @@ public class ShopController {
 
     private final CategoryService categoryService;
 
-    //private final ReviewService reviewService;
-
 
     @GetMapping("/members/item/new")
     public String itemForm(Model model) {

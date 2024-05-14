@@ -45,9 +45,9 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private Gender gender; //성별(m: 남자, f: 여자, secret: 비공개)
 
-    @Column(nullable = false, columnDefinition = "int default 50") //DB 스키마 적용 기본값
+    @Column(nullable = false, columnDefinition = "Double default 5.0") //DB 스키마 적용 기본값
     @Builder.Default //JPA 적용 기본값
-    private int mannerScore = 50; //매너점수
+    private Double mannerScore = 5.0; //매너점수
 
     @Column(nullable = false)
     private String userStnum; //지번
@@ -78,9 +78,9 @@ public class Member {
     private String providerId;
 
     // 매너점수 업데이트
-    public void updateMannerScore(int newScore) {
+    public void updateMannerScore(Double newScore) {
 
-        this.mannerScore = newScore;
+        this.mannerScore = Math.round(newScore * 10) / 10.0;
     }
 
 }

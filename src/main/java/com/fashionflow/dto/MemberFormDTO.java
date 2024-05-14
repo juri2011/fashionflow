@@ -61,7 +61,7 @@ public class MemberFormDTO {
 
     private String intro; //사용자 소개
 
-    private int mannerScore; //매너점수
+    private Double mannerScore; //매너점수
 
     private ProfileImageDTO profileImageDTO; //프로필 사진
 

@@ -72,21 +72,19 @@
         <hr>
         <input type="hidden" th:field="*{id}">
 
-        <div th:if="${#lists.isEmpty(itemFormDTO.itemImgDTOList)}">
-            <div class="form-group" th:each="num: ${#numbers.sequence(1,4)}">
-                <div class="custom-file img-div">
-                    <input type="file" class="custom-file-input" name="itemImgFile">
-                    <label class="custom-file-label" th:text="'상품이미지 ' + ${num}"></label>
-                </div>
+        <div class="form-group">
+            <div class="custom-file img-div" th:each="img, iterStat: ${itemFormDTO.itemImgDTOList}">
+                <input type="file" class="custom-file-input" name="itemImgFile" th:id="'itemImgFile-' + ${iterStat.index}">
+                <input type="hidden" name="itemImgIds" th:value="${img.id}">
+                <label class="custom-file-label" th:text="${not #strings.isEmpty(img.oriImgName)} ? ${img.oriImgName} : '상품이미지 ' + ${iterStat.index + 1}"></label>
             </div>
         </div>
-
-        <div th:if="${not #lists.isEmpty(itemFormDTO.itemImgDTOList)}">
-            <div class="form-group" th:each="itemImgDto, status: ${itemFormDTO.itemImgDTOList}">
-                <div class="custom-file img-div">
-                    <input type="file" class="custom-file-input" name="itemImgFile">
-                    <input type="hidden" name="itemImgIds" th:value="${itemFormDTO.id}">
-                    <label class="custom-file-label" th:text="${not #strings.isEmpty(itemImgDto.oriImgName)} ? ${itemImgDto.oriImgName} : '상품이미지' + ${status.index+1}"></label>
+        <!-- If fewer than 4 images are uploaded, show empty image upload fields -->
+        <div th:if="${itemFormDTO.itemImgDTOList.size() &lt; 4}">
+            <div class="form-group">
+                <div class="custom-file img-div" th:each="num, iterStat2: ${#numbers.sequence(itemFormDTO.itemImgDTOList.size(), 3)}">
+                    <input type="file" class="custom-file-input" name="itemImgFile" th:id="'itemImgFile-' + ${num}">
+                    <label class="custom-file-label" th:text="'상품이미지 ' + ${num + 1}"></label>
                 </div>
             </div>
         </div>

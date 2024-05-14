@@ -234,18 +234,6 @@ public class ItemService {
             }
         }
 
-        /*// ItemImgDTOList 업데이트
-        List<ItemImgDTO> itemImgDTOList = itemFormDTO.getItemImgDTOList();
-        if (itemImgDTOList != null && !itemImgDTOList.isEmpty()) {
-            // 이전에 등록된 상품 이미지 삭제
-            itemImgRepository.deleteByItemId(itemId);
-            // 새로운 상품 이미지 등록
-            List<ItemImg> itemImgs = itemImgDTOList.stream()
-                    .map(imgDTO -> new ItemImg(imgDTO.getOriImgName(), imgDTO.getRepimgYn(), item))
-                    .collect(Collectors.toList());
-            itemImgRepository.saveAll(itemImgs);
-        }*/
-
         // ItemTagDTOList 업데이트
         List<ItemTagDTO> itemTagDTOList = itemFormDTO.getItemTagDTOList();
         if (itemTagDTOList != null && !itemTagDTOList.isEmpty()) {

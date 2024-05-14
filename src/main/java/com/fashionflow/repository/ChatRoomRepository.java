@@ -10,4 +10,6 @@ public interface ChatRoomRepository extends CrudRepository<ChatRoom, Long> {
     public List<ChatRoom> findAllByOrderByIdDesc();
 
     public Optional<ChatRoom> findByUuid(String uuid);
+
+    public Optional<ChatRoom> findByItemIdAndBuyerEmailAndSellerEmail(Long itemId, String buyerEmail, String sellerEmail);
 }

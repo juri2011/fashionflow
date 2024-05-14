@@ -231,12 +231,19 @@ public class MemberService implements UserDetailsService {
             QItemImg qItemImg = QItemImg.itemImg;
             ItemImg itemRepImg = queryFactory.select(qItemImg)
                     .from(qItemImg)
-                    .where(qItemImg.item.id.eq(item.getId()),
-                            qItemImg.repimgYn.eq("Y"))
+                    .where(qItemImg.item.id.eq(item.getId())
+                            .and(qItemImg.repimgYn.eq("Y")))
                     .fetchOne();
-            ItemImgDTO itemRepImgDTO = ItemImgDTO.entityToDto(itemRepImg);
 
-            itemFormDTO.setItemRepImgDTO(itemRepImgDTO);
+            System.out.println("===========================대표사진 : "+itemRepImg);
+            if(itemRepImg != null){
+                ItemImgDTO itemRepImgDTO = ItemImgDTO.entityToDto(itemRepImg);
+
+                itemFormDTO.setItemRepImgDTO(itemRepImgDTO);
+            }
+
+            System.out.println(itemFormDTO);
+
 
             itemFormDTOList.add(itemFormDTO);
         }

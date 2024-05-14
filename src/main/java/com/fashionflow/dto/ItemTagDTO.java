@@ -1,9 +1,7 @@
 package com.fashionflow.dto;
 
 import com.fashionflow.constant.ItemTagName;
-import com.fashionflow.entity.Item;
 import com.fashionflow.entity.ItemTag;
-import jakarta.persistence.*;
 import lombok.*;
 import org.modelmapper.ModelMapper;
 
@@ -15,14 +13,14 @@ import org.modelmapper.ModelMapper;
 @Builder
 public class ItemTagDTO {
 
-    private Long id;
+    private Long id;  // 태그의 ID
 
-    private ItemTagName itemTagName;
+    private ItemTagName itemTagName;  // 태그 이름, Enum 타입 사용
 
-    private static ModelMapper modelMapper = new ModelMapper();
+    private static final ModelMapper modelMapper = new ModelMapper();
 
-    public static ItemTagDTO entityToDTO(ItemTag itemTag){
-        ItemTagDTO itemTagDTO =  modelMapper.map(itemTag, ItemTagDTO.class);
-        return itemTagDTO;
+    // ItemTag 엔티티 객체를 ItemTagDTO 객체로 변환
+    public static ItemTagDTO entityToDTO(ItemTag itemTag) {
+        return modelMapper.map(itemTag, ItemTagDTO.class);
     }
 }

@@ -8,4 +8,7 @@ import java.util.List;
 
 public interface ItemTagRepository extends JpaRepository<ItemTag, Long> {
     public List<ItemTag> findByItemId(Long itemId);
+
+    void deleteByItemId(Long itemId);
+
 }

@@ -1,24 +1,29 @@
 package com.fashionflow.controller;
 
 import com.fashionflow.constant.ItemTagName;
-import com.fashionflow.dto.CategoryDTO;
-import com.fashionflow.dto.ItemFormDTO;
-import com.fashionflow.service.CategoryService;
-import com.fashionflow.service.ItemService;
+import com.fashionflow.dto.*;
+import com.fashionflow.entity.Item;
+import com.fashionflow.entity.Review;
+import com.fashionflow.repository.ItemRepository;
+import com.fashionflow.service.*;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -29,7 +34,9 @@ public class ShopController {
 
     private final CategoryService categoryService;
 
-    //private final ReviewService reviewService;
+    private final ReviewService reviewService;
+
+    private final HeartService heartService;
 
 
     @GetMapping("/members/item/new")
@@ -59,21 +66,104 @@ public class ShopController {
     @PostMapping("/members/item/new")
     public String saveItem(@Valid ItemFormDTO itemFormDTO, BindingResult bindingResult,
                            @RequestParam("itemImgFile") List<MultipartFile> itemImgFileList,
-                           @RequestParam("tagSelect") String tagSelect, // 태그 선택 정보 추가
+                           @RequestParam("tagSelectList") List<String> tagSelectList, // 태그 선택 정보 추가
                            Principal principal, Model model) {
+
+
         if (bindingResult.hasErrors()) {
             return "/item/itemForm";  // 입력 폼으로 리턴
         }
 
         try {
             String email = principal.getName(); // 사용자 이메일 가져오기
-            itemService.saveItem(itemFormDTO, itemImgFileList, tagSelect, email); // 태그 정보도 함께 저장
+            itemService.saveItem(itemFormDTO, itemImgFileList, tagSelectList, email); // 태그 정보도 함께 저장
             return "redirect:/";
         } catch (Exception e) {
             model.addAttribute("errorMessage", "상품 등록 실패");
             return "/item/itemForm";
         }
     }
+
+    @GetMapping("/myshop")
+    public String showMyShop(@AuthenticationPrincipal User user, Model model) {
+        String userEmail = user.getUsername(); // 현재 로그인한 사용자의 이메일을 가져옴
+        List<ItemFormDTO> items = itemService.getItemsWithImagesByUserEmail(userEmail);
+
+        // 현재 사용자의 이메일로 등록된 리뷰만 가져오도록 수정
+        List<ReviewDTO> getItemReviewListWithImg = reviewService.getItemReviewListWithImg(userEmail);
+
+        // 현재 사용자의 이메일로 등록된 리뷰만 가져오도록 수정
+        List<HeartDTO> getHeartItemsWithImagesByUserEmail = heartService.getHeartItemsWithImagesByUserEmail(userEmail);
+
+
+        model.addAttribute("items", items);
+        model.addAttribute("getItemReviewListWithImg", getItemReviewListWithImg); // 리뷰가 이미 작성되었는지 여부를 모델에 추가
+        model.addAttribute("getHeartItemsWithImagesByUserEmail", getHeartItemsWithImagesByUserEmail); // 리뷰가 이미 작성되었는지 여부를 모델에 추가
+        return "myshop"; // HTML 파일 이름과 일치
+    }
+
+
+
+    @GetMapping("/members/item/{itemId}")
+    public String modifyItemForm(@PathVariable("itemId") Long itemId, Model model) {
+        // 상품 상세 정보 가져오기
+        ItemFormDTO itemFormDTO = itemService.getItemDetail(itemId);
+        model.addAttribute("itemFormDTO", itemFormDTO);
+
+        // 상위 카테고리 정보 가져오기
+        List<CategoryDTO> parentCategories = categoryService.findParentCategories();
+        model.addAttribute("categories", parentCategories);
+
+
+
+
+        return "item/itemModifyForm";
+    }
+
+    @PostMapping("/members/item/{itemId}")
+    public String updateItem(@PathVariable("itemId") Long itemId,
+                             @ModelAttribute("itemFormDTO") ItemFormDTO itemFormDTO,
+                             @RequestParam("itemImgFile") List<MultipartFile> itemImgFileList,
+                             @RequestParam("tagSelectList") List<String> tagSelectList,
+                             RedirectAttributes redirectAttributes) {
+        for(String tagSelect : tagSelectList){
+            ItemTagDTO itemTagDTO = new ItemTagDTO();
+            itemTagDTO.setItemTagName(ItemTagName.valueOf(tagSelect));
+
+            itemFormDTO.getItemTagDTOList().add(itemTagDTO);
+        }
+
+        if (itemId == null) {
+            // 아이템 ID가 null인 경우 처리
+            redirectAttributes.addFlashAttribute("errorMessage", "상품 ID가 null입니다.");
+
+            return "redirect:/myshop";
+        }
+
+        try {
+            itemService.updateItem(itemId, itemFormDTO, itemImgFileList);
+            return "redirect:/myshop";
+        } catch (Exception e) {
+            redirectAttributes.addAttribute("itemId", itemId);
+            return "forward:/members/item/{itemId}";
+        }
+    }
+
+    @PostMapping("/members/item/delete/{itemId}")
+    public String deleteItem(@PathVariable("itemId") Long itemId, RedirectAttributes redirectAttributes) {
+        try {
+            // 상품을 삭제합니다.
+            itemService.deleteItem(itemId);
+            // 상품 삭제에 성공하면 "해당 상품이 삭제 되었습니다" 메시지를 포함한 리다이렉트를 반환합니다.
+            redirectAttributes.addFlashAttribute("successMessage", "해당 상품이 삭제 되었습니다.");
+            return "redirect:/myshop";
+        } catch (Exception e) {
+            // 상품 삭제에 실패하면 "상품 삭제에 실패했습니다" 메시지를 포함한 리다이렉트를 반환합니다.
+            redirectAttributes.addFlashAttribute("errorMessage", "상품 삭제에 실패했습니다.");
+            return "redirect:/myshop";
+        }
+    }
+
 
 
 }

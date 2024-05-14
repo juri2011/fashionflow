@@ -8,7 +8,8 @@
     <ul class="list-group list-group-flush">
       <li class="list-group-item" th:each="item : ${session.recentViewedItems}">
         <a th:href="@{'/item/' + ${item.itemId}}">
-          <img th:src="'/images/'+${item.imgName}" alt="상품 이미지" />
+          <img th:if="${item.imgName != null}" th:src="'/images/'+${item.imgName}"  alt="상품 이미지" />
+          <img th:unless="${item.imgName != null}" th:src="@{/img/default.PNG}"  alt="대체 이미지" />
           <span th:text="${item.itemName}">상품명</span>
         </a>
       </li>
@@ -17,7 +18,7 @@
   <style>
     .recent-viewed-items {
       position: fixed;
-      top: 70px;
+      top: 300px;
       right: 20px;
       width: 150px;
       min-height: 50px;
@@ -43,7 +44,7 @@
             var listItem = document.createElement('li');
             listItem.className = 'list-group-item';
             listItem.innerHTML = '<a href="/item/' + item.itemId + '">' +
-                                 '<img src="/images/' + item.imgName + '" alt="상품 이미지" />' +
+                                 '<img src="' + (item.imgName ? '/images/' + item.imgName : '/img/default.PNG') + '" alt="상품 이미지" />' +
                                  '<span>' + item.itemName + '</span>' +
                                  '</a>';
             list.appendChild(listItem);
@@ -56,4 +57,3 @@
   </script>
 </div>
 </html>
-

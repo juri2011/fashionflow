@@ -1,9 +1,7 @@
 package com.fashionflow.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -11,6 +9,8 @@ import org.hibernate.annotations.OnDeleteAction;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class ItemImg {
 
     @Id
@@ -31,6 +31,12 @@ public class ItemImg {
     @JoinColumn(name = "item_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Item item;
+
+    public ItemImg(String oriImgName, String repimgYn, Item item) {
+        this.oriImgName = oriImgName;
+        this.repimgYn = repimgYn;
+        this.item = item;
+    }
 
     public void updateItemImg(String oriImgName, String imgName, String imgUrl){
         this.oriImgName = oriImgName;

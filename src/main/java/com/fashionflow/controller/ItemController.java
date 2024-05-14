@@ -52,8 +52,6 @@ public class ItemController {
 
     private final MemberService memberService;
 
-    private final CategoryService categoryService;
-
     private final ObjectMapper objectMapper;
 
 

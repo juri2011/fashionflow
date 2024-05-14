@@ -1,5 +1,6 @@
 package com.fashionflow.controller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -15,9 +16,16 @@ import java.nio.file.Paths;
 @RestController
 public class ImageController {
 
+    @Value("${itemImgLocation}")
+    private String itemImgLocation;
+
+    @Value("${uploadPath}")
+    private String uploadPath;
+
     @GetMapping("/images/{filename:.+}")
     public ResponseEntity<Resource> serveFile(@PathVariable("filename") String filename) {
-        Path file = Paths.get("C:/shop/item").resolve(filename);
+      
+        Path file = Paths.get(itemImgLocation).resolve(filename);
         try {
             Resource resource = new UrlResource(file.toUri());
             if (resource.exists() || resource.isReadable()) {

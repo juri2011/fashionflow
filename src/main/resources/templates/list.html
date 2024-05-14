@@ -150,7 +150,7 @@
                     const selectedCategories = [...document.querySelectorAll('#categorySelect input:checked')].map(el => el.value);
                     const selectedSaleStatus = [...document.querySelectorAll('#saleStatusSelect input:checked')].map(el => el.value);
                     const selectedProductCategories = [...document.querySelectorAll('#productSelect input:checked')].map(el => el.value);
-                    loadMoreProducts(initialSize, isInitialLoad, selectedCategories, selectedSaleStatus, selectedProductCategories, minPrice, maxPrice, searchQuery);
+                    loadMoreProducts(initialSize, true, selectedCategories, selectedSaleStatus, selectedProductCategories, minPrice, maxPrice, searchQuery);
                 }
 
                 document.getElementById('categorySelect').addEventListener('change', updateAndLoadProducts);

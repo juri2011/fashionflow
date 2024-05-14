@@ -2,10 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layout1}">
-<head>
-    <meta charset="UTF-8">
-    <title>reportMemberDetail</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<th:block layout:fragment="script">
     <script>
         $(document).ready(function(){
 
@@ -19,6 +16,10 @@
                 }else{
                     alert('처리 항목을 선택해주세요.');
                 }
+            });
+
+            $('.cancel').on('click', function(){
+                window.history.back();
             });
         });
         const token = $("meta[name='_csrf']").attr("content");
@@ -63,30 +64,121 @@
             });
         }
     </script>
-</head>
+</th:block>
+
+<th:block layout:fragment="css">
+    <style>
+        .report-container {
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 5px;
+        }
+
+        .info {
+            display: flex;
+            margin-bottom: 10px;
+        }
+
+        .item-info {
+            display: flex;
+            margin-bottom: 20px;
+            border: 1px solid #ccc; /* 테두리 추가 */
+            padding: 10px; /* 내부 여백 추가 */
+            border-radius: 5px;
+        }
+
+        .label {
+            font-weight: bold;
+            width: 100px;
+        }
+
+        .value {
+            margin-right: 20px;
+        }
+
+        .sub-label {
+            font-weight: bold;
+        }
+
+        .item-img {
+            max-width: 100px;
+            border-radius: 5px;
+        }
+
+        .item-image {
+            margin-right: 20px;
+        }
+
+        .buttons {
+            margin-top: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: #fff;
+            border: none;
+        }
+        button{
+            margin-top: 20px;
+        }
+    </style>
+</th:block>
 
 <div layout:fragment="content">
-    관리자만 접근 가능한 페이지입니다
+    <div class="report-container">
+        <input type="hidden" name="reportId" id="reportId" th:value="${reportMember.id}">
+        <div class="info">
+            <div class="label">리뷰번호 :</div>
+            <div class="value" th:text="${reportMember.id}"></div>
+        </div>
+        <div class="info">
+            <div class="label">리뷰작성자 :</div>
+            <div class="value" th:text="${reportMember.reporterMemberEmail}"></div>
+        </div>
+        <div class="info">
+            <div class="label">신고대상 :</div>
+            <div class="value" th:text="${reportMember.reportedMember.nickname}
+                            +'('+${reportMember.reportedMember.email}+')'"></div>
+        </div>
+        <div class="info">
+            <div class="label">신고내용 :</div>
+            <div class="value" th:text="${reportMember.content}"></div>
+        </div>
+        <div class="info">
+            <div class="label">신고상태 :</div>
+            <div class="value" th:text="${reportMember.reportStatus.getDescription()}"></div>
+        </div>
+        <div class="info">
+            <div class="label">신고태그 :</div>
+            <div class="value">
+                <p th:each="reportTag, status: ${reportMember.reportMemberTagDTOList}">
+                    <span class="badge text-bg-secondary" th:text="${reportTag.reportTagDesc}"></span>
+                </p>
+            </div>
+        </div>
+        <label for="processSelect" class="form-group-text">신고 처리 목록</label>
+        <select class="form-select" name="processSelect" id="processSelect">
+            <option value="default">---선택---</option>
+            <option value="SUSPEND">중지</option>
+            <option value="ETC">직접처리</option>
+        </select>
 
-    <input type="hidden" name="reportId" id="reportId" th:value="${reportMember.id}">
-    리뷰번호 : <span th:text="${reportMember.id}"></span>
-    리뷰작성자 : <span th:text="${reportMember.reporterMemberEmail}"></span>
-    신고대상 : <span th:text="${reportMember.reportedMember.nickname}
-                            +'('+${reportMember.reportedMember.email}+')'"></span>
-    신고내용 : <span th:text="${reportMember.content}"></span>
-    신고상태 : <span th:text="${reportMember.reportStatus.getDescription()}"></span>
-    신고태그 :
-    <p th:each="reportTag, status: ${reportMember.reportMemberTagDTOList}">
-        <span th:text="${reportTag.reportTagDesc}"></span>
-    </p>
-    <select name="processSelect" id="processSelect">
-        <option value="default">---선택---</option>
-        <option value="SUSPEND">중지</option>
-        <option value="ETC">직접처리</option>
-    </select>
-
-    <button class="confirm" type="button">처리</button>
-    <button class="cancel" type="button">취소</button>
+        <button class="btn btn-primary confirm" type="button">처리</button>
+        <button class="btn btn-secondary cancel" type="button">취소</button>
+    </div>
 
 </div>
 </html>

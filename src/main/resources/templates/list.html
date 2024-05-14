@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/mainLayout}">
+
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+            let currentPage = 0;
+            let isLoading = false;
+            let isLastPage = false;
+            const bufferHeight = 300;
+            const initialSize = 12;
+            const scrollSize = 4;
+            let currentCategories = [];
+            let currentSaleStatus = [];
+            let currentProductCategories = [];
+            let currentMinPrice = 0;
+            let currentMaxPrice = 999999999;
+            let currentSort = 'regdate';
+            let currentDirection = 'DESC';
+            let searchQuery = '';
+
+            // 가격 출력
+            function formatPrice(price) {
+                return price.toLocaleString();
+            }
+
+            function loadMoreProducts(size, isInitialLoad = false, categories = [], saleStatus = [], productCategories = [], minPrice = 0, maxPrice = 999999999, searchQuery) {
+
+                if(isInitialLoad) {
+                    currentCategories = categories; // 초기 로딩 시 현재 상품 상태 업데이트
+                    currentSaleStatus = saleStatus; // 초기 로딩 시 현재 판매 상태 업데이트
+                    currentProductCategories = productCategories; // 카테고리 상태
+                    currentMinPrice = minPrice;
+                    currentMaxPrice = maxPrice;
+                } else {
+                    categories = currentCategories; // 스크롤 이벤트 시 현재 선택된 상품 상태 사용
+                    saleStatus = currentSaleStatus; // 스크롤 이벤트 시 현재 선택된 판매 상태 사용
+                    productCategories = currentProductCategories ; // 카테고리 상태
+                    minPrice = currentMinPrice;
+                    maxPrice = currentMaxPrice;
+                    searchQuery = document.querySelector('.search-input').value;
+                }
+
+                // 마지막 페이지 or 로딩중 true일시 리턴을 통한 중단
+                if(isLoading || isLastPage) return;
+                isLoading = true;
+
+                const categoriesQuery = categories.length ? `&categories=${categories.join(',')}` : '';
+                const saleStatusQuery = saleStatus.length ? `&saleStatus=${saleStatus.join(',')}` : '';
+                const productCategoriesQuery = productCategories.length ? `&productCategories=${productCategories.join(',')}` : '';
+                const priceQuery = `&minPrice=${minPrice}&maxPrice=${maxPrice}`;
+                const searchQueryPart = searchQuery ? `&query=${encodeURIComponent(searchQuery)}` : '';
+
+
+                setTimeout(() => {
+                    fetch(`/list/more?page=${currentPage}&size=${size}&sort=${currentSort}&direction=${currentDirection}${categoriesQuery}${saleStatusQuery}${productCategoriesQuery}${priceQuery}${searchQueryPart}`)
+                        .then(response => response.json())
+                        .then(products => {
+                            if(products.length === 0) {
+                                isLastPage = true;
+                            }
+                            products.forEach(product => {
+                                const productElement = document.createElement("div");
+                                productElement.classList.add("product-item");
+
+                                let dateDisplay;
+
+                                // 데이터 날짜 형식 재생성
+                                const productDate = new Date(product.regdate[0], product.regdate[1] - 1, product.regdate[2], product.regdate[3], product.regdate[4]);
+                                const now = new Date();
+
+                                // 현재 시간과 제품 등록 시간의 차이
+                                const diff = now - productDate;
+
+                                // 밀리초를 시간으로 변환
+                                const hoursDiff = diff / (1000 * 60 * 60);
+
+                                if (hoursDiff < 24) {
+                                    // 24시간 이내일 경우 시간으로 표시
+                                    dateDisplay = `${Math.floor(hoursDiff)}시간 전`;
+                                } else {
+                                    // 24시간을 초과할 경우 일수로 표시
+                                    const daysDiff = hoursDiff / 24;
+                                    dateDisplay = `${Math.floor(daysDiff)}일 전`;
+                                }
+
+
+                                productElement.innerHTML = `
+                                    <img src="/images/${product.imgName}" alt="Product Image" class="product-image clickable">
+                                    <span>상품명: <span class="product-name clickable">${product.itemName}</span></span>
+                                    <span>가격: ${formatPrice(product.price)}</span>
+                                    <span>${dateDisplay}</span>
+
+                                `;
+                                document.querySelector('.product-list').appendChild(productElement);
+
+                                // 이미지와 상품명에 클릭 이벤트 리스너 추가
+                                const clickableItems = productElement.querySelectorAll('.clickable');
+                                clickableItems.forEach(item => {
+                                    item.addEventListener('click', () => {
+                                        window.location.href = `/item/${product.id}`;
+                                    });
+                                });
+                            });
+                            currentPage++;
+                            isLoading = false;
+
+                            if(isInitialLoad) {
+                                // 초기 로딩이후 페이지 변경
+                                currentPage = Math.ceil(initialSize / scrollSize);
+                                // 초기 로딩이 완료된 후, 스크롤 이벤트 리스너 추가
+                                attachScrollListener();
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error loading more products:', error);
+                            isLoading = false;
+                        });
+                }, 100);
+            }
+
+            function attachScrollListener() {
+                window.addEventListener('scroll', function() {
+                    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - bufferHeight) {
+                        // 스크롤시 사이즈 정의
+                        loadMoreProducts(scrollSize);
+                    }
+                });
+            }
+
+            // 초기 페이지 로드
+            document.addEventListener('DOMContentLoaded', function() {
+
+                const searchForm = document.querySelector('.search-form');
+
+
+                let minPrice = 0; // 가격 범위 최소값을 글로벌 변수로 관리
+                let maxPrice = 999999999; // 가격 범위 최대값을 글로벌 변수로 관리
+
+                loadMoreProducts(initialSize, true); // 초기 상품 로딩
+
+                // 공통 로직을 함수
+                function updateAndLoadProducts(isInitialLoad = false) {
+                    currentPage = 0;
+                    isLastPage = false;
+                    document.querySelector('.product-list').innerHTML = ''; // 상품 리스트 초기화
+                    const selectedCategories = [...document.querySelectorAll('#categorySelect input:checked')].map(el => el.value);
+                    const selectedSaleStatus = [...document.querySelectorAll('#saleStatusSelect input:checked')].map(el => el.value);
+                    const selectedProductCategories = [...document.querySelectorAll('#productSelect input:checked')].map(el => el.value);
+                    loadMoreProducts(initialSize, isInitialLoad, selectedCategories, selectedSaleStatus, selectedProductCategories, minPrice, maxPrice, searchQuery);
+                }
+
+                document.getElementById('categorySelect').addEventListener('change', updateAndLoadProducts);
+                document.getElementById('saleStatusSelect').addEventListener('change', updateAndLoadProducts);
+                document.getElementById('productSelect').addEventListener('change', updateAndLoadProducts);
+
+                // 가격 범위
+                document.getElementById('applyPriceFilter').addEventListener('click', function() {
+                    minPrice = document.getElementById('minPrice').value || 0;
+                    maxPrice = document.getElementById('maxPrice').value || 999999999;
+
+                    // 가격 유효성
+                    // 최대 가격
+                    if (maxPrice > 999999999) {
+                        alert("최대가격은 999999999 입니다.");
+                        event.preventDefault();
+                    }
+
+                    // 최소 가격과 최대 가격이 양수인지 확인
+                    if (minPrice < 0 || maxPrice < 0) {
+                        alert("가격은 양수여야 합니다.");
+                        event.preventDefault();
+                    }
+
+                    // 최소 가격이 최대 가격보다 낮은지 확인
+                    if (parseInt(minPrice) > parseInt(maxPrice)) {
+                        alert("최대 가격은 최소 가격보다 커야 합니다.");
+                        event.preventDefault();
+                    }
+
+                    updateAndLoadProducts();
+                });
+
+                document.getElementById('sortDate').addEventListener('click', function() {
+                    if (currentSort === 'regdate') {
+                        currentDirection = currentDirection === 'DESC' ? 'ASC' : 'DESC';
+                    } else {
+                        currentSort = 'regdate';
+                        currentDirection = 'DESC';
+                    }
+                    updateAndLoadProducts();
+                });
+
+                document.getElementById('sortPrice').addEventListener('click', function() {
+                    if (currentSort === 'price') {
+                        currentDirection = currentDirection === 'DESC' ? 'ASC' : 'DESC';
+                    } else {
+                        currentSort = 'price';
+                        currentDirection = 'DESC';
+                    }
+                    updateAndLoadProducts();
+                });
+
+                searchForm.addEventListener('submit', function(e) {
+                
+                    e.preventDefault();
+
+                    searchQuery = document.querySelector('.search-input').value;
+
+                    updateAndLoadProducts();
+                });
+
+            });
+
+            // 사이드바 스크롤
+            window.addEventListener("scroll", function() {
+                var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                // 전체 페이지의 스크롤 위치에 따라 사이드바 내부의 스크롤 위치를 조정
+                document.querySelector('.sidebar').scrollTop = scrollTop;
+            });
+
+    </script>
+
+    <style>
+
+
+        .sidebar {
+            position: fixed;
+            top: 30%;
+            left: 0;
+            width: 200px;
+            height: calc(100% - 10%);
+            background-color: #ffffff;
+            overflow-y: auto; /* 사이드바 내부의 스크롤을 활성화 */
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+        }
+
+        /* 사이드바 내의 스크롤바를 숨기는 CSS */
+        .sidebar::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+
+        .product-list {
+            margin-left: 220px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+
+        .product-item {
+            width: calc(25% - 40px); /* 한 줄에 4개씩, 양쪽 여백을 고려하여 조정 */
+            height: 400px;
+            margin: 10px; /* 상품 간 여백 */
+            border: 1px solid #ddd; /* 사각형 박스 형태의 보더 추가 */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* 상품에 그림자 효과 추가 */
+            background-color: #f9f9f9;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column; /* 상품 내용을 세로로 정렬 */
+            align-items: center;
+        }
+
+        .product-image {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .clickable {
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+
+<body>
+<div layout:fragment="content">
+
+    <div class="sidebar">
+        <h3>카테고리</h3>
+        <br/>
+        <div id="productSelect">
+            <br/>
+            <p>남성의류</p>
+            <div id="menSelect">
+                <label><input type="checkbox" name="category" value="4"> 아우터</label><br>
+                <label><input type="checkbox" name="category" value="5"> 상의</label><br>
+                <label><input type="checkbox" name="category" value="6"> 바지</label><br>
+                <label><input type="checkbox" name="category" value="7"> 셋업/세트</label><br>
+            </div>
+            <br/>
+            <p>여성의류</p>
+            <div id="womanSelect">
+                <label><input type="checkbox" name="category" value="8"> 아우터</label><br>
+                <label><input type="checkbox" name="category" value="9"> 상의</label><br>
+                <label><input type="checkbox" name="category" value="10"> 바지</label><br>
+                <label><input type="checkbox" name="category" value="11"> 치마</label><br>
+                <label><input type="checkbox" name="category" value="12"> 원피스</label><br>
+                <label><input type="checkbox" name="category" value="13"> 셋업/세트</label><br>
+            </div>
+            <br/>
+            <p>신발</p>
+            <div id="shoesSelect">
+                <label><input type="checkbox" name="category" value="14"> 스니커즈</label><br>
+                <label><input type="checkbox" name="category" value="15"> 남성화</label><br>
+                <label><input type="checkbox" name="category" value="16"> 여성화</label><br>
+                <label><input type="checkbox" name="category" value="17"> 스포츠화</label><br>
+            </div>
+            <br/>
+        </div>
+        <br/>
+        <div id="priceRangeSelect">
+            <label>최소 가격: <input type="number" id="minPrice" name="minPrice" placeholder="0"></label><br>
+            <label>최대 가격: <input type="number" id="maxPrice" name="maxPrice" placeholder="999999999"></label><br>
+            <button id="applyPriceFilter">적용</button>
+        </div>
+        <br/>
+        <p>상품 상태</p>
+        <div id="categorySelect">
+            <label><input type="checkbox" value="1"> 새상품(미개봉)</label><br>
+            <label><input type="checkbox" value="2"> 사용감 없음</label><br>
+            <label><input type="checkbox" value="3"> 사용감 적음</label><br>
+            <label><input type="checkbox" value="4"> 사용감 많음</label><br>
+            <label><input type="checkbox" value="5"> 파손, 고장 상품</label><br>
+        </div>
+        <br/>
+        <p>상품 상태</p>
+        <div id="saleStatusSelect">
+            <label><input type="checkbox" name="saleStatus" value="1"> 판매중</label><br>
+            <label><input type="checkbox" name="saleStatus" value="3"> 판매완료</label><br>
+        </div>
+
+    </div>
+    <button id="sortDate">등록일순</button>
+    <button id="sortPrice">가격순</button>
+    <div class="product-list">
+
+    </div>
+</div>
+
+</body>
+
+</html>

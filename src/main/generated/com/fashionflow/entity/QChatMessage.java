@@ -28,6 +28,8 @@ public class QChatMessage extends EntityPathBase<ChatMessage> {
 
     public final StringPath message = createString("message");
 
+    public final EnumPath<com.fashionflow.constant.ReadStatus> readStatus = createEnum("readStatus", com.fashionflow.constant.ReadStatus.class);
+
     public final DateTimePath<java.time.LocalDateTime> sendDate = createDateTime("sendDate", java.time.LocalDateTime.class);
 
     public final StringPath sender = createString("sender");

@@ -29,5 +29,4 @@ public class ItemImgDTO {
         itemImgDTO.setImgUrl("/images/" + itemImg.getImgName());
         return itemImgDTO;
     }
-
 }

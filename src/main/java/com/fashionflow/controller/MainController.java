@@ -20,10 +20,4 @@ public class MainController {
     public String resetPassword() {
         return "ResetPwd";
     }
-
-    @GetMapping("/myshop")
-    public String myShop() {
-        return "myshop";
-    }
-
 }

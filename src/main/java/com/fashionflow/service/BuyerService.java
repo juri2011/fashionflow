@@ -38,7 +38,6 @@ public class BuyerService {
         return itemBuyRepository.findByMemberId(memberId, sort);
     }
 
-    //구매한 아이템 리스트 이미지 추가
     public List<BuyerDTO> getItemBuyListWithImg() {
         List<BuyerDTO> buyerDTO = new ArrayList<>();
 
@@ -46,7 +45,10 @@ public class BuyerService {
             ItemImg img = itemImgRepository.findByItemIdAndRepimgYn(itemBuy.getItem().getId(), "Y")
                     .orElse(null); // 대표 이미지가 없는 경우를 대비한 처리
 
-            BuyerDTO dto = new BuyerDTO(itemBuy.getItem().getId(), itemBuy.getItem().getItemName(), itemBuy.getItem().getPrice(), img.getImgName(), itemBuy.getBuyDate(), itemBuy.isReviewExists());
+            // 이미지가 존재하면 해당 경로를 사용하고, 그렇지 않으면 기본 이미지 경로를 사용합니다.
+            String imgName = img != null ? "/images/"+img.getImgName() : "/img/default.PNG";
+
+            BuyerDTO dto = new BuyerDTO(itemBuy.getItem().getId(), itemBuy.getItem().getItemName(), itemBuy.getItem().getPrice(), imgName, itemBuy.getBuyDate(), itemBuy.isReviewExists());
             buyerDTO.add(dto);
         }
 
@@ -67,7 +69,7 @@ public class BuyerService {
                 .member(member)
                 .content(reviewDTO.getContent())
                 .score(reviewDTO.getScore())
-                .regdate(LocalDateTime.now())
+                .regDate(LocalDateTime.now())
                 .build();
 
         review = reviewRepository.save(review);
@@ -118,4 +120,6 @@ public class BuyerService {
             seller.updateMannerScore(avgScore);
         }
     }
+
+
 }

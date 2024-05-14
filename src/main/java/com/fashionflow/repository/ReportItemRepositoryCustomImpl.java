@@ -2,7 +2,6 @@ package com.fashionflow.repository;
 
 import com.fashionflow.entity.QReportItem;
 import com.fashionflow.entity.ReportItem;
-import com.querydsl.core.QueryResults;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Page;

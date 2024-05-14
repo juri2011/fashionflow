@@ -33,6 +33,6 @@ public class Review {
     private int score;
 
     @Column(nullable = false)
-    private LocalDateTime regdate;
+    private LocalDateTime regDate;
 
 }

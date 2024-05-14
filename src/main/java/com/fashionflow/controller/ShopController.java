@@ -30,7 +30,6 @@ public class ShopController {
     private final CategoryService categoryService;
 
 
-
     @GetMapping("/members/item/new")
     public String itemForm(Model model) {
         // 새 ItemFormDTO 객체를 모델에 추가

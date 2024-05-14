@@ -24,6 +24,7 @@ public class ImageController {
 
     @GetMapping("/images/{filename:.+}")
     public ResponseEntity<Resource> serveFile(@PathVariable("filename") String filename) {
+      
         Path file = Paths.get(itemImgLocation).resolve(filename);
         try {
             Resource resource = new UrlResource(file.toUri());

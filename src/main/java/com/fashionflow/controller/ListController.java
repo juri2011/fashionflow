@@ -50,7 +50,8 @@ public class ListController {
                                                                  @RequestParam(value = "saleStatus", required = false) String saleStatus,
                                                                  @RequestParam(value = "productCategories", required = false) String productCategories,
                                                                  @RequestParam(value = "minPrice", required = false, defaultValue = "0") int minPrice,
-                                                                 @RequestParam(value = "maxPrice", required = false, defaultValue = "999999999") int maxPrice){
+                                                                 @RequestParam(value = "maxPrice", required = false, defaultValue = "999999999") int maxPrice,
+                                                                 @RequestParam(value = "query", required = false) String searchQuery){
 
 
 
@@ -78,7 +79,8 @@ public class ListController {
         Sort sortObj = Sort.by(sortDirection, sort);
         Pageable pageable = PageRequest.of(currentPage, size, sortObj);
 
-        Page<ListingItemDTO> goodsPage = listService.listingItemWithImgAndCategories(pageable, categoryList, saleStatusList, productCategoriesList, minPrice, maxPrice);
+        Page<ListingItemDTO> goodsPage = listService.listingItemWithImgAndCategories(pageable, categoryList,
+                saleStatusList, productCategoriesList, minPrice, maxPrice, searchQuery);
 
         return ResponseEntity.ok(goodsPage.getContent()); // ResponseEntity를 통해 ListingItemDTO 목록을 JSON 형식으로 반환
     }

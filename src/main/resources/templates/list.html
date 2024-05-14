@@ -20,13 +20,14 @@
             let currentMaxPrice = 999999999;
             let currentSort = 'regdate';
             let currentDirection = 'DESC';
+            let searchQuery = '';
 
             // 가격 출력
             function formatPrice(price) {
                 return price.toLocaleString();
             }
 
-            function loadMoreProducts(size, isInitialLoad = false, categories = [], saleStatus = [], productCategories = [], minPrice = 0, maxPrice = 999999999) {
+            function loadMoreProducts(size, isInitialLoad = false, categories = [], saleStatus = [], productCategories = [], minPrice = 0, maxPrice = 999999999, searchQuery) {
 
                 if(isInitialLoad) {
                     currentCategories = categories; // 초기 로딩 시 현재 상품 상태 업데이트
@@ -40,6 +41,7 @@
                     productCategories = currentProductCategories ; // 카테고리 상태
                     minPrice = currentMinPrice;
                     maxPrice = currentMaxPrice;
+                    searchQuery = document.querySelector('.search-input').value;
                 }
 
                 // 마지막 페이지 or 로딩중 true일시 리턴을 통한 중단
@@ -50,9 +52,11 @@
                 const saleStatusQuery = saleStatus.length ? `&saleStatus=${saleStatus.join(',')}` : '';
                 const productCategoriesQuery = productCategories.length ? `&productCategories=${productCategories.join(',')}` : '';
                 const priceQuery = `&minPrice=${minPrice}&maxPrice=${maxPrice}`;
+                const searchQueryPart = searchQuery ? `&query=${encodeURIComponent(searchQuery)}` : '';
+
 
                 setTimeout(() => {
-                    fetch(`/list/more?page=${currentPage}&size=${size}&sort=${currentSort}&direction=${currentDirection}${categoriesQuery}${saleStatusQuery}${productCategoriesQuery}${priceQuery}`)
+                    fetch(`/list/more?page=${currentPage}&size=${size}&sort=${currentSort}&direction=${currentDirection}${categoriesQuery}${saleStatusQuery}${productCategoriesQuery}${priceQuery}${searchQueryPart}`)
                         .then(response => response.json())
                         .then(products => {
                             if(products.length === 0) {
@@ -130,21 +134,23 @@
             // 초기 페이지 로드
             document.addEventListener('DOMContentLoaded', function() {
 
+                const searchForm = document.querySelector('.search-form');
+
+
                 let minPrice = 0; // 가격 범위 최소값을 글로벌 변수로 관리
                 let maxPrice = 999999999; // 가격 범위 최대값을 글로벌 변수로 관리
 
                 loadMoreProducts(initialSize, true); // 초기 상품 로딩
 
                 // 공통 로직을 함수
-                function updateAndLoadProducts() {
+                function updateAndLoadProducts(isInitialLoad = false) {
                     currentPage = 0;
                     isLastPage = false;
                     document.querySelector('.product-list').innerHTML = ''; // 상품 리스트 초기화
                     const selectedCategories = [...document.querySelectorAll('#categorySelect input:checked')].map(el => el.value);
                     const selectedSaleStatus = [...document.querySelectorAll('#saleStatusSelect input:checked')].map(el => el.value);
                     const selectedProductCategories = [...document.querySelectorAll('#productSelect input:checked')].map(el => el.value);
-                    loadMoreProducts(initialSize, true, selectedCategories, selectedSaleStatus, selectedProductCategories, minPrice, maxPrice);
-
+                    loadMoreProducts(initialSize, isInitialLoad, selectedCategories, selectedSaleStatus, selectedProductCategories, minPrice, maxPrice, searchQuery);
                 }
 
                 document.getElementById('categorySelect').addEventListener('change', updateAndLoadProducts);
@@ -195,6 +201,15 @@
                         currentSort = 'price';
                         currentDirection = 'DESC';
                     }
+                    updateAndLoadProducts();
+                });
+
+                searchForm.addEventListener('submit', function(e) {
+                
+                    e.preventDefault();
+
+                    searchQuery = document.querySelector('.search-input').value;
+
                     updateAndLoadProducts();
                 });
 

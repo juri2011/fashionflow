@@ -27,10 +27,10 @@ public class ListService {
     private final ItemImgRepository itemImgRepository;
 
 
-    public Page<ListingItemDTO> listingItemWithImgAndCategories(Pageable pageable, List<Long> categoryList, List<Long> saleStatusList, List<Long> productCategoryList, int minPrice, int maxPrice) {
+    public Page<ListingItemDTO> listingItemWithImgAndCategories(Pageable pageable, List<Long> categoryList, List<Long> saleStatusList, List<Long> productCategoryList, int minPrice, int maxPrice, String searchQuery) {
 
 
-        Page<Item> listingItems = itemRepository.findAll(withCategory(categoryList, saleStatusList, productCategoryList, minPrice, maxPrice), pageable);
+        Page<Item> listingItems = itemRepository.findAll(withCategory(categoryList, saleStatusList, productCategoryList, minPrice, maxPrice, searchQuery), pageable);
 
         List<ListingItemDTO> listingItemDTO = new ArrayList<>();
 
@@ -64,7 +64,7 @@ public class ListService {
     }
 
     //조건 검색
-    public static Specification<Item> withCategory(List<Long> categories, List<Long> saleStatuses, List<Long> productCategories, int minPrice, int maxPrice) {
+    public static Specification<Item> withCategory(List<Long> categories, List<Long> saleStatuses, List<Long> productCategories, int minPrice, int maxPrice, String searchQuery) {
         return (root, query, criteriaBuilder) -> {
             List<jakarta.persistence.criteria.Predicate> predicates = new ArrayList<>();
             // 상품 상태
@@ -95,6 +95,18 @@ public class ListService {
             // maxPrice 조건 추가
             if (maxPrice > 0) { // maxPrice가 null이 아니고, 0보다 클 때만 조건을 적용
                 predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("price"), maxPrice));
+            }
+
+            // 검색어를 기반으로 itemName과 비교
+            if (searchQuery != null && !searchQuery.isEmpty()) {
+                // itemName 속성에 대한 Path 객체 생성
+                jakarta.persistence.criteria.Path<String> itemNamePath = root.get("itemName");
+                // 검색어를 포함하는 조건 추가
+                jakarta.persistence.criteria.Predicate searchPredicate = criteriaBuilder.like(
+                        criteriaBuilder.lower(itemNamePath), // DB 필드를 소문자로 변환
+                        "%" + searchQuery.toLowerCase() + "%" // 검색어를 소문자로 변환하고 양쪽에 '%' 추가
+                );
+                predicates.add(searchPredicate);
             }
 
             // 올바른 타입으로 배열 변환

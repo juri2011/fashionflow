@@ -2,7 +2,7 @@
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/layout1}">
+      layout:decorate="~{layouts/mainLayout}">
 
 <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -214,25 +214,23 @@
 
         .sidebar {
             position: fixed;
-            top: 10%;
+            top: 30%;
             left: 0;
             width: 200px;
             height: calc(100% - 10%);
             background-color: #ffffff;
             overflow-y: auto; /* 사이드바 내부의 스크롤을 활성화 */
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
         }
 
         /* 사이드바 내의 스크롤바를 숨기는 CSS */
         .sidebar::-webkit-scrollbar {
             display: none; /* Chrome, Safari, Opera */
         }
-        .sidebar {
-            -ms-overflow-style: none; /* IE and Edge */
-            scrollbar-width: none; /* Firefox */
-        }
 
         .product-list {
-            margin-left: 220px; /* 사이드바 너비 + 여백 */
+            margin-left: 220px;
             display: flex;
             flex-wrap: wrap;
             justify-content: space-around;

@@ -60,17 +60,36 @@ public class RoomController {
     public String myRoom(Model model){
 
         log.info("# All Chat Rooms");
-        List<ChatRoomDTO> rooms = new ArrayList<>();
+        List<ChatRoomDTO> sellRooms = new ArrayList<>();
+        List<ChatRoomDTO> buyRooms = new ArrayList<>();
         String currentMemberEmail = memberService.currentMemberEmail();
         for(ChatRoom chatRoom : chatRoomRepository.findAllByOrderByIdDesc()){
             if(chatRoom.getSellerEmail() == null || chatRoom.getBuyerEmail()==null) continue;
             //사용자가 속해있는 채팅방만 표시
             if(chatRoom.getSellerEmail().equals(currentMemberEmail) ||
                chatRoom.getBuyerEmail().equals(currentMemberEmail)){
-                rooms.add(ChatRoomDTO.entityToDto(chatRoom));
+                ChatRoomDTO chatRoomDTO = ChatRoomDTO.entityToDto(chatRoom);
+                chatRoomDTO.setItem(itemService.getItemDetail(chatRoom.getItemId()));
+                try{
+                    chatRoomDTO.setSeller(memberService.getMemberFormDTOByEmail(chatRoom.getSellerEmail()));
+                }catch(EntityNotFoundException e){
+                    chatRoomDTO.setSeller(null);
+                }
+                try{
+                    chatRoomDTO.setBuyer(memberService.getMemberFormDTOByEmail(chatRoom.getBuyerEmail()));
+                }catch(EntityNotFoundException e){
+                    chatRoomDTO.setBuyer(null);
+                }
+                if(chatRoomDTO.getSeller().getEmail().equals(currentMemberEmail)){
+                    sellRooms.add(chatRoomDTO);
+                }else if(chatRoomDTO.getBuyer().getEmail().equals(currentMemberEmail)){
+                    buyRooms.add(chatRoomDTO);
+                }
             }
         }
-        model.addAttribute("list", rooms);
+
+        model.addAttribute("sellList", sellRooms);
+        model.addAttribute("buyList", buyRooms);
 
         return "chat/rooms";
     }

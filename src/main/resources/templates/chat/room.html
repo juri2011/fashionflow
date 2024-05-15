@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/layout1}">
+      layout:decorate="~{layouts/mainLayout}">
 
 <div layout:fragment="content">
     <div class="container" style="min-width: 500px;">
@@ -12,7 +12,11 @@
                 <span th:text="${room.item.itemName}">
                 </span>
                 <img style="width: 100px; height:100px;"
+                     th:if="${room.item.itemRepImgDTO}!=null"
                      th:src="'/images/'+${room.item.itemRepImgDTO.imgName}">
+                <img style="width: 100px; height:100px;"
+                     th:if="${room.item.itemRepImgDTO}==null" src="/img/default.png">
+
                 <div th:switch="${#strings.toString(room.item.sellStatus)}">
                     <span th:case="SELLING">판매중</span>
                     <span th:case="SUSPENDED">판매중단</span>

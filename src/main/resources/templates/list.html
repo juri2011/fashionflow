@@ -27,7 +27,7 @@
                 return price.toLocaleString();
             }
 
-            function loadMoreProducts(size, isInitialLoad = false, searchQuery, categories = [], saleStatus = [], productCategories = [], minPrice = 0, maxPrice = 999999999) {
+            function loadMoreProducts(size, isInitialLoad = false, searchQuery, productCategories = [], categories = [], saleStatus = [], minPrice = 0, maxPrice = 999999999) {
 
                 if(isInitialLoad) {
                     currentCategories = categories; // 초기 로딩 시 현재 상품 상태 업데이트
@@ -137,13 +137,40 @@
                 const searchForm = document.querySelector('.search-form');
 
                 const urlParams = new URLSearchParams(window.location.search);
-                let searchQuery = urlParams.get('query') || ''; // 검색어가 없으면 빈 문자열로 초기화
+                let searchQuery = urlParams.get('query') || ''; // URL에서 검색어 추출, 없으면 빈 문자열로 초기화
+                let category = urlParams.get('category') || ''; // URL에서 카테고리 쿼리 추출
 
+                // 해당하는 체크박스 선택
+                if(category) {
+                    switch(category) {
+                        case 'men':
+                            document.querySelectorAll('#menSelect input[type="checkbox"]').forEach(checkbox => {
+                                checkbox.checked = true;
+                            });
+                            break;
+                        case 'women':
+                            document.querySelectorAll('#womanSelect input[type="checkbox"]').forEach(checkbox => {
+                                checkbox.checked = true;
+                            });
+                            break;
+                        case 'shoes':
+                            document.querySelectorAll('#shoesSelect input[type="checkbox"]').forEach(checkbox => {
+                                checkbox.checked = true;
+                            });
+                            break;
+                    }
+                }
 
                 let minPrice = 0; // 가격 범위 최소값을 글로벌 변수로 관리
                 let maxPrice = 999999999; // 가격 범위 최대값을 글로벌 변수로 관리
+                // 카테고리 매핑
+                let categoryMapping = {
+                    'men': [4,5,6,7],
+                    'women': [8,9,10,11], // 여성의류 카테고리 번호 예시
+                    'shoes': [12,13,14,15] // 신발 카테고리 번호 예시
+                };
 
-                loadMoreProducts(initialSize, true, searchQuery); // 초기 상품 로딩
+                loadMoreProducts(initialSize, true, searchQuery, categoryMapping[category]); // 초기 상품 로딩
                 document.querySelector('.search-input').value = searchQuery; // 검색 입력 필드에 검색어 설정
 
                 // 공통 로직을 함수
@@ -154,7 +181,7 @@
                     const selectedCategories = [...document.querySelectorAll('#categorySelect input:checked')].map(el => el.value);
                     const selectedSaleStatus = [...document.querySelectorAll('#saleStatusSelect input:checked')].map(el => el.value);
                     const selectedProductCategories = [...document.querySelectorAll('#productSelect input:checked')].map(el => el.value);
-                    loadMoreProducts(initialSize, true, searchQuery, selectedCategories, selectedSaleStatus, selectedProductCategories, minPrice, maxPrice);
+                    loadMoreProducts(initialSize, true, searchQuery, selectedProductCategories, selectedCategories, selectedSaleStatus, minPrice, maxPrice);
                 }
 
                 document.getElementById('categorySelect').addEventListener('change', updateAndLoadProducts);

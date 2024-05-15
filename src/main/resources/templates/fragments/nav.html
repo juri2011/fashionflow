@@ -68,7 +68,7 @@
             left: 0; /* 화면 우측에 위치합니다. */
             z-index: 999; /* 다른 콘텐츠 위에 표시됩니다. */
             width: 15vw;
-            height: 50vh;
+            height: 20vh;
             background-color: #F1EEE9;
             box-shadow: 0px 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
             transform: translateY(-100%);
@@ -111,14 +111,25 @@
                 <input type="checkbox" id="checkbox">
             </header>
             <nav>
-                <ul>
-                    <li><a>1</a></li>
-                    <li><a>2</a></li>
-                    <li><a>3</a></li>
-                    <li><a>4</a></li>
+                <ul id="categorySearch">
+                    <li><button data-category="men">남성의류</button></li>
+                    <li><button data-category="women">여성의류</button></li>
+                    <li><button data-category="shoes">신발</button></li>
                 </ul>
             </nav>
         </div>
     </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 버튼에 클릭 이벤트 리스너 추가
+            document.querySelectorAll('#categorySearch button').forEach(button => {
+                button.addEventListener('click', function() {
+                    var category = this.getAttribute('data-category'); // 버튼의 data-category 속성 값 가져오기
+                    window.location.href = `/list?category=${encodeURIComponent(category)}`; // data-category 속성 값 포함된 URL로 리디렉션
+                 });
+            });
+        });
+    </script>
 </div>
 </html>

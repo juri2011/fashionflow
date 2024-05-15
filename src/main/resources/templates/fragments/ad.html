@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+    <div th:fragment="advertisement" sec:authorize="isAnonymous()">
+        <style>
+            .ad-container {
+                position:fixed;
+                width: 160px; /* 너비를 160px로 고정 */
+                height: 600px; /* 높이를 600px로 고정 */
+                overflow: hidden; /* 넘치는 부분을 숨김 */
+                display: flex; /* Flexbox를 사용하여 내용을 중앙에 배치 */
+                justify-content: flex-start; /* 가로 방향 시작 위치 정렬 */
+                align-items: center; /* 세로 방향 중앙 정렬 */
+                margin-left: 50px;
+            }
+            .ad-img {
+                max-width: 100%; /* 최대 너비를 컨테이너 너비의 100%로 설정 */
+                max-height: 100%; /* 최대 높이를 컨테이너 높이의 100%로 설정 */
+                width: auto; /* 너비 자동 조정 */
+                height: auto; /* 높이 자동 조정 */
+                object-fit: contain; /* 이미지가 컨테이너에 맞게 조정되도록 설정 */
+            }
+        </style>
+        <div class="ad-container">
+            <img class="ad-img" src="img/nikeAD.jpg" alt="Nike Ad">
+        </div>
+    </div>
+</html>

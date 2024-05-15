@@ -2,7 +2,7 @@
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/mainLayout}">
+      layout:decorate="~{layouts/layout1}" xmlns:sec="http://www.w3.org/1999/xhtml">
 
 <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -245,60 +245,186 @@
                 });
             });
 
-            // 사이드바 스크롤
-            window.addEventListener("scroll", function() {
-                var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                // 전체 페이지의 스크롤 위치에 따라 사이드바 내부의 스크롤 위치를 조정
-                document.querySelector('.sidebar').scrollTop = scrollTop;
-            });
-
-
+            function toggleSection(sectionId) {
+                const section = document.getElementById(sectionId);
+                section.style.display = section.style.display === 'block' ? 'none' : 'block';
+            }
 
     </script>
 
     <style>
 
+        .container {
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 80%;
+            margin: 20px auto;
+        }
+
+        .sortBtns {
+            display: flex;
+            justify-content: flex-end;
+            width: 100%;
+        }
+
+        .sortBtns button {
+            margin-left: 10px; /* 버튼 사이의 간격 설정 */
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #000; /* 글씨 색 검은색 */
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
 
         .sidebar {
             position: fixed;
             top: 30%;
-            left: 0;
+            left: 20px;
             width: 200px;
-            height: calc(100% - 10%);
+            height: 550px;
             background-color: #ffffff;
-            overflow-y: auto; /* 사이드바 내부의 스크롤을 활성화 */
-            -ms-overflow-style: none; /* IE and Edge */
-            scrollbar-width: none; /* Firefox */
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow-y: scroll;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* 그림자 효과 추가 */
         }
 
-        /* 사이드바 내의 스크롤바를 숨기는 CSS */
+        /* 스크롤 바 스타일 */
         .sidebar::-webkit-scrollbar {
-            display: none; /* Chrome, Safari, Opera */
+            width: 8px;
         }
+
+        /* 스크롤 바 thumb 스타일 */
+        .sidebar::-webkit-scrollbar-thumb {
+            background-color: #888;
+            border-radius: 4px;
+        }
+
+        /* 스크롤 바 track 스타일 */
+        .sidebar::-webkit-scrollbar-track {
+            background-color: #f1f1f1;
+        }
+
+
+        /* 스크롤바 전체를 위한 스타일 */
+        .sidebar::-webkit-scrollbar {
+            width: 5px; /* 스크롤바의 너비 */
+        }
+
+        /* 스크롤바의 트랙(바탕)을 위한 스타일 */
+        .sidebar::-webkit-scrollbar-track {
+            background: #f1f1f1; /* 트랙의 배경색 */
+        }
+
+        /* 스크롤바의 핸들을 위한 스타일 */
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #c1c1c1; /* 핸들의 배경색 */
+        }
+
+        /* 스크롤바의 핸들에 호버됐을 때를 위한 스타일 */
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8; /* 핸들의 호버 색상 */
+        }
+
+
+
+        .sidebar h3 {
+            font-weight: bold;
+        }
+
+        .sidebar p {
+            cursor: pointer;
+        }
+
+
+        .sidebar p.active + div {
+            display: block; /* 클릭된 경우 보여집니다. */
+        }
+
+        /* 최소 및 최대 가격 입력란의 디자인 개선 */
+        #priceRangeSelect label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        #productSelect p, #priceRangeSelect label:first-of-type, #categorySelect p, #saleStatusSelect p {
+            font-size: 20px; /* 글씨 크기 키우기 */
+            font-weight: bold; /* 볼드체 */
+            margin-bottom: 5px; /* 하단 여백 추가 */
+        }
+
+        /* 섹션 박스 스타일 */
+        #productSelect > div, #priceRangeSelect, #categorySelect, #saleStatusSelect {
+            border: 1px solid #ccc; /* 경계선 */
+            padding: 10px; /* 내부 여백 */
+            margin-bottom: 20px; /* 하단 여백 */
+            border-radius: 5px; /* 경계선 둥글게 */
+        }
+
+        #minPrice,
+        #maxPrice {
+            width: calc(100% - 10px); /* 입력란이 테두리 내에 꽉 차도록 설정 */
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+
+        #applyPriceFilter {
+            padding: 5px 10px;
+            background-color: #8C8A88;
+            border: none;
+            color: white;
+            font-size: 14px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
 
         .product-list {
-            margin-left: 220px;
             display: flex;
             flex-wrap: wrap;
             justify-content: space-around;
         }
 
         .product-item {
-            width: calc(25% - 40px); /* 한 줄에 4개씩, 양쪽 여백을 고려하여 조정 */
+            position: relative; /* 액자 효과를 위한 가상 요소의 위치 기준점 설정 */
+            width: calc(25% - 40px);
             height: 400px;
-            margin: 10px; /* 상품 간 여백 */
-            border: 1px solid #ddd; /* 사각형 박스 형태의 보더 추가 */
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* 상품에 그림자 효과 추가 */
+            margin: 10px;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             background-color: #f9f9f9;
             padding: 20px;
             box-sizing: border-box;
             display: flex;
-            flex-direction: column; /* 상품 내용을 세로로 정렬 */
+            flex-direction: column;
             align-items: center;
         }
 
+        .product-item::before {
+            content: ''; /* 가상 요소는 content 속성이 필수 */
+            position: absolute; /* 부모 요소(.product-item)를 기준으로 위치 */
+            top: -10px; /* 액자의 테두리를 위해 상품 박스 바깥으로 위치 조정 */
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border: 2px solid #F1EEE9; /* 액자 테두리 색상 - 무채색 계열의 회색 사용 */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15); /* 액자에 더 깊이감 있는 그림자 효과 추가 */
+            z-index: -1; /* 상품 내용이 액자 테두리 위로 오도록 설정 */
+        }
+
+
         .product-image {
-            max-width: 100%;
+            margin-bottom: 20px;
+            width: 90%;
+            height: 70%;
             height: auto;
         }
 
@@ -310,69 +436,72 @@
 
 
 <body>
-<div layout:fragment="content">
+    <div layout:fragment="content">
 
-    <div class="sidebar">
-        <h3>카테고리</h3>
-        <br/>
-        <div id="productSelect">
-            <br/>
-            <p>남성의류</p>
-            <div id="menSelect">
-                <label><input type="checkbox" name="category" value="4"> 아우터</label><br>
-                <label><input type="checkbox" name="category" value="5"> 상의</label><br>
-                <label><input type="checkbox" name="category" value="6"> 바지</label><br>
-                <label><input type="checkbox" name="category" value="7"> 셋업/세트</label><br>
-            </div>
-            <br/>
-            <p>여성의류</p>
-            <div id="womanSelect">
-                <label><input type="checkbox" name="category" value="8"> 아우터</label><br>
-                <label><input type="checkbox" name="category" value="9"> 상의</label><br>
-                <label><input type="checkbox" name="category" value="10"> 바지</label><br>
-                <label><input type="checkbox" name="category" value="11"> 치마</label><br>
-                <label><input type="checkbox" name="category" value="12"> 원피스</label><br>
-                <label><input type="checkbox" name="category" value="13"> 셋업/세트</label><br>
-            </div>
-            <br/>
-            <p>신발</p>
-            <div id="shoesSelect">
-                <label><input type="checkbox" name="category" value="14"> 스니커즈</label><br>
-                <label><input type="checkbox" name="category" value="15"> 남성화</label><br>
-                <label><input type="checkbox" name="category" value="16"> 여성화</label><br>
-                <label><input type="checkbox" name="category" value="17"> 스포츠화</label><br>
-            </div>
-            <br/>
-        </div>
-        <br/>
-        <div id="priceRangeSelect">
-            <label>최소 가격: <input type="number" id="minPrice" name="minPrice" placeholder="0"></label><br>
-            <label>최대 가격: <input type="number" id="maxPrice" name="maxPrice" placeholder="999999999"></label><br>
-            <button id="applyPriceFilter">적용</button>
-        </div>
-        <br/>
-        <p>상품 상태</p>
-        <div id="categorySelect">
-            <label><input type="checkbox" value="1"> 새상품(미개봉)</label><br>
-            <label><input type="checkbox" value="2"> 사용감 없음</label><br>
-            <label><input type="checkbox" value="3"> 사용감 적음</label><br>
-            <label><input type="checkbox" value="4"> 사용감 많음</label><br>
-            <label><input type="checkbox" value="5"> 파손, 고장 상품</label><br>
-        </div>
-        <br/>
-        <p>상품 상태</p>
-        <div id="saleStatusSelect">
-            <label><input type="checkbox" name="saleStatus" value="1"> 판매중</label><br>
-            <label><input type="checkbox" name="saleStatus" value="3"> 판매완료</label><br>
-        </div>
+        <div class="container">
 
+            <div class="sortBtns">
+                <button id="sortDate">등록일순</button>
+                <button id="sortPrice">가격순</button>
+            </div>
+            <div class="product-list"></div>
+
+            <div class="sidebar" sec:authorize="isAuthenticated()">
+                    <div id="productSelect">
+                        <br/>
+                        <p onclick="toggleSection('menSelect')">남성의류</p>
+                        <div id="menSelect" style="display: none;">
+                            <label><input class="categoryBtns" type="checkbox" name="category" value="4"> 아우터</label><br>
+                            <label><input class="categoryBtns" type="checkbox" name="category" value="5"> 상의</label><br>
+                            <label><input class="categoryBtns" type="checkbox" name="category" value="6"> 바지</label><br>
+                            <label><input class="categoryBtns" type="checkbox" name="category" value="7"> 셋업/세트</label><br>
+                        </div>
+                        <br/>
+                        <p onclick="toggleSection('womanSelect')">여성의류</p>
+                        <div id="womanSelect" style="display: none;">
+                            <label><input class="categoryBtns" type="checkbox" name="category" value="8"> 아우터</label><br>
+                            <label><input class="categoryBtns" type="checkbox" name="category" value="9"> 상의</label><br>
+                            <label><input class="categoryBtns" type="checkbox" name="category" value="10"> 바지</label><br>
+                            <label><input class="categoryBtns" type="checkbox" name="category" value="11"> 치마</label><br>
+                            <label><input class="categoryBtns" type="checkbox" name="category" value="12"> 원피스</label><br>
+                            <label><input class="categoryBtns" type="checkbox" name="category" value="13"> 셋업/세트</label><br>
+                        </div>
+                        <br/>
+                        <p onclick="toggleSection('shoesSelect')">신발</p>
+                        <div id="shoesSelect" style="display: none;">
+                            <label><input class="categoryBtns" type="checkbox" name="category" value="14"> 스니커즈</label><br>
+                            <label><input class="categoryBtns" type="checkbox" name="category" value="15"> 남성화</label><br>
+                            <label><input class="categoryBtns" type="checkbox" name="category" value="16"> 여성화</label><br>
+                            <label><input class="categoryBtns" type="checkbox" name="category" value="17"> 스포츠화</label><br>
+                        </div>
+                        <br/>
+                    </div>
+                    <br/>
+                    <div id="priceRangeSelect">
+                        <label>가격 범위: </label>
+                        <input type="number" id="minPrice" name="minPrice" placeholder="최소 가격">
+                        <span>~</span>
+                        <input type="number" id="maxPrice" name="maxPrice" placeholder="최대 가격">
+                        <button id="applyPriceFilter">적용</button>
+                    </div>
+                    <br/>
+                    <p>상품 상태</p>
+                    <div id="categorySelect">
+                        <label><input type="checkbox" value="1"> 새상품(미개봉)</label><br>
+                        <label><input type="checkbox" value="2"> 사용감 없음</label><br>
+                        <label><input type="checkbox" value="3"> 사용감 적음</label><br>
+                        <label><input type="checkbox" value="4"> 사용감 많음</label><br>
+                        <label><input type="checkbox" value="5"> 파손, 고장 상품</label><br>
+                    </div>
+                    <br/>
+                    <p>판매 상태</p>
+                    <div id="saleStatusSelect">
+                        <label><input type="checkbox" name="saleStatus" value="1"> 판매중</label><br>
+                        <label><input type="checkbox" name="saleStatus" value="3"> 판매완료</label><br>
+                    </div>
+                </div>
+        </div>
     </div>
-    <button id="sortDate">등록일순</button>
-    <button id="sortPrice">가격순</button>
-    <div class="product-list">
-
-    </div>
-</div>
 
 </body>
 

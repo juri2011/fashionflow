@@ -193,7 +193,8 @@
 
             <div id="selectedTagsDisplay" class="alert alert-info">
                 <th:block th:each="itemTag : ${itemFormDTO.itemTagDTOList}">
-                    [[${#strings.toString(itemTag.itemTagName.description)}]]<th:block th:if="${itemTagStat.last} == false">,</th:block>
+                    <span class="tag-block badge text-bg-secondary" th:data-code="${#strings.toString(itemTag.itemTagName)}"
+                          th:text="${#strings.toString(itemTag.itemTagName.description)}"></span>
                 </th:block>
             </div>
         </div>
@@ -348,12 +349,20 @@
    var selectedTags = [];  // 선택된 태그의 코드를 저장하는 배열
    var isAddTagExecutedOnce = false;
 
-     function addTag() {
-        if(!isAddTagExecutedOnce){
-            const loadedTag = $('.loaded-item-tag');
-            loadedTag.remove();
-            isAddTagExecutedOnce = true;
+    function addTag() {
+
+        var tagSelect = document.getElementById('tagSelect');
+        var selectedOption = tagSelect.options[tagSelect.selectedIndex];
+        // 선택된 옵션을 확인하고 배열에 없으면 추가
+        if (selectedOption.value !== "" && !selectedTags.includes(selectedOption.value)) {
+            selectedTags.push(selectedOption.value); // 배열에 태그 코드 추가
+            updateTagsDisplay();  // 화면에 선택된 태그들을 업데이트
+            tagSelect.selectedIndex = 0;  // 셀렉트 박스를 초기화
+
+            str = '<input type="hidden" name="tagSelectList" value="'+ selectedOption.value +'"/>';
+            $('#ModifyForm').append(str);
         }
+    }
 
         var tagSelect = document.getElementById('tagSelect');
         var selectedOption = tagSelect.options[tagSelect.selectedIndex];
@@ -372,11 +381,15 @@
 
 
     function updateTagsDisplay() {
+        $('#selectedTagsDisplay').empty();
         var displayText = selectedTags.map(code => {
             var option = document.querySelector(`#tagSelect option[value="${code}"]`);
             return option ? option.textContent : code;
-        }).join(', ');  // 선택된 태그들을 쉼표로 구분하여 한 줄로 연결
-        document.getElementById('selectedTagsDisplay').textContent = displayText || '태그를 선택해 주세요.';
+        });
+        console.log(displayText);
+        displayText.forEach((tag, i) => {
+            $('#selectedTagsDisplay').append('<span data-code="'+selectedTags[i]+'" class="tag-block badge text-bg-secondary">'+tag+'</span>');
+        });
     }
 
     function loadCategory(){
@@ -424,6 +437,32 @@ $(document).ready(function(){
         if (!validateForm()) {
             event.preventDefault(); // 폼 제출을 중지
         }
+    });
+
+    $('.loaded-item-tag').each(function(){
+        selectedTags.push($(this).val());
+    });
+
+    $('#selectedTagsDisplay').on('click', '.tag-block', function() {
+
+        //태그 블록 삭제
+        $(event.target).remove();
+
+        for(let i=0; i<selectedTags.length; i++){
+            //selectedTags 배열에서 삭제(태그 중복 등록 방지를 위한 배열)
+            if(selectedTags[i] === $(event.target).data('code')){
+                selectedTags.splice(i,1);
+
+                //input 삭제
+                $('input[name="tagSelectList"]').each(function() {
+                    if($(this).val() === $(event.target).data('code')){
+                        $(this).remove();
+                    }
+                });
+                i--;
+            }
+        }
+
     });
 });
 

@@ -33,6 +33,7 @@ public class ItemBuy {
     private LocalDateTime buyDate;
 
     @Column(nullable = false)
+    @Builder.Default
     private boolean reviewExists = false; // 리뷰 여부를 나타내는 변수
 
 }

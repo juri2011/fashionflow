@@ -29,6 +29,7 @@ public class ChatRoomDTO {
 
     private boolean enabled;
 
+    @Builder.Default
     private Set<WebSocketSession> sessions = new HashSet<>();
 
     public static ChatRoomDTO create(String name, ItemFormDTO item, MemberFormDTO buyer, MemberFormDTO seller){

@@ -141,7 +141,10 @@
                 <span th:if="${review.price}" th:text="'가격: ' + ${review.price}" ></span>
                 <span th:if="${review.score}" th:text="'매너점수: ' + ${review.score}" ></span>
                 <span th:if="${review.regDate}" th:text="'거래일: ' + ${#temporals.format(review.regDate, 'yyyy-MM-dd')}" ></span>
-
+                <!-- 리뷰 태그 정보 출력 -->
+                <span th:if="${review.reviewTags}">
+                    <span th:each="tag : ${review.reviewTags}" th:text="${tag.description}"></span>
+                </span>
             </form>
         </div>
     </div>

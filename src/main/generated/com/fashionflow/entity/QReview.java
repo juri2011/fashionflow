@@ -30,7 +30,7 @@ public class QReview extends EntityPathBase<Review> {
 
     public final QMember member;
 
-    public final DateTimePath<java.time.LocalDateTime> regdate = createDateTime("regdate", java.time.LocalDateTime.class);
+    public final DateTimePath<java.time.LocalDateTime> regDate = createDateTime("regDate", java.time.LocalDateTime.class);
 
     public final NumberPath<Integer> score = createNumber("score", Integer.class);
 

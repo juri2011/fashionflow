@@ -1,57 +1,3 @@
-<!--
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-    <div th:fragment="header">
-        <nav class="navbar navbar-expand-lg bg-body-tertiary">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="/">Shop</a>
-                <button class="navbar-toggler" type="button"
-                        data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-                        aria-controls="navbarSupportedContent" aria-expanded="false"
-                        aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-
-                        <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="/list">리스트</a>
-                        </li>
-
-                    </ul>
-                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0" style="margin-right:200px">
-
-                        <li class="nav-item" sec:authorize="isAuthenticated()">
-                            &lt;!&ndash; 로그아웃 form &ndash;&gt;
-                            <form action="/members/logout" method="post" style="display:inline;">
-                                &lt;!&ndash; CSRF 토큰 포함 &ndash;&gt;
-                                <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
-                                &lt;!&ndash; 로그아웃 버튼 &ndash;&gt;
-                                <button type="submit" class="btn btn-link nav-link active" aria-current="page" style="border:none;
-                                 background:none; padding:0; margin-top: 8px; margin-left: 5px;">로그아웃</button>
-                            </form>
-                        </li>
-
-                        <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                마이페이지
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <li>
-                                    <a class="dropdown-item" href="/members/memberEdit">회원정보수정</a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="/buyer/orders">구매내역</a>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </div>
-</html>-->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
@@ -59,17 +5,27 @@
 <div class="header" th:fragment="header">
     <style>
         .header {
+
+            background-color: #F1EEE9;
+            border-top: 3px solid #EEEEEE;
+
+        }
+
+        .header-box{
             display: flex;
             justify-content: space-around;
             align-items: center;
-            background-color: #F1EEE9;
-            padding: 0 20px;
-            height: 200px;
+            width: 70%;
+            height: 160px;
+            margin: 0 auto;
+            padding: 0 40px;
+
         }
         .search-form {
             display: flex;
             justify-content: center;
             width: 40%; /* 검색창의 너비를 줄입니다. */
+            height: 50px;
             border-radius: 25px;
             border: 2px solid #BFBDBA;
         }
@@ -83,38 +39,42 @@
             color: #403F3F;
         }
         .search-button {
-            padding: 10px 20px;
+            padding: 10px 30px;
             cursor: pointer;
             background-color: #8C8A88;
             border: none;
             color: white;
-            font-size: 16px;
+            font-size: 14px;
             border-radius: 25px;
         }
         .links {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 30px;
         }
         .link {
+            margin: 0 10px;
             text-decoration: none;
             color: black;
-            font-size: 20px;
+            font-size: 16px;
             font-weight: bold;
+
         }
     </style>
-
-    <a href="/" class="logo">
-        <img src="/img/logo.png" alt="Shop" style="height: 100px; width: 400px;">
-    </a>
-    <form class="search-form" action="/list" method="get">
-        <input class="search-input" type="search" placeholder="Search" aria-label="Search" name="query">
-        <button class="search-button" type="submit">검색</button>
-    </form>
-    <div class="links">
-        <a href="/sell" class="link">판매하기</a>
-        <a href="/myshop" class="link">내상점</a>
-        <a href="/flowtalk" class="link">플로우톡</a>
+    <div class="header-box">
+        <a href="/" class="logo">
+            <img src="/img/logo.png" alt="Shop" style="height: 60px; width: 250px;">
+        </a>
+        <form class="search-form" action="/list" method="get">
+            <input class="search-input" type="search" placeholder="Search" aria-label="Search" name="query">
+            <button class="search-button" type="submit">검색</button>
+        </form>
+        <div class="links">
+            <a href="/members/item/new" class="link">판매하기</a>
+            <a href="/myshop" class="link">내상점</a>
+            <a href="/chat/flowtalk" class="link">플로우톡</a>
+        </div>
     </div>
+
 </div>
 </html>

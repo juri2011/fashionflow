@@ -1,67 +1,8 @@
-<!--
 <!DOCTYPE html>
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layout1}">
-
-<head>
-    <style>
-        .header-container {
-            display: flex;
-            justify-content: space-between; /* 검색 폼과 메뉴를 양쪽 끝으로 분배 */
-            align-items: center; /* 세로 중앙 정렬 */
-            padding: 20px; /* 여백 추가 */
-        }
-        .search-form {
-            display: flex;
-            margin-right: 10px; /* 오른쪽으로의 여백을 줄임 */
-        }
-        .search-input {
-            width: 500px; /* input의 가로 크기 조절 */
-        }
-        .search-button {
-            margin-left: 5px; /* 버튼과 input 사이의 간격 */
-        }
-        .menu-links {
-            margin-left: 10px; /* 메뉴 사이의 간격을 줄임 */
-        }
-        .menu-links a {
-            text-decoration: none;
-            color: black; /* 링크 색상 설정 */
-            margin-left: 15px; /* 링크들 사이의 간격 */
-            padding: 8px; /* 클릭 영역 확장 */
-        }
-    </style>
-</head>
-
-
-<body>
-<div layout:fragment="content">
-    <div class="header-container">
-        <h1>메인페이지입니다.</h1>
-        <form class="search-form" role="search">
-            <input class="form-control me-2 search-input" type="search" placeholder="Search" aria-label="Search">
-            <button class="btn btn-outline-success search-button" type="submit">검색</button>
-        </form>
-        <div class="menu-links">
-            <a href="/sell">판매하기</a>
-            <a href="/myshop">내상점</a>
-            <a href="/flowtalk">플로우톡</a>
-        </div>
-    </div>
-
-</div>
-</body>
-
-</html>
--->
-
-<!DOCTYPE html>
-<html lang="en"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/mainLayout}">
 
 <head>
     <style>
@@ -120,9 +61,6 @@
 <body>
 
 <div layout:fragment="content">
-    <div class="header-container">
-        <h1>메인 페이지</h1>
-    </div>
 
     <div class="slide-container">
         <div class="slide">

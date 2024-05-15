@@ -17,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -57,7 +59,12 @@ public class RoomController {
 
     //내가 속해있는 채팅방만
     @GetMapping("/flowtalk")
-    public String myRoom(Model model){
+    public String myRoom(@AuthenticationPrincipal User user, Model model){
+
+        if (user == null) {
+            // 사용자가 로그인하지 않은 경우, 로그인 페이지로 리디렉션
+            return "/error/loginError";
+        }
 
         log.info("# All Chat Rooms");
         List<ChatRoomDTO> rooms = new ArrayList<>();

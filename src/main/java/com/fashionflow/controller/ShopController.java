@@ -40,7 +40,13 @@ public class ShopController {
 
 
     @GetMapping("/members/item/new")
-    public String itemForm(Model model) {
+    public String itemForm(@AuthenticationPrincipal User user, Model model) {
+
+        if (user == null) {
+            // 사용자가 로그인하지 않은 경우, 로그인 페이지로 리디렉션
+            return "/error/loginError";
+        }
+        String userEmail = user.getUsername();
         // 새 ItemFormDTO 객체를 모델에 추가
         model.addAttribute("itemFormDTO", new ItemFormDTO());
 
@@ -77,7 +83,7 @@ public class ShopController {
         try {
             String email = principal.getName(); // 사용자 이메일 가져오기
             itemService.saveItem(itemFormDTO, itemImgFileList, tagSelectList, email); // 태그 정보도 함께 저장
-            return "redirect:/";
+            return "redirect:/myshop";
         } catch (Exception e) {
             model.addAttribute("errorMessage", "상품 등록 실패");
             return "/item/itemForm";
@@ -86,20 +92,21 @@ public class ShopController {
 
     @GetMapping("/myshop")
     public String showMyShop(@AuthenticationPrincipal User user, Model model) {
-        String userEmail = user.getUsername(); // 현재 로그인한 사용자의 이메일을 가져옴
+        if (user == null) {
+            // 사용자가 로그인하지 않은 경우, 로그인 페이지로 리디렉션
+            return "/error/loginError";
+        }
+
+        String userEmail = user.getUsername();
         List<ItemFormDTO> items = itemService.getItemsWithImagesByUserEmail(userEmail);
-
-        // 현재 사용자의 이메일로 등록된 리뷰만 가져오도록 수정
         List<ReviewDTO> getItemReviewListWithImg = reviewService.getItemReviewListWithImg(userEmail);
-
-        // 현재 사용자의 이메일로 등록된 리뷰만 가져오도록 수정
         List<HeartDTO> getHeartItemsWithImagesByUserEmail = heartService.getHeartItemsWithImagesByUserEmail(userEmail);
 
-
         model.addAttribute("items", items);
-        model.addAttribute("getItemReviewListWithImg", getItemReviewListWithImg); // 리뷰가 이미 작성되었는지 여부를 모델에 추가
-        model.addAttribute("getHeartItemsWithImagesByUserEmail", getHeartItemsWithImagesByUserEmail); // 리뷰가 이미 작성되었는지 여부를 모델에 추가
-        return "myshop"; // HTML 파일 이름과 일치
+        model.addAttribute("getItemReviewListWithImg", getItemReviewListWithImg);
+        model.addAttribute("getHeartItemsWithImagesByUserEmail", getHeartItemsWithImagesByUserEmail);
+
+        return "myshop";
     }
 
 
@@ -124,6 +131,7 @@ public class ShopController {
     public String updateItem(@PathVariable("itemId") Long itemId,
                              @ModelAttribute("itemFormDTO") ItemFormDTO itemFormDTO,
                              @RequestParam("itemImgFile") List<MultipartFile> itemImgFileList,
+                             @RequestParam(value = "itemImgIds", required = false) List<String> itemImgIdStringList,
                              @RequestParam("tagSelectList") List<String> tagSelectList,
                              RedirectAttributes redirectAttributes) {
         for(String tagSelect : tagSelectList){
@@ -141,7 +149,7 @@ public class ShopController {
         }
 
         try {
-            itemService.updateItem(itemId, itemFormDTO, itemImgFileList);
+            itemService.updateItem(itemId, itemFormDTO, itemImgFileList, itemImgIdStringList);
             return "redirect:/myshop";
         } catch (Exception e) {
             redirectAttributes.addAttribute("itemId", itemId);

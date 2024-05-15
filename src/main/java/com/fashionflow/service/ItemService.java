@@ -21,6 +21,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -208,7 +209,10 @@ public class ItemService {
 
 
     @Transactional
-    public void updateItem(Long itemId, ItemFormDTO itemFormDTO, List<MultipartFile> itemImgFileList) throws Exception {
+    public void updateItem(Long itemId, ItemFormDTO itemFormDTO,
+                           List<MultipartFile> itemImgFileList,
+                           List<String> itemImgIdStringList) throws Exception {
+
         // Repository에서 상품 번호를 사용하여 Item 엔티티 가져오기
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 상품이 존재하지 않습니다. id = " + itemId));
@@ -219,20 +223,54 @@ public class ItemService {
                 itemFormDTO.getSellStatus(), itemFormDTO.getItemStatus(), itemFormDTO.getContent(),
                 itemFormDTO.getPrice(), itemFormDTO.getDelivery(), itemFormDTO.getAddress());
 
-        // 이미지 파일 처리
-        if (itemImgFileList != null && !itemImgFileList.isEmpty()) {
-            // 이전에 등록된 상품 이미지 삭제
-            itemImgRepository.deleteByItemId(itemId);
-            for (int i = 0; i < itemImgFileList.size(); i++) {
-                MultipartFile file = itemImgFileList.get(i);
-                if (!file.isEmpty()) {
-                    ItemImg itemImg = new ItemImg();
-                    itemImg.setItem(item);
-                    itemImg.setRepimgYn(i == 0 ? "Y" : "N"); // 첫 번째 이미지를 대표 이미지로 설정
-                    itemImgService.saveItemImg(itemImg, file);
+        int index = 0;
+
+        List<ItemImg> itemImgList = itemImgRepository.findByItemId(itemId);
+        List<Long> itemImgIdList = itemImgList.stream().map(ItemImg::getId).toList();
+
+        //기존에 이미지가 있을 때만 실행
+        if(itemImgIdStringList != null){
+
+            List<Long> requestImgIdList = itemImgIdStringList.stream().map(Long::parseLong).toList();
+            for(Long itemImgId : itemImgIdList){
+                if(!requestImgIdList.contains(itemImgId)){
+                    itemImgRepository.deleteById(itemImgId);
                 }
             }
+            System.out.println("상품 이미지 삭제 작업 완료");
+
+            System.out.println(itemImgIdStringList.size());
+            //수정
+            for(; index<itemImgIdStringList.size(); index++){
+                Long itemImgId = Long.parseLong(itemImgIdStringList.get(index));
+                MultipartFile itemFile = itemImgFileList.get(index);
+                if(!itemFile.isEmpty()){
+                    ItemImg itemImg = itemImgRepository.findById(itemImgId)
+                            .orElseThrow(() -> new EntityNotFoundException("이미지 정보를 찾을 수 없습니다. id = " + itemImgId));
+                    itemImgService.saveItemImg(itemImg, itemFile);
+                    System.out.println(itemImg);
+                }
+            }
+            System.out.println("상품 이미지 변경 작업 완료");
         }
+
+        Optional<ItemImg> repItemImg = itemImgRepository.findFirstByItemIdAndRepimgYn(itemId,"Y");
+        //추가
+        for(;index<itemImgFileList.size();index++){
+            MultipartFile itemFile = itemImgFileList.get(index);
+            if(!itemFile.isEmpty()){
+                System.out.println("추가해야 할 이미지가 더 있음");
+                ItemImg itemImg = new ItemImg();
+                itemImg.setItem(item);
+                if(repItemImg.isEmpty()){
+                    itemImg.setRepimgYn("Y");
+                }else{
+                    itemImg.setRepimgYn("N");
+                }
+                itemImgService.saveItemImg(itemImg, itemFile);
+            }
+        }
+        System.out.println("상품 이미지 추가 작업 완료");
 
         // ItemTagDTOList 업데이트
         List<ItemTagDTO> itemTagDTOList = itemFormDTO.getItemTagDTOList();
@@ -249,7 +287,6 @@ public class ItemService {
         // 변경된 상품 정보 저장
         itemRepository.save(item);
     }
-
 
 
     public void updateViewCount(Long itemId){

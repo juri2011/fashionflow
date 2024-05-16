@@ -27,6 +27,11 @@
             object-fit: contain; /* 이미지가 컨테이너를 꽉 채우도록 설정, 비율 유지 */
         }
 
+        #product-grid {
+            display: flex;
+            flex-wrap: wrap; /* 상품들이 컨테이너 너비를 초과하면 다음 줄로 넘김 */
+            justify-content: space-between; /* 상품 사이의 간격을 균일하게 조정 */
+        }
 
         .product-item {
             position: relative; /* 액자 효과를 위한 가상 요소의 위치 기준점 설정 */
@@ -73,7 +78,7 @@
         <div class="slide">
             <img th:src="@{/img/logo.png}" alt="슬라이드 이미지">
         </div>
-        <div class="product-grid">
+        <div id="product-grid">
             <div th:each="product : ${Top8products}" class="product-item">
                 <a th:href="@{/item/{id}(id=${product.id})}">
                     <img th:src="'/images/'+${product.imgName}" alt="Product Image" class="product-image clickable">

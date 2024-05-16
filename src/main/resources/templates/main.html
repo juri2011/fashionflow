@@ -85,8 +85,9 @@
                     <img th:src="'/images/'+${product.imgName}" alt="Product Image" class="product-image clickable">
                 </a>
                 <span>상품명:<a th:href="@{/item/{id}(id=${product.id})}"> <span class="product-name clickable" th:text="${product.itemName}"></span></a></span>
-                <span>가격: <span th:text="${product.price}"></span></span>
+                <span>가격: <span th:text="${#numbers.formatInteger(product.price,3,'COMMA')}"></span></span>
             </div>
+
         </div>
     </div>
 </div>

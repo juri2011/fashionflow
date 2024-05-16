@@ -108,7 +108,7 @@ public class BuyerService {
 
         for(Item sellerItem : sellerItemList) {
             ItemBuy reviewedItem = itemBuyRepository.findItemBuyByItem(sellerItem);
-            if(reviewedItem.isReviewExists()) {
+            if (reviewedItem != null && reviewedItem.isReviewExists()) {
                 reviewedSellerItemList.add(sellerItem);
             }
         }

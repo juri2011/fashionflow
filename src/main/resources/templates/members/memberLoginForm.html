@@ -2,9 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layout1}">
-
+<head>
 <!-- 사용자 CSS 추가 -->
-<th:block layout:fragment="css">
     <style>
         .container {
             display: flex;
@@ -17,7 +16,7 @@
             display: flex;
             flex-direction: column;
             margin-bottom: 20px;
-            width: 100%; /* 입력 필드의 너비를 조정합니다. */
+            width: 550px; /* 입력 필드의 너비를 조정합니다. */
         }
 
         .emailFormControl, .passwordControl {
@@ -56,13 +55,13 @@
             margin: 10px 0;
         }
 
-        a {
+        oauth-container a {
             color: #6A6866; /* 링크 색상 */
             text-decoration: none; /* 밑줄 제거 */
             margin-top: 20px;
         }
 
-        a:hover {
+        oauth-container a:hover {
             text-decoration: underline; /* 호버 시 밑줄 추가 */
         }
 
@@ -82,7 +81,7 @@
 
 
     </style>
-</th:block>
+</head>
 
 <div layout:fragment="content">
     <div class="container">

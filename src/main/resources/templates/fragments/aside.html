@@ -5,8 +5,8 @@
     <div class="card-header">
       최근 본 상품
     </div>
-    <ul class="list-group list-group-flush">
-      <li class="list-group-item" th:each="item : ${session.recentViewedItems}">
+    <ul class="recent-view list-group list-group-flush">
+      <li class="recent-view-item list-group-item" th:each="item : ${session.recentViewedItems}">
         <a th:href="@{'/item/' + ${item.itemId}}">
           <img th:if="${item.imgName != null}" th:src="'/images/'+${item.imgName}"  alt="상품 이미지" />
           <img th:unless="${item.imgName != null}" th:src="@{/img/default.PNG}"  alt="대체 이미지" />
@@ -39,10 +39,10 @@
       if (recentItems) {
         try {
           var items = JSON.parse(decodeURIComponent(recentItems));
-          var list = document.querySelector('.list-group');
+          var list = document.querySelector('.recent-view');
           items.forEach(function(item) {
             var listItem = document.createElement('li');
-            listItem.className = 'list-group-item';
+            listItem.className = 'recent-view-item';
             listItem.innerHTML = '<a href="/item/' + item.itemId + '">' +
                                  '<img src="' + (item.imgName ? '/images/' + item.imgName : '/img/default.PNG') + '" alt="상품 이미지" />' +
                                  '<span>' + item.itemName + '</span>' +

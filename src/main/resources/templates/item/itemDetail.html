@@ -266,6 +266,7 @@
             <input type="hidden" id="shopMemberEmail" name="shopMemberEmail" th:value="${shopMember.email}" class="form-control">
             <!--<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">-->
         </form>
+
         <div id="detailPopup" class="modal" tabindex="-1">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -283,106 +284,67 @@
                             <span th:text="${itemFormDTO.itemName}"></span>
                         </div>
 
-                        <img th:if="${shopMember.profileImageDTO}!=null"
-                             th:src="${shopMember.profileImageDTO.uploadPath}+${shopMember.profileImageDTO.filename}">
-                    </div>
-                    <div>
-                        판매자 판매수 : <span th:text="${sellCount}"></span>
-                    </div>
-                    <div>
-                        판매자 소개 : <span th:text="${shopMember.intro}"></span>
-                    </div>
-                    <hr/>
-                    <h2>판매중인 다른 상품</h2>
-                    사용자가 판매중인 다른 상품
-                    <div th:each="otherItem, status: ${shopMember.itemFormDTOList}">
-                        <img th:if="${otherItem.itemRepImgDTO} != null" th:src="'/images/'+${otherItem.itemRepImgDTO.imgName}" alt="사진">
-                        <img th:if="${otherItem.itemRepImgDTO} == null" src="/img/item_not_found.png" alt="사진">
-                        <p th:text="${otherItem.itemName}"></p>
-                        <p th:text="${otherItem.price}"></p>
-                        <p th:text="${#temporals.format(otherItem.regdate, 'yyyy-MM-dd')}"></p>
-                        <hr>
-                    </div>
-                    <div id="detailPopup" class="modal" tabindex="-1">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">상품 신고</h5>
-                                    <button type="button" class="btn-close closePopup" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="mb-3">
-                            <span th:each="itemImg, status: ${itemFormDTO.itemImgDTOList}">
-                                <img class="img-thumbnail" th:alt="${itemImg.imgName}" style="width:100px; height:100px;"
-                                     th:if="${itemImg.repimgYn} == 'Y'"
-                                     th:src="'/images/'+${itemImg.imgName}">
-                            </span>
-                                        <span th:text="${itemFormDTO.itemName}"></span>
-                                    </div>
+                        <div class="mb-3">
+                            <label for="reportContent" class="form-label">신고 내용</label>
+                            <textarea class="form-control" id="reportContent" name="reportContent" placeholder="내용을 입력하세요"></textarea>
+                        </div>
 
-                                    <div class="mb-3">
-                                        <label for="reportContent" class="form-label">신고 내용</label>
-                                        <textarea class="form-control" id="reportContent" name="reportContent" placeholder="내용을 입력하세요"></textarea>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label for="tagSelect" class="form-label">태그선택</label>
-                                        <select class="form-select" name="tagSelect" id="tagSelect">
-                                            <option value="default">--선택--</option>
-                                            <option value="VIOLATION">규정위반</option>
-                                            <option value="test">test</option>
-                                        </select>
-                                        <div class="tagBox"></div>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-primary reportConfirm">신고하기</button>
-                                    <button type="button" class="btn btn-secondary closePopup">취소</button>
-                                </div>
-                            </div>
+                        <div class="mb-3">
+                            <label for="tagSelect" class="form-label">태그선택</label>
+                            <select class="form-select" name="tagSelect" id="tagSelect">
+                                <option value="default">--선택--</option>
+                                <option value="VIOLATION">규정위반</option>
+                                <option value="test">test</option>
+                            </select>
+                            <div class="tagBox"></div>
                         </div>
                     </div>
-
-                    <div id="detailPopupMember" class="modal" tabindex="-1">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">사용자 신고</h5>
-                                    <button type="button" class="btn-close closePopupMember" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="mb-3">
-                                        <span th:text="${shopMember.nickname}"></span>
-                                        <span th:text="'('+${shopMember.email}+')'"></span>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label for="reportContent" class="form-label">신고 내용</label>
-                                        <textarea class="form-control" id="reportContentMember" name="reportContentMember" placeholder="내용을 입력하세요"></textarea>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label for="tagSelectMember" class="form-label">태그선택</label>
-                                        <select name="tagSelectMember" id="tagSelectMember">
-                                            <option value="default">--선택--</option>
-                                            <option value="DISRESPECTFUL">비매너</option>
-                                            <option value="FRAUD">사기</option>
-                                        </select>
-                                        <div class="tagBoxMember"></div>
-                                    </div>
-
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-primary reportConfirmMember">신고하기</button>
-                                    <button type="button" class="btn btn-secondary closePopupMember">취소</button>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary reportConfirm">신고하기</button>
+                        <button type="button" class="btn btn-secondary closePopup">취소</button>
                     </div>
                 </div>
-
-
             </div>
+        </div>
+
+        <div id="detailPopupMember" class="modal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">사용자 신고</h5>
+                        <button type="button" class="btn-close closePopupMember" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <span th:text="${shopMember.nickname}"></span>
+                            <span th:text="'('+${shopMember.email}+')'"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="reportContent" class="form-label">신고 내용</label>
+                            <textarea class="form-control" id="reportContentMember" name="reportContentMember" placeholder="내용을 입력하세요"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="tagSelectMember" class="form-label">태그선택</label>
+                            <select name="tagSelectMember" id="tagSelectMember">
+                                <option value="default">--선택--</option>
+                                <option value="DISRESPECTFUL">비매너</option>
+                                <option value="FRAUD">사기</option>
+                            </select>
+                            <div class="tagBoxMember"></div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary reportConfirmMember">신고하기</button>
+                        <button type="button" class="btn btn-secondary closePopupMember">취소</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
 </div>
 
 <th:block layout:fragment="script">

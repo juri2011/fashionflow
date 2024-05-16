@@ -8,80 +8,136 @@
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript" th:inline="javascript">
         google.charts.load('current', {'packages':['corechart']});
-            google.charts.setOnLoadCallback(drawCharts);
+        google.charts.setOnLoadCallback(drawCharts);
 
-            // 서버에서 가져온 아이템 데이터
-            /*<![CDATA[*/
-            var itemDTOs = /*[[${itemDTOs}]]*/ [];
-            /*]]>*/
+        // 서버에서 가져온 아이템 데이터
+        /*<![CDATA[*/
+        var itemDTOs = /*[[${itemDTOs}]]*/ [];
+        /*]]>*/
 
-            function drawCharts() {
-                // categoryId 분포도 데이터 준비
-                var categoryData = new google.visualization.DataTable();
-                categoryData.addColumn('string', 'CategoryId');
-                categoryData.addColumn('number', '수량');
+        function drawCharts() {
+            var categoryData = new google.visualization.DataTable();
+            categoryData.addColumn('string', 'Category');
+            categoryData.addColumn('number', '수량');
 
-                // itemStatus 분포도 데이터 준비
-                var statusData = new google.visualization.DataTable();
-                statusData.addColumn('string', 'ItemStatus');
-                statusData.addColumn('number', '수량');
+            var statusData = new google.visualization.DataTable();
+            statusData.addColumn('string', 'ItemStatus');
+            statusData.addColumn('number', '수량');
 
-                // price 분포 준비 (예시로 단순화)
-                var priceData = new google.visualization.DataTable();
-                priceData.addColumn('string', 'Price Range');
-                priceData.addColumn('number', '수량');
+            var priceData = new google.visualization.DataTable();
+            priceData.addColumn('string', 'Price Range');
+            priceData.addColumn('number', '수량');
 
-                var categoryCounts = {};
-                var statusCounts = {};
-                var priceRanges = {'0-10000': 0, '10001-100000': 0, '100001-500000': 0, '>500001': 0};
+            var categoryCounts = {};
+            var statusCounts = {};
+            var priceRanges = {'0-10000': 0, '10001-100000': 0, '100001-500000': 0, '>500001': 0};
 
-                itemDTOs.forEach(function(item) {
-                    categoryCounts[item.categoryId] = (categoryCounts[item.categoryId] || 0) + 1;
-                    statusCounts[item.itemStatus] = (statusCounts[item.itemStatus] || 0) + 1;
+            // 카테고리 ID와 이름 매핑
+            var categoryNames = {
+                "4": "MEN_OUTER", "5": "MEN_TOPS", "6": "MEN_PANTS", "7": "MEN_SETS",
+                "8": "WOMEN_OUTER", "9": "WOMEN_TOP", "10": "WOMEN_PANTS", "11": "WOMEN_SKRITS",
+                "12": "WOMEN_DRESSES", "13": "WOMEN_SETS", "14": "SHOES_SNEAKERS", "15": "SHOES_MENS",
+                "16": "SHOES_WOMENS", "17": "SHOES_SPORTS"
+            };
 
-                    if(item.price <= 10000) priceRanges['0-10000']++;
-                    else if(item.price <= 100000) priceRanges['10001-100000']++;
-                    else if(item.price <= 500000) priceRanges['100001-500000']++;
-                    else priceRanges['>500001']++;
-                });
+            itemDTOs.forEach(function(item) {
+                var categoryName = categoryNames[item.categoryId] || "기타";
+                categoryCounts[categoryName] = (categoryCounts[categoryName] || 0) + 1;
+                statusCounts[item.itemStatus] = (statusCounts[item.itemStatus] || 0) + 1;
 
-                Object.keys(categoryCounts).forEach(function(key) {
-                    categoryData.addRow([key, categoryCounts[key]]);
-                });
+                if(item.price <= 10000) priceRanges['0-10000']++;
+                else if(item.price <= 100000) priceRanges['10001-100000']++;
+                else if(item.price <= 500000) priceRanges['100001-500000']++;
+                else priceRanges['>500001']++;
+            });
 
-                Object.keys(statusCounts).forEach(function(key) {
-                    statusData.addRow([key, statusCounts[key]]);
-                });
+            Object.keys(categoryCounts).forEach(function(key) {
+                categoryData.addRow([key, categoryCounts[key]]);
+            });
 
-                Object.keys(priceRanges).forEach(function(key) {
-                    priceData.addRow([key, priceRanges[key]]);
-                });
+            Object.keys(statusCounts).forEach(function(key) {
+                statusData.addRow([key, statusCounts[key]]);
+            });
 
-                // 차트 옵션
-                var options = {
-                    title: '분포도',
-                    pieHole: 0.4
-                };
+            Object.keys(priceRanges).forEach(function(key) {
+                priceData.addRow([key, priceRanges[key]]);
+            });
 
-                // categoryId 분포도 차트 생성
-                var categoryChart = new google.visualization.PieChart(document.getElementById('category_chart_div'));
-                categoryChart.draw(categoryData, options);
+            // 카테고리 분포도에 대한 옵션
+            var categoryOptions = {
+                title: '카테고리 분포도',
+                pieHole: 0.4
+            };
 
-                // itemStatus 분포도 차트 생성
-                var statusChart = new google.visualization.PieChart(document.getElementById('status_chart_div'));
-                statusChart.draw(statusData, options);
+            // 상품 상태 분포도에 대한 옵션
+            var statusOptions = {
+                title: '상품 상태 분포도',
+                pieHole: 0.4
+            };
 
-                // price 분포도 차트 생성
-                var priceChart = new google.visualization.PieChart(document.getElementById('price_chart_div'));
-                priceChart.draw(priceData, options);
-            }
+            // 가격 분포도에 대한 옵션
+            var priceOptions = {
+                title: '가격 분포도',
+                pieHole: 0.4
+            };
+
+            var categoryChart = new google.visualization.PieChart(document.getElementById('category_chart_div'));
+            categoryChart.draw(categoryData, categoryOptions); // 상품 품목 분포도에 대한 옵션 사용
+
+            var statusChart = new google.visualization.PieChart(document.getElementById('status_chart_div'));
+            statusChart.draw(statusData, statusOptions); // 상품 상태 분포도에 대한 옵션 사용
+
+            var priceChart = new google.visualization.PieChart(document.getElementById('price_chart_div'));
+            priceChart.draw(priceData, priceOptions); // 가격 분포도에 대한 옵션 사용
+
+            // 카테고리별 평균 가격 column차트
+var categoryPriceData = new google.visualization.DataTable();
+categoryPriceData.addColumn('string', 'Category');
+categoryPriceData.addColumn('number', '평균 가격');
+
+var categorySum = {};
+var categoryCounts = {};
+
+itemDTOs.forEach(function(item) {
+    var categoryName = categoryNames[item.categoryId] || "기타";
+    categorySum[categoryName] = (categorySum[categoryName] || 0) + item.price;
+    categoryCounts[categoryName] = (categoryCounts[categoryName] || 0) + 1;
+});
+
+Object.keys(categorySum).forEach(function(key) {
+    var avgPrice = categorySum[key] / categoryCounts[key];
+    avgPrice = Math.floor(avgPrice); // 소수점 버리기
+    categoryPriceData.addRow([key, avgPrice]);
+});
+
+var categoryPriceOptions = {
+    title: '카테고리별 평균 가격',
+    chartArea: {width: '50%'},
+    vAxis: { // 이제 가격은 세로축(vAxis)에 표시됩니다.
+        title: '평균 가격',
+        minValue: 0,
+        maxValue: 1000000 // 최대값 설정
+    },
+    hAxis: { // 카테고리는 가로축(hAxis)에 표시됩니다.
+        title: '카테고리'
+    }
+};
+
+// BarChart 대신 ColumnChart를 사용합니다.
+var categoryPriceChart = new google.visualization.ColumnChart(document.getElementById('scatter_chart_div')); // scatter_chart_div 대신 이제 막대 그래프를 그립니다.
+categoryPriceChart.draw(categoryPriceData, categoryPriceOptions);
+
+
+
+        }
     </script>
 </head>
 <body>
 <h1>통계</h1>
 
-<table border="1">
+<table border="1" style="display: none;">
     <thead>
+
     <tr>
         <th>price</th>
         <th>categoryId</th>
@@ -89,17 +145,21 @@
     </tr>
     </thead>
     <tbody>
-    <tr th:each="item : ${itemDTOs}">
-        <td th:text="${item.price}"></td>
-        <td th:text="${item.getItemStatus().getCode()}"></td>
-        <td th:text="${item.categoryId}"></td>
-    </tr>
+
+        <tr th:each="item : ${itemDTOs}" >
+            <td th:text="${item.price}"></td>
+            <td th:text="${item.getItemStatus().getCode()}"></td>
+            <td th:text="${item.categoryId}"></td>
+        </tr>
     </tbody>
 </table>
-
-<div id="category_chart_div" style="width: 400px; height: 300px;"></div>
-<div id="status_chart_div" style="width: 400px; height: 300px;"></div>
-<div id="price_chart_div" style="width: 400px; height: 300px;"></div>
+<div id="charts" style="display:flex; flex-direction: row; flex-wrap: wrap;">
+    <div id="category_chart_div" style="width: 400px; height: 300px;"></div>
+    <div id="status_chart_div" style="width: 400px; height: 300px;"></div>
+    <div id="price_chart_div" style="width: 400px; height: 300px;"></div>
+    <div style="width: 100%;"></div>
+    <div id="scatter_chart_div" style="width: 1600px; height: 600px;"></div>
+</div>
 
 </body>
 </html>

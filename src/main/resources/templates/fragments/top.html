@@ -2,20 +2,53 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <div class="top" th:fragment="top">
+    <style>
+        .summit {
+            height: 40px;
+            background-color: black;
+
+        }
+
+        .summit-box {
+            display: flex; /* 부모 요소를 flex 컨테이너로 설정합니다. */
+            justify-content: space-around;
+            justify-content: flex-end; /* 아이템을 오른쪽으로 정렬합니다. */
+            width: 65%;
+            margin: 0 auto;
+            padding: 0 35px;
+            text-align: right;
+        }
+
+        .nav-item {
+            margin-left: 10px;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+        }
+
+        #logout {
+            color: #fff;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+        }
+
+    </style>
+
     <div class="summit" th:fragment="summit" style="display: flex; justify-content: space-between; align-items: center;">
-        <div>
-        </div>
-        <div>
+        <div class="summit-box">
             <ul style="display: flex; align-items: center; list-style-type: none; margin: 0; padding: 0;">
-                <li class="top-item nav-item" sec:authorize="isAnonymous()">
-                    <a class="top-link nav-link active" aria-current="page" href="/members/login" th:href="@{/members/login}">로그인</a>
+                <li class="nav-item" sec:authorize="isAnonymous()" style="margin-right:20px">
+                    <a class="nav-link active" aria-current="page" href="/members/login" th:href="@{/members/login}">로그인</a>
                 </li>
                 <li class="top-item nav-item" sec:authorize="isAnonymous()">
                     <a class="top-link nav-link active" aria-current="page" href="/members/register" th:href="@{/members/register}">회원가입</a>
                 </li>
                 <li class="top-item nav-item" sec:authorize="isAuthenticated()">
                     <!-- 로그아웃 form -->
-                    <form action="/members/logout" method="post" style="display:inline;">
+                    <form action="/members/logout" method="post" style="margin-right:10px">
                         <!-- CSRF 토큰 포함 -->
                         <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
                         <!-- 로그아웃 버튼 -->

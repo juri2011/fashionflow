@@ -7,39 +7,42 @@
 </head>
 <body>
 <div class="container mt-5">
-    <h1 class="mb-4">비밀번호 찾기</h1>
-    <p>찾으시는 회원의 이름과 이메일을 입력해주세요.</p>
-    <form id="verificationForm" class="needs-validation" novalidate>
-        <div class="form-group">
-            <label for="name">이름 :</label>
-            <input type="text" id="name" name="name" class="form-control" placeholder="NAME" required>
-            <div class="invalid-feedback">
-                이름을 입력해주세요.
+    <div class="container">
+
+        <h1 class="mb-4">비밀번호 찾기</h1>
+        <p>찾으시는 회원의 이름과 이메일을 입력해주세요.</p>
+        <form id="verificationForm" class="needs-validation" novalidate>
+            <div class="form-group">
+                <label for="name">이름 :</label>
+                <input type="text" id="name" name="name" class="form-control" placeholder="NAME" required>
+                <div class="invalid-feedback">
+                    이름을 입력해주세요.
+                </div>
             </div>
-        </div>
 
-        <div class="form-group">
-            <label for="email">이메일 :</label>
-            <input type="text" id="email" name="email" class="form-control" placeholder="EMAIL" required>
-            <div class="invalid-feedback">
-                이메일을 입력해주세요.
+            <div class="form-group">
+                <label for="email">이메일 :</label>
+                <input type="text" id="email" name="email" class="form-control" placeholder="EMAIL" required>
+                <div class="invalid-feedback">
+                    이메일을 입력해주세요.
+                </div>
             </div>
-        </div>
 
-        <button type="button" id="sendEmail" class="btn btn-primary">인증번호 전송</button>
-        <br><br>
+            <button type="button" id="sendEmail" class="btn btn-primary">인증번호 전송</button>
+            <br><br>
 
-        <div class="form-group">
-            <label for="authCode">인증번호 :</label>
-            <input type="text" id="authCode" name="authCode" class="form-control" placeholder="CODE" required>
-            <div class="invalid-feedback">
-                인증번호를 입력해주세요.
+            <div class="form-group">
+                <label for="authCode">인증번호 :</label>
+                <input type="text" id="authCode" name="authCode" class="form-control" placeholder="CODE" required>
+                <div class="invalid-feedback">
+                    인증번호를 입력해주세요.
+                </div>
             </div>
-        </div>
 
-        <button type="button" id="confirmEmail" class="btn btn-success">인증번호 확인</button>
-        <input type="hidden" id="csrfToken" th:value="${_csrf.token}" />
-    </form>
+            <button type="button" id="confirmEmail" class="btn btn-success">인증번호 확인</button>
+            <input type="hidden" id="csrfToken" th:value="${_csrf.token}" />
+        </form>
+    </div>
 </div>
 
 <!-- Bootstrap JS, Popper.js, and jQuery -->

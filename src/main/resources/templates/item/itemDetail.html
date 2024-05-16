@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/mainLayout}">
+      layout:decorate="~{layouts/layout1}">
 <th:block layout:fragment="css">
     <style>
         #detailPopup, #detailPopupMember{
@@ -27,8 +27,17 @@
             position:relative; top: 50%; left: 50%; transform: translate(-50%, -50%);
         }
 
-        #container{
+        .content{
+            display:block;
+        }
+
+        #container {
             min-width: 800px;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 80%;
+            margin: 20px auto;
         }
 
         #item-container{ padding: 5px; }
@@ -61,55 +70,56 @@
     </style>
     </th:block>
 
-<div id="container" layout:fragment="content">
-    <!--<input type="hidden" id="itemId" th:value="${itemFormDTO.id}">-->
-    <input type="hidden" id="currentMemberEmail" th:value="${currentMember}">
+<div layout:fragment="content">
+    <div id="container">
+        <!--<input type="hidden" id="itemId" th:value="${itemFormDTO.id}">-->
+        <input type="hidden" id="currentMemberEmail" th:value="${currentMember}">
 
-    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item">전체</li>
-            <li class="breadcrumb-item" th:text="${itemFormDTO.categoryDTO.parent.name}"></li>
-            <li class="breadcrumb-item active" aria-current="page" th:text="${itemFormDTO.categoryDTO.name}"></li>
-        </ol>
-    </nav>
+        <nav class="breadcrumb-nav" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">전체</li>
+                <li class="breadcrumb-item" th:text="${itemFormDTO.categoryDTO.parent.name}"></li>
+                <li class="breadcrumb-item active" aria-current="page" th:text="${itemFormDTO.categoryDTO.name}"></li>
+            </ol>
+        </nav>
 
-    <div id="item-container" class="border-top border-bottom d-flex flex-row mb-2 gap-3">
-        <div id="carouselExampleIndicators" class="carousel slide carousel-dark" data-bs-theme="dark">
-            <div class="carousel-indicators">
-                <th:block th:each="itemImg : ${itemFormDTO.itemImgDTOList}">
-                    <button type="button" data-bs-target="#carouselExampleIndicators" th:data-bs-slide-to="${itemImgStat.index}"
-                            th:classappend="${itemImgStat.first} ? 'active'"
-                            th:attrappend="aria-current=${itemImgStat.first} ? 'true', aria-label='Slide ' + ${itemImgStat.index + 1}"></button>
-                </th:block>
+        <div id="item-container" class="border-top border-bottom d-flex flex-row mb-2 gap-3">
+            <div id="carouselExampleIndicators" class="carousel slide carousel-dark" data-bs-theme="dark">
+                <div class="carousel-indicators">
+                    <th:block th:each="itemImg : ${itemFormDTO.itemImgDTOList}">
+                        <button type="button" data-bs-target="#carouselExampleIndicators" th:data-bs-slide-to="${itemImgStat.index}"
+                                th:classappend="${itemImgStat.first} ? 'active'"
+                                th:attrappend="aria-current=${itemImgStat.first} ? 'true', aria-label='Slide ' + ${itemImgStat.index + 1}"></button>
+                    </th:block>
 
+                </div>
+                <div class="carousel-inner border rounded">
+                    <th:block th:each="itemImg : ${itemFormDTO.itemImgDTOList}">
+                        <div class="carousel-item" th:classappend="${itemImgStat.first} ? 'active'">
+                            <img th:src="'/images/'+${itemImg.imgName}" class="d-block object-fit-contain" alt="...">
+                        </div>
+                    </th:block>
+                    <th:block th:if="${#lists.size(itemFormDTO.ItemImgDTOList) == 0}">
+                        <div class="carousel-item active">
+                            <img src="/img/default.png" class="d-block object-fit-contain" alt="...">
+                        </div>
+                    </th:block>
+                </div>
+
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
             </div>
-            <div class="carousel-inner border rounded">
-                <th:block th:each="itemImg : ${itemFormDTO.itemImgDTOList}">
-                    <div class="carousel-item" th:classappend="${itemImgStat.first} ? 'active'">
-                        <img th:src="'/images/'+${itemImg.imgName}" class="d-block object-fit-contain" alt="...">
-                    </div>
-                </th:block>
-                <th:block th:if="${#lists.size(itemFormDTO.ItemImgDTOList) == 0}">
-                    <div class="carousel-item active">
-                        <img src="/img/default.png" class="d-block object-fit-contain" alt="...">
-                    </div>
-                </th:block>
-            </div>
 
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
-            </button>
-        </div>
-
-        <div id="iteminfo-container">
-            <div>
-                <h2 th:text="${itemFormDTO.itemName}"></h2>
-                <div style="margin-bottom: 20px;">
+            <div id="iteminfo-container">
+                <div>
+                    <h2 th:text="${itemFormDTO.itemName}"></h2>
+                    <div style="margin-bottom: 20px;">
                     <span th:each="itemTag, status: ${itemFormDTO.itemTagDTOList}">
                         <span th:switch="${#strings.toString(itemTag.itemTagName)}">
                             <span class="badge text-bg-secondary" th:case="DIRECT_TRADE">직거래</span>
@@ -118,219 +128,222 @@
                             <span class="badge text-bg-secondary" th:case="INTERNATIONAL_DELIVERY">해외배송</span>
                         </span>
                     </span>
+                    </div>
                 </div>
-            </div>
-            <div style="line-height: 32px;">
-                <span style="font-size:32px; font-weight: 800;" th:text="${#numbers.formatInteger(itemFormDTO.price, 1, 'COMMA') + '원'}"></span>
-                <button style="float:right;" type="button" class="reportBtn btn btn-warning">신고하기</button>
-            </div>
-            <div>
-                <span class="info-label">배송비</span><span th:text="${#numbers.formatInteger(itemFormDTO.delivery, 1, 'COMMA') + '원'}"></span>
-            </div>
-            <div>
-                <span class="info-label">조회수</span>
-                <span th:text="${itemFormDTO.viewCount}"></span>
-                <div class="vr"></div>
-                <span class="info-label">찜한 횟수</span>
-                <span th:text="${heartCount}"></span>
-                <div class="vr"></div>
-                <span class="info-label">등록일</span>
-                <span th:text="${#temporals.format(itemFormDTO.regdate, 'yyyy-MM-dd HH:mm:ss')}"></span>
-            </div>
-            <div>
-                <span class="info-label">거래지역</span>
-                <span th:text="${itemFormDTO.address}"></span>
-            </div>
-            <div>
-                <span class="info-label">상품상태</span>
-                <span th:switch="${#strings.toString(itemFormDTO.itemStatus)}">
+                <div style="line-height: 32px;">
+                    <span style="font-size:32px; font-weight: 800;" th:text="${#numbers.formatInteger(itemFormDTO.price, 1, 'COMMA') + '원'}"></span>
+                    <button style="float:right;" type="button" class="reportBtn btn btn-warning">신고하기</button>
+                </div>
+                <div>
+                    <span class="info-label">배송비</span><span th:text="${#numbers.formatInteger(itemFormDTO.delivery, 1, 'COMMA') + '원'}"></span>
+                </div>
+                <div>
+                    <span class="info-label">조회수</span>
+                    <span th:text="${itemFormDTO.viewCount}"></span>
+                    <div class="vr"></div>
+                    <span class="info-label">찜한 횟수</span>
+                    <span th:text="${heartCount}"></span>
+                    <div class="vr"></div>
+                    <span class="info-label">등록일</span>
+                    <span th:text="${#temporals.format(itemFormDTO.regdate, 'yyyy-MM-dd HH:mm:ss')}"></span>
+                </div>
+                <div>
+                    <span class="info-label">거래지역</span>
+                    <span th:text="${itemFormDTO.address}"></span>
+                </div>
+                <div>
+                    <span class="info-label">상품상태</span>
+                    <span th:switch="${#strings.toString(itemFormDTO.itemStatus)}">
                     <span th:case="NEW">새상품</span>
                     <span th:case="NO_SIGNS_OF_USE">사용감 없음</span>
                     <span th:case="SOME_SIGNS_OF_USE">사용감 적음</span>
                     <span th:case="SIGNIFICANT_SIGNS_OF_USE">사용감 많음</span>
                     <span th:case="FAULTY">파손/고장</span>
                 </span>
-                <!--<span th:text="${item.itemStatus}"></span>-->
+                    <!--<span th:text="${item.itemStatus}"></span>-->
+                </div>
+                <div th:switch="${#strings.toString(itemFormDTO.sellStatus)}">
+                    <span class="info-label">판매상태</span>
+                    <span th:case="SELLING">판매중</span>
+                    <span th:case="SUSPENDED">판매중단</span>
+                    <span th:case="SOLD_OUT">판매완료</span>
+                </div>
+                <button type="button" class="heartBtn btn btn-primary">찜하기</button>
+                <button type="button" class="chatBtn btn btn-primary">플로우톡</button>
             </div>
-            <div th:switch="${#strings.toString(itemFormDTO.sellStatus)}">
-                <span class="info-label">판매상태</span>
-                <span th:case="SELLING">판매중</span>
-                <span th:case="SUSPENDED">판매중단</span>
-                <span th:case="SOLD_OUT">판매완료</span>
-            </div>
-            <button type="button" class="heartBtn btn btn-primary">찜하기</button>
-            <button type="button" class="chatBtn btn btn-primary">플로우톡</button>
         </div>
-    </div>
 
-    <div>
-        <!-- 탭 메뉴 -->
-        <ul class="nav nav-tabs" id="myTab" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="iteminfo-tab" data-bs-toggle="tab"
-                        data-bs-target="#item-info" type="button" role="tab" aria-controls="item-info"
-                        aria-selected="true">회원정보</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="sellerinfo-tab" data-bs-toggle="tab"
-                        data-bs-target="#seller-info" type="button" role="tab"
-                        aria-controls="seller-info" aria-selected="false">판매자 정보</button>
-            </li>
-        </ul>
+        <div>
+            <!-- 탭 메뉴 -->
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="iteminfo-tab" data-bs-toggle="tab"
+                            data-bs-target="#item-info" type="button" role="tab" aria-controls="item-info"
+                            aria-selected="true">회원정보</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="sellerinfo-tab" data-bs-toggle="tab"
+                            data-bs-target="#seller-info" type="button" role="tab"
+                            aria-controls="seller-info" aria-selected="false">판매자 정보</button>
+                </li>
+            </ul>
 
-        <!-- 내용 -->
-        <div class="tab-content" id="info-tab">
+            <!-- 내용 -->
+            <div class="tab-content" id="info-tab">
 
-            <!-- 상품정보 탭 -->
-            <div class="tab-pane p-2 fade show active" id="item-info" role="tabpanel"
-                 aria-labelledby="iteminfo-tab">
-                <div>
-                    <h4>상품 정보</h4>
-                    <span th:text="${itemFormDTO.content}"></span>
-                </div>
-            </div>
-
-            <!-- 판매자 정보 탭 -->
-            <div class="tab-pane fade p-2" id="seller-info" role="tabpanel"
-                 aria-labelledby="sellerinfo-tab">
-
-                <div class="border-top mt-2 p-2 border-bottom d-flex flex-row mb-2 gap-3">
-                    <div id="profile-container" class="profile-pic g-col-6">
-                        <img th:if="${shopMember.profileImageDTO}==null" src="/img/profile_default.png">
-                        <!-- 테스트를 위해 임시 경로를 지정했지만 파일업로드 기능이 구현되면 변경될 수 있습니다.
-                        view에서 null인지 조건을 검사하는 것보다 회원가입할 때 사용자가 프로필 사진을 따로 설정하지 않았으면
-                         기본 사진의 경로와 이미지 이름으로 지정하는 것이 더 깔끔해 보임 -->
-
-                        <img th:if="${shopMember.profileImageDTO}!=null"
-                             th:src="${shopMember.profileImageDTO.uploadPath}+${shopMember.profileImageDTO.filename}">
-                    </div>
-                    <div id="sellerinfo-container">
-                        <div style="height:50px; line-height: 50px;">
-                            <span class="info-label" th:text="${shopMember.nickname}"></span>
-                            <button style="float:right;" type="button" class="reportMemberBtn btn btn-warning">사용자 신고하기</button>
-                        </div>
-                        <div>
-                            <span class="info-label">가입일</span>
-                            <span th:text="${#temporals.format(shopMember.regdate, 'yyyy-MM-dd')}"></span>
-                            <div class="vr"></div>
-                            <span class="info-label">판매수</span>
-                            <span th:text="${shopMember.sellCount}"></span>
-                            <div class="vr"></div>
-                            <span class="info-label">매너점수</span>
-                            <span th:text="${#numbers.formatInteger(shopMember.mannerScore * 10, 1) + '점'}"></span>
-                        </div>
-                        <div class="seller-introduction">
-                            <span th:text="${shopMember.intro}"></span>
-                        </div>
+                <!-- 상품정보 탭 -->
+                <div class="tab-pane p-2 fade show active" id="item-info" role="tabpanel"
+                     aria-labelledby="iteminfo-tab">
+                    <div>
+                        <h4>상품 정보</h4>
+                        <span th:text="${itemFormDTO.content}"></span>
                     </div>
                 </div>
-                <div id="otheritems-container" class="p-2 mb-2">
-                    <h4>판매중인 다른 상품</h4>
-                    <div class="p-2 d-flex flex-row mb-2 gap-3 flex-wrap">
-                        <div class="card item-card" style="width: 15rem;" th:each="otherItem, status: ${shopMember.itemFormDTOList}">
-                            <a th:if="${otherItem.itemRepImgDTO} != null"  th:href="'/item/'+${otherItem.id}">
-                                <img style="max-height: 100px;" th:src="'/images/'+${otherItem.itemRepImgDTO.imgName}" alt="사진">
-                            </a>
-                            <a th:if="${otherItem.itemRepImgDTO} == null"  th:href="'/item/'+${otherItem.id}">
-                                <img style="max-height: 100px;" src="/img/default.png" alt="사진">
-                            </a>
-                            <div class="card-body">
-                                <h5 class="card-title" th:text="${otherItem.itemName}">Item title</h5>
-                                <p class="card-text" th:text="${#numbers.formatInteger(otherItem.price, 1, 'COMMA') + '원'}">가격</p>
-                                <p class="card-text" th:text="${#temporals.format(otherItem.regdate, 'yyyy-MM-dd')}">등록일</p>
+
+                <!-- 판매자 정보 탭 -->
+                <div class="tab-pane fade p-2" id="seller-info" role="tabpanel"
+                     aria-labelledby="sellerinfo-tab">
+
+                    <div class="border-top mt-2 p-2 border-bottom d-flex flex-row mb-2 gap-3">
+                        <div id="profile-container" class="profile-pic g-col-6">
+                            <img th:if="${shopMember.profileImageDTO}==null" src="/img/profile_default.png">
+                            <!-- 테스트를 위해 임시 경로를 지정했지만 파일업로드 기능이 구현되면 변경될 수 있습니다.
+                            view에서 null인지 조건을 검사하는 것보다 회원가입할 때 사용자가 프로필 사진을 따로 설정하지 않았으면
+                             기본 사진의 경로와 이미지 이름으로 지정하는 것이 더 깔끔해 보임 -->
+
+                            <img th:if="${shopMember.profileImageDTO}!=null"
+                                 th:src="${shopMember.profileImageDTO.uploadPath}+${shopMember.profileImageDTO.filename}">
+                        </div>
+                        <div id="sellerinfo-container">
+                            <div style="height:50px; line-height: 50px;">
+                                <span class="info-label" th:text="${shopMember.nickname}"></span>
+                                <button style="float:right;" type="button" class="reportMemberBtn btn btn-warning">사용자 신고하기</button>
+                            </div>
+                            <div>
+                                <span class="info-label">가입일</span>
+                                <span th:text="${#temporals.format(shopMember.regdate, 'yyyy-MM-dd')}"></span>
+                                <div class="vr"></div>
+                                <span class="info-label">판매수</span>
+                                <span th:text="${shopMember.sellCount}"></span>
+                                <div class="vr"></div>
+                                <span class="info-label">매너점수</span>
+                                <span th:text="${#numbers.formatInteger(shopMember.mannerScore * 10, 1) + '점'}"></span>
+                            </div>
+                            <div class="seller-introduction">
+                                <span th:text="${shopMember.intro}"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="otheritems-container" class="p-2 mb-2">
+                        <h4>판매중인 다른 상품</h4>
+                        <div class="p-2 d-flex flex-row mb-2 gap-3 flex-wrap">
+                            <div class="card item-card" style="width: 15rem;" th:each="otherItem, status: ${shopMember.itemFormDTOList}">
+                                <a th:if="${otherItem.itemRepImgDTO} != null"  th:href="'/item/'+${otherItem.id}">
+                                    <img style="max-height: 100px;" th:src="'/images/'+${otherItem.itemRepImgDTO.imgName}" alt="사진">
+                                </a>
+                                <a th:if="${otherItem.itemRepImgDTO} == null"  th:href="'/item/'+${otherItem.id}">
+                                    <img style="max-height: 100px;" src="/img/default.png" alt="사진">
+                                </a>
+                                <div class="card-body">
+                                    <h5 class="card-title" th:text="${otherItem.itemName}">Item title</h5>
+                                    <p class="card-text" th:text="${#numbers.formatInteger(otherItem.price, 1, 'COMMA') + '원'}">가격</p>
+                                    <p class="card-text" th:text="${#temporals.format(otherItem.regdate, 'yyyy-MM-dd')}">등록일</p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
 
 
 
-    <!-- 채팅방 생성 및 입장을 위한 form -->
-    <form id="chat-form" th:action="@{/chat/room}" method="post">
-        <!--<input type="hidden" name="name" class="form-control">-->
-        <input type="hidden" id="itemId" name="itemId" th:value="${itemFormDTO.id}" class="form-control">
-        <input type="hidden" id="shopMemberEmail" name="shopMemberEmail" th:value="${shopMember.email}" class="form-control">
-        <!--<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">-->
-    </form>
-    <div id="detailPopup" class="modal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">상품 신고</h5>
-                    <button type="button" class="btn-close closePopup" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
+        <!-- 채팅방 생성 및 입장을 위한 form -->
+        <form id="chat-form" th:action="@{/chat/room}" method="post">
+            <!--<input type="hidden" name="name" class="form-control">-->
+            <input type="hidden" id="itemId" name="itemId" th:value="${itemFormDTO.id}" class="form-control">
+            <input type="hidden" id="shopMemberEmail" name="shopMemberEmail" th:value="${shopMember.email}" class="form-control">
+            <!--<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">-->
+        </form>
+
+        <div id="detailPopup" class="modal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">상품 신고</h5>
+                        <button type="button" class="btn-close closePopup" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
                         <span th:each="itemImg, status: ${itemFormDTO.itemImgDTOList}">
                             <img class="img-thumbnail" th:alt="${itemImg.imgName}" style="width:100px; height:100px;"
                                  th:if="${itemImg.repimgYn} == 'Y'"
                                  th:src="'/images/'+${itemImg.imgName}">
                         </span>
                             <span th:text="${itemFormDTO.itemName}"></span>
-                    </div>
+                        </div>
 
-                    <div class="mb-3">
-                        <label for="reportContent" class="form-label">신고 내용</label>
-                        <textarea class="form-control" id="reportContent" name="reportContent" placeholder="내용을 입력하세요"></textarea>
-                    </div>
+                        <div class="mb-3">
+                            <label for="reportContent" class="form-label">신고 내용</label>
+                            <textarea class="form-control" id="reportContent" name="reportContent" placeholder="내용을 입력하세요"></textarea>
+                        </div>
 
-                    <div class="mb-3">
-                        <label for="tagSelect" class="form-label">태그선택</label>
-                        <select class="form-select" name="tagSelect" id="tagSelect">
-                            <option value="default">--선택--</option>
-                            <option value="VIOLATION">규정위반</option>
-                            <option value="test">test</option>
-                        </select>
-                        <div class="tagBox"></div>
+                        <div class="mb-3">
+                            <label for="tagSelect" class="form-label">태그선택</label>
+                            <select class="form-select" name="tagSelect" id="tagSelect">
+                                <option value="default">--선택--</option>
+                                <option value="VIOLATION">규정위반</option>
+                                <option value="test">test</option>
+                            </select>
+                            <div class="tagBox"></div>
+                        </div>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary reportConfirm">신고하기</button>
-                    <button type="button" class="btn btn-secondary closePopup">취소</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="detailPopupMember" class="modal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">사용자 신고</h5>
-                    <button type="button" class="btn-close closePopupMember" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <span th:text="${shopMember.nickname}"></span>
-                        <span th:text="'('+${shopMember.email}+')'"></span>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary reportConfirm">신고하기</button>
+                        <button type="button" class="btn btn-secondary closePopup">취소</button>
                     </div>
-
-                    <div class="mb-3">
-                        <label for="reportContent" class="form-label">신고 내용</label>
-                        <textarea class="form-control" id="reportContentMember" name="reportContentMember" placeholder="내용을 입력하세요"></textarea>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="tagSelectMember" class="form-label">태그선택</label>
-                        <select name="tagSelectMember" id="tagSelectMember">
-                            <option value="default">--선택--</option>
-                            <option value="DISRESPECTFUL">비매너</option>
-                            <option value="FRAUD">사기</option>
-                        </select>
-                        <div class="tagBoxMember"></div>
-                    </div>
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary reportConfirmMember">신고하기</button>
-                    <button type="button" class="btn btn-secondary closePopupMember">취소</button>
                 </div>
             </div>
         </div>
+
+        <div id="detailPopupMember" class="modal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">사용자 신고</h5>
+                        <button type="button" class="btn-close closePopupMember" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <span th:text="${shopMember.nickname}"></span>
+                            <span th:text="'('+${shopMember.email}+')'"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="reportContent" class="form-label">신고 내용</label>
+                            <textarea class="form-control" id="reportContentMember" name="reportContentMember" placeholder="내용을 입력하세요"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="tagSelectMember" class="form-label">태그선택</label>
+                            <select name="tagSelectMember" id="tagSelectMember">
+                                <option value="default">--선택--</option>
+                                <option value="DISRESPECTFUL">비매너</option>
+                                <option value="FRAUD">사기</option>
+                            </select>
+                            <div class="tagBoxMember"></div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary reportConfirmMember">신고하기</button>
+                        <button type="button" class="btn btn-secondary closePopupMember">취소</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 

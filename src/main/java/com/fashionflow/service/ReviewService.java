@@ -1,26 +1,29 @@
 package com.fashionflow.service;
 
+import com.fashionflow.constant.ReviewTagContent;
 import com.fashionflow.dto.ReviewDTO;
 import com.fashionflow.entity.ItemImg;
 import com.fashionflow.entity.Review;
+import com.fashionflow.entity.ReviewTag;
 import com.fashionflow.repository.ItemImgRepository;
 import com.fashionflow.repository.ItemRepository;
 import com.fashionflow.repository.ReviewRepository;
+import com.fashionflow.repository.ReviewTagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ReviewService {
 
-
     private final ReviewRepository reviewRepository;
     private final ItemImgRepository itemImgRepository;
-
+    private final ReviewTagRepository reviewTagRepository;
 
     public List<ReviewDTO> getItemReviewListWithImg(String userEmail) {
         List<ReviewDTO> reviewDTOs = new ArrayList<>();
@@ -43,11 +46,17 @@ public class ReviewService {
             dto.setScore(review.getScore());
             dto.setImgName(imgName);
             dto.setRegDate(review.getRegDate());
+
+            // ReviewTag 정보 가져오기
+            List<ReviewTag> reviewTags = reviewTagRepository.findByReview(review);
+            List<ReviewTagContent> tagContents = reviewTags.stream()
+                    .map(ReviewTag::getReviewTagContent)
+                    .collect(Collectors.toList());
+            dto.setReviewTags(tagContents);
+
             reviewDTOs.add(dto);
         }
 
         return reviewDTOs;
     }
-
-
 }

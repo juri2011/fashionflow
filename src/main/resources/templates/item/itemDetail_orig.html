@@ -110,7 +110,11 @@
         <img th:src="'/images/'+${itemImg.imgName}">
     </div>
 
-    <hr>
+        <h2>판매 상품 이미지</h2>
+        <!-- 판매중인 상품 이미지 -->
+        <div th:each="itemImg, status: ${itemImgList}">
+            <img th:src="'/test_images/'+${itemImg.oriImgName}">
+        </div>
 
     <h2>판매자 정보</h2>
 

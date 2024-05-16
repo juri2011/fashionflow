@@ -17,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -55,9 +57,13 @@ public class RoomController {
         return "chat/rooms";
     }
 
-    //내가 속해있는 채팅방만
+    // 내가 속해있는 채팅방만
     @GetMapping("/flowtalk")
-    public String myRoom(Model model){
+    public String myRoom(@AuthenticationPrincipal User user, Model model) {
+        String userEmail = memberService.currentMemberEmail();
+        if (userEmail.equals("anonymousUser")) {
+            return "/error/loginError";
+        }
 
         log.info("# All Chat Rooms");
         List<ChatRoomDTO> sellRooms = new ArrayList<>();
@@ -93,6 +99,7 @@ public class RoomController {
 
         return "chat/rooms";
     }
+
 
     //채팅방 개설
     /*@PostMapping("/room")
@@ -292,7 +299,7 @@ public class RoomController {
         }catch(EntityNotFoundException e){
             return new ResponseEntity<String>("정보를 불러오는 도중 에러가 발생했습니다.", HttpStatus.NOT_FOUND);
         }catch (Exception e){
-            return new ResponseEntity<String>("오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<String>("오류가 발생했습니다." + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }

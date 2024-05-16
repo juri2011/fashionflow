@@ -12,8 +12,11 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -21,6 +24,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -208,7 +212,10 @@ public class ItemService {
 
 
     @Transactional
-    public void updateItem(Long itemId, ItemFormDTO itemFormDTO, List<MultipartFile> itemImgFileList) throws Exception {
+    public void updateItem(Long itemId, ItemFormDTO itemFormDTO,
+                           List<MultipartFile> itemImgFileList,
+                           List<String> itemImgIdStringList) throws Exception {
+
         // Repository에서 상품 번호를 사용하여 Item 엔티티 가져오기
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 상품이 존재하지 않습니다. id = " + itemId));
@@ -219,20 +226,54 @@ public class ItemService {
                 itemFormDTO.getSellStatus(), itemFormDTO.getItemStatus(), itemFormDTO.getContent(),
                 itemFormDTO.getPrice(), itemFormDTO.getDelivery(), itemFormDTO.getAddress());
 
-        // 이미지 파일 처리
-        if (itemImgFileList != null && !itemImgFileList.isEmpty()) {
-            // 이전에 등록된 상품 이미지 삭제
-            itemImgRepository.deleteByItemId(itemId);
-            for (int i = 0; i < itemImgFileList.size(); i++) {
-                MultipartFile file = itemImgFileList.get(i);
-                if (!file.isEmpty()) {
-                    ItemImg itemImg = new ItemImg();
-                    itemImg.setItem(item);
-                    itemImg.setRepimgYn(i == 0 ? "Y" : "N"); // 첫 번째 이미지를 대표 이미지로 설정
-                    itemImgService.saveItemImg(itemImg, file);
+        int index = 0;
+
+        List<ItemImg> itemImgList = itemImgRepository.findByItemId(itemId);
+        List<Long> itemImgIdList = itemImgList.stream().map(ItemImg::getId).toList();
+
+        //기존에 이미지가 있을 때만 실행
+        if(itemImgIdStringList != null){
+
+            List<Long> requestImgIdList = itemImgIdStringList.stream().map(Long::parseLong).toList();
+            for(Long itemImgId : itemImgIdList){
+                if(!requestImgIdList.contains(itemImgId)){
+                    itemImgRepository.deleteById(itemImgId);
                 }
             }
+            System.out.println("상품 이미지 삭제 작업 완료");
+
+            System.out.println(itemImgIdStringList.size());
+            //수정
+            for(; index<itemImgIdStringList.size(); index++){
+                Long itemImgId = Long.parseLong(itemImgIdStringList.get(index));
+                MultipartFile itemFile = itemImgFileList.get(index);
+                if(!itemFile.isEmpty()){
+                    ItemImg itemImg = itemImgRepository.findById(itemImgId)
+                            .orElseThrow(() -> new EntityNotFoundException("이미지 정보를 찾을 수 없습니다. id = " + itemImgId));
+                    itemImgService.saveItemImg(itemImg, itemFile);
+                    System.out.println(itemImg);
+                }
+            }
+            System.out.println("상품 이미지 변경 작업 완료");
         }
+
+        Optional<ItemImg> repItemImg = itemImgRepository.findFirstByItemIdAndRepimgYn(itemId,"Y");
+        //추가
+        for(;index<itemImgFileList.size();index++){
+            MultipartFile itemFile = itemImgFileList.get(index);
+            if(!itemFile.isEmpty()){
+                System.out.println("추가해야 할 이미지가 더 있음");
+                ItemImg itemImg = new ItemImg();
+                itemImg.setItem(item);
+                if(repItemImg.isEmpty()){
+                    itemImg.setRepimgYn("Y");
+                }else{
+                    itemImg.setRepimgYn("N");
+                }
+                itemImgService.saveItemImg(itemImg, itemFile);
+            }
+        }
+        System.out.println("상품 이미지 추가 작업 완료");
 
         // ItemTagDTOList 업데이트
         List<ItemTagDTO> itemTagDTOList = itemFormDTO.getItemTagDTOList();
@@ -249,7 +290,6 @@ public class ItemService {
         // 변경된 상품 정보 저장
         itemRepository.save(item);
     }
-
 
 
     public void updateViewCount(Long itemId){
@@ -331,6 +371,64 @@ public class ItemService {
             // 다른 예외가 발생한 경우에 대한 처리
             throw new RuntimeException("상품 삭제 중에 오류가 발생했습니다.", e);
         }
+    }
+
+
+    // 조회수 내림차순으로 상위 8개의 상품 조회
+    public List<Item> getTop8products() {
+        return itemRepository.findTop8ByOrderByViewCountDesc(PageRequest.of(0, 8, Sort.by(Sort.Direction.DESC, "viewCount")));
+    }
+
+    public List<ListingItemDTO> getTop8productswithImg() {
+        List<Item> topItems = getTop8products();
+
+        // Item 객체를 ListingItemDTO로 변환
+        List<ListingItemDTO> listingItemDTOs = topItems.stream().map(item -> {
+            // 각 Item에 대한 대표 이미지 조회
+            ItemImg repImg = itemImgRepository.findFirstByItemIdAndRepimgYn(item.getId(), "Y").orElse(null);
+
+            // ListingItemDTO 객체 생성 및 필드 설정
+            ListingItemDTO listingItemDTO = new ListingItemDTO();
+            listingItemDTO.setId(item.getId());
+            listingItemDTO.setItemName(item.getItemName());
+            listingItemDTO.setPrice(item.getPrice());
+            listingItemDTO.setRegdate(item.getRegdate());
+            listingItemDTO.setCategoryId(item.getCategory().getId());
+            listingItemDTO.setItemStatus(item.getItemStatus());
+            listingItemDTO.setSellStatus(item.getSellStatus());
+            // 대표 이미지가 존재하는 경우, 이미지 이름 설정
+            if (repImg != null) {
+                listingItemDTO.setImgName(repImg.getImgName());
+            }
+
+            return listingItemDTO;
+
+        }).collect(Collectors.toList());
+
+        return listingItemDTOs;
+    }
+
+    public void addallItems(Model model) {
+        
+        List<Item> items = itemRepository.findAll();
+        List<ListingItemDTO> itemDTOs = new ArrayList<>();
+        
+        for(Item item : items){
+            ListingItemDTO dto = new ListingItemDTO();
+            dto.setId(item.getId());
+            dto.setItemName(item.getItemName());
+            dto.setPrice(item.getPrice());
+            dto.setRegdate(item.getRegdate());
+            dto.setCategoryId(item.getCategory().getId());
+            dto.setItemStatus(item.getItemStatus());
+            dto.setSellStatus(item.getSellStatus());
+            dto.setImgName(null);
+    
+            itemDTOs.add(dto);            
+        }
+
+
+        model.addAttribute("itemDTOs", itemDTOs);
     }
 
 }

@@ -38,6 +38,10 @@
 <!-- 사용자 CSS 추가 -->
 <th:block layout:fragment="css">
     <style>
+        .content {
+         display : block;
+        }
+
         .input-group {
             margin-bottom: 15px;
         }
@@ -63,6 +67,12 @@
                 display: none; /* 기본적으로 지도를 숨김 */
             }
 
+        .tag-block{
+            display: inline-block;
+            margin-right: 5px;
+            padding: 5px;
+        }
+
     </style>
 </th:block>
 
@@ -77,16 +87,17 @@
                 <input type="file" class="custom-file-input" name="itemImgFile" th:id="'itemImgFile-' + ${iterStat.index}">
                 <input type="hidden" name="itemImgIds" th:value="${img.id}">
                 <label class="custom-file-label" th:text="${not #strings.isEmpty(img.oriImgName)} ? ${img.oriImgName} : '상품이미지 ' + ${iterStat.index + 1}"></label>
+                <div class="delete-image" th:if="${img.repimgYn == 'N'}"><button type="button">파일 삭제</button></div>
             </div>
         </div>
         <!-- If fewer than 4 images are uploaded, show empty image upload fields -->
-        <div th:if="${itemFormDTO.itemImgDTOList.size() &lt; 4}">
-            <div class="form-group">
+        <div class="form-group new-img-group">
+            <th:block th:if="${itemFormDTO.itemImgDTOList.size() &lt; 4}">
                 <div class="custom-file img-div" th:each="num, iterStat2: ${#numbers.sequence(itemFormDTO.itemImgDTOList.size(), 3)}">
                     <input type="file" class="custom-file-input" name="itemImgFile" th:id="'itemImgFile-' + ${num}">
-                    <label class="custom-file-label" th:text="'상품이미지 ' + ${num + 1}"></label>
+                    <label class="custom-file-label"></label>
                 </div>
-            </div>
+            </th:block>
         </div>
 
         <div class="input-group">
@@ -193,7 +204,8 @@
 
             <div id="selectedTagsDisplay" class="alert alert-info">
                 <th:block th:each="itemTag : ${itemFormDTO.itemTagDTOList}">
-                    [[${#strings.toString(itemTag.itemTagName.description)}]]<th:block th:if="${itemTagStat.last} == false">,</th:block>
+                    <span class="tag-block badge text-bg-secondary" th:data-code="${#strings.toString(itemTag.itemTagName)}"
+                          th:text="${#strings.toString(itemTag.itemTagName.description)}"></span>
                 </th:block>
             </div>
         </div>
@@ -346,14 +358,8 @@
 
     // 선택된 태그 출력, 추가
    var selectedTags = [];  // 선택된 태그의 코드를 저장하는 배열
-   var isAddTagExecutedOnce = false;
 
      function addTag() {
-        if(!isAddTagExecutedOnce){
-            const loadedTag = $('.loaded-item-tag');
-            loadedTag.remove();
-            isAddTagExecutedOnce = true;
-        }
 
         var tagSelect = document.getElementById('tagSelect');
         var selectedOption = tagSelect.options[tagSelect.selectedIndex];
@@ -372,11 +378,15 @@
 
 
     function updateTagsDisplay() {
+        $('#selectedTagsDisplay').empty();
         var displayText = selectedTags.map(code => {
             var option = document.querySelector(`#tagSelect option[value="${code}"]`);
             return option ? option.textContent : code;
-        }).join(', ');  // 선택된 태그들을 쉼표로 구분하여 한 줄로 연결
-        document.getElementById('selectedTagsDisplay').textContent = displayText || '태그를 선택해 주세요.';
+        });
+        console.log(displayText);
+        displayText.forEach((tag, i) => {
+            $('#selectedTagsDisplay').append('<span data-code="'+selectedTags[i]+'" class="tag-block badge text-bg-secondary">'+tag+'</span>');
+        });
     }
 
     function loadCategory(){
@@ -425,6 +435,42 @@ $(document).ready(function(){
             event.preventDefault(); // 폼 제출을 중지
         }
     });
+
+    $('.loaded-item-tag').each(function(){
+        selectedTags.push($(this).val());
+    });
+
+    $('#selectedTagsDisplay').on('click', '.tag-block', function() {
+
+        //태그 블록 삭제
+        $(event.target).remove();
+
+        for(let i=0; i<selectedTags.length; i++){
+            //selectedTags 배열에서 삭제(태그 중복 등록 방지를 위한 배열)
+            if(selectedTags[i] === $(event.target).data('code')){
+                selectedTags.splice(i,1);
+
+                //input 삭제
+                $('input[name="tagSelectList"]').each(function() {
+                    if($(this).val() === $(event.target).data('code')){
+                        $(this).remove();
+                    }
+                });
+                i--;
+            }
+        }
+
+    });
+
+    $('.delete-image').on('click', 'button',function(){
+        alert('이미지 삭제');
+        $(this).closest('.img-div').remove();
+        let str = '<div class="custom-file img-div">'
+        str += '<input type="file" class="custom-file-input" name="itemImgFile">'
+        str += '<label class="custom-file-label"></label></div>';
+        $('.new-img-group').append(str);
+    });
+
 });
 
 function validateForm() {
@@ -477,13 +523,4 @@ function validateForm() {
 }
 
 
-
-
-
-
-
-
-
 </script>
-
-

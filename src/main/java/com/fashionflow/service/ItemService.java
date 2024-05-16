@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -407,5 +408,27 @@ public class ItemService {
         return listingItemDTOs;
     }
 
+    public void addallItems(Model model) {
+        
+        List<Item> items = itemRepository.findAll();
+        List<ListingItemDTO> itemDTOs = new ArrayList<>();
+        
+        for(Item item : items){
+            ListingItemDTO dto = new ListingItemDTO();
+            dto.setId(item.getId());
+            dto.setItemName(item.getItemName());
+            dto.setPrice(item.getPrice());
+            dto.setRegdate(item.getRegdate());
+            dto.setCategoryId(item.getCategory().getId());
+            dto.setItemStatus(item.getItemStatus());
+            dto.setSellStatus(item.getSellStatus());
+            dto.setImgName(null);
+    
+            itemDTOs.add(dto);            
+        }
+
+
+        model.addAttribute("itemDTOs", itemDTOs);
+    }
 
 }

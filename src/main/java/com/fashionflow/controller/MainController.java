@@ -63,4 +63,12 @@ public class MainController {
         return "loginError";
     }
 
+    @GetMapping("/chart") // 과목별 점수 합계 + 평균  // 두 종류의 그래프
+    public String allItems(Model model) {
+        itemService.addallItems(model);
+        return "chart";
+    }
+
+    
+
 }

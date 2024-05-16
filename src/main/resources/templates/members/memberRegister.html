@@ -6,6 +6,65 @@
 <!-- 사용자 CSS 추가 -->
 <th:block layout:fragment="css">
     <style>
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+            width: 600px; /* 입력 필드의 너비를 조정합니다. */
+        }
+
+        .form-control {
+            padding: 15px;
+            font-size: 14px;
+            border-radius: 20px;
+            border: 2px solid #DADADA; /* 경계선 색상 */
+            background-color: #FFFFFF; /* 배경 색상 */
+        }
+
+        label {
+            margin-bottom: 8px;
+            color: #8C8A88; /* 라벨 색상 */
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            padding: 10px 30px;
+            margin-right: 10px;
+            cursor: pointer;
+            background-color: #8C8A88; /* 버튼 배경 색상 */
+            border: none;
+            color: white;
+            font-size: 14px;
+            border-radius: 20px;
+            white-space: nowrap;
+            transition: background-color 0.3s ease; /* 버튼 호버 효과 */
+        }
+
+        .btn-primary:hover {
+            background-color: #6A6866; /* 호버 시 색상 변경 */
+        }
+
+        .error {
+            color: #FF6B6B; /* 에러 메시지 색상 */
+            margin: 10px 0;
+        }
+
+        a {
+            color: #6A6866; /* 링크 색상 */
+            text-decoration: none; /* 밑줄 제거 */
+            margin-top: 20px;
+        }
+
+        a:hover {
+            text-decoration: underline; /* 호버 시 밑줄 추가 */
+        }
         .error {
             color: #bd2130;
         }

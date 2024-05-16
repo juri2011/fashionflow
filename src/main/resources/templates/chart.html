@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Students</title>
+
+    <!-- Google Charts 라이브러리 -->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript" th:inline="javascript">
+        google.charts.load('current', {'packages':['corechart']});
+            google.charts.setOnLoadCallback(drawCharts);
+
+            // 서버에서 가져온 아이템 데이터
+            /*<![CDATA[*/
+            var itemDTOs = /*[[${itemDTOs}]]*/ [];
+            /*]]>*/
+
+            function drawCharts() {
+                // categoryId 분포도 데이터 준비
+                var categoryData = new google.visualization.DataTable();
+                categoryData.addColumn('string', 'CategoryId');
+                categoryData.addColumn('number', '수량');
+
+                // itemStatus 분포도 데이터 준비
+                var statusData = new google.visualization.DataTable();
+                statusData.addColumn('string', 'ItemStatus');
+                statusData.addColumn('number', '수량');
+
+                // price 분포 준비 (예시로 단순화)
+                var priceData = new google.visualization.DataTable();
+                priceData.addColumn('string', 'Price Range');
+                priceData.addColumn('number', '수량');
+
+                var categoryCounts = {};
+                var statusCounts = {};
+                var priceRanges = {'0-10000': 0, '10001-100000': 0, '100001-500000': 0, '>500001': 0};
+
+                itemDTOs.forEach(function(item) {
+                    categoryCounts[item.categoryId] = (categoryCounts[item.categoryId] || 0) + 1;
+                    statusCounts[item.itemStatus] = (statusCounts[item.itemStatus] || 0) + 1;
+
+                    if(item.price <= 10000) priceRanges['0-10000']++;
+                    else if(item.price <= 100000) priceRanges['10001-100000']++;
+                    else if(item.price <= 500000) priceRanges['100001-500000']++;
+                    else priceRanges['>500001']++;
+                });
+
+                Object.keys(categoryCounts).forEach(function(key) {
+                    categoryData.addRow([key, categoryCounts[key]]);
+                });
+
+                Object.keys(statusCounts).forEach(function(key) {
+                    statusData.addRow([key, statusCounts[key]]);
+                });
+
+                Object.keys(priceRanges).forEach(function(key) {
+                    priceData.addRow([key, priceRanges[key]]);
+                });
+
+                // 차트 옵션
+                var options = {
+                    title: '분포도',
+                    pieHole: 0.4
+                };
+
+                // categoryId 분포도 차트 생성
+                var categoryChart = new google.visualization.PieChart(document.getElementById('category_chart_div'));
+                categoryChart.draw(categoryData, options);
+
+                // itemStatus 분포도 차트 생성
+                var statusChart = new google.visualization.PieChart(document.getElementById('status_chart_div'));
+                statusChart.draw(statusData, options);
+
+                // price 분포도 차트 생성
+                var priceChart = new google.visualization.PieChart(document.getElementById('price_chart_div'));
+                priceChart.draw(priceData, options);
+            }
+    </script>
+</head>
+<body>
+<h1>통계</h1>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>price</th>
+        <th>categoryId</th>
+        <th>itemStatus</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="item : ${itemDTOs}">
+        <td th:text="${item.price}"></td>
+        <td th:text="${item.getItemStatus().getCode()}"></td>
+        <td th:text="${item.categoryId}"></td>
+    </tr>
+    </tbody>
+</table>
+
+<div id="category_chart_div" style="width: 400px; height: 300px;"></div>
+<div id="status_chart_div" style="width: 400px; height: 300px;"></div>
+<div id="price_chart_div" style="width: 400px; height: 300px;"></div>
+
+</body>
+</html>

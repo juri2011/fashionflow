@@ -57,30 +57,28 @@ public class RoomController {
         return "chat/rooms";
     }
 
-    //내가 속해있는 채팅방만
+    // 내가 속해있는 채팅방만
     @GetMapping("/flowtalk")
-    public String myRoom(@AuthenticationPrincipal User user, Model model){
-
-        if (user == null) {
-            // 사용자가 로그인하지 않은 경우, 로그인 페이지로 리디렉션
+    public String myRoom(@AuthenticationPrincipal User user, Model model) {
+        String userEmail = memberService.currentMemberEmail();
+        if (userEmail.equals("anonymousUser")) {
             return "/error/loginError";
         }
 
         log.info("# All Chat Rooms");
         List<ChatRoomDTO> rooms = new ArrayList<>();
-        String currentMemberEmail = memberService.currentMemberEmail();
-        for(ChatRoom chatRoom : chatRoomRepository.findAllByOrderByIdDesc()){
-            if(chatRoom.getSellerEmail() == null || chatRoom.getBuyerEmail()==null) continue;
-            //사용자가 속해있는 채팅방만 표시
-            if(chatRoom.getSellerEmail().equals(currentMemberEmail) ||
-               chatRoom.getBuyerEmail().equals(currentMemberEmail)){
+        for (ChatRoom chatRoom : chatRoomRepository.findAllByOrderByIdDesc()) {
+            if (chatRoom.getSellerEmail() == null || chatRoom.getBuyerEmail() == null) continue;
+            // 사용자가 속해있는 채팅방만 표시
+            if (chatRoom.getSellerEmail().equals(userEmail) ||
+                    chatRoom.getBuyerEmail().equals(userEmail)) {
                 rooms.add(ChatRoomDTO.entityToDto(chatRoom));
             }
         }
         model.addAttribute("list", rooms);
-
         return "chat/rooms";
     }
+
 
     //채팅방 개설
     /*@PostMapping("/room")
@@ -280,7 +278,7 @@ public class RoomController {
         }catch(EntityNotFoundException e){
             return new ResponseEntity<String>("정보를 불러오는 도중 에러가 발생했습니다.", HttpStatus.NOT_FOUND);
         }catch (Exception e){
-            return new ResponseEntity<String>("오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<String>("오류가 발생했습니다." + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }

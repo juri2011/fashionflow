@@ -62,24 +62,22 @@
             transform: rotate(-22deg);
         }
 
-        nav {
+        .category-nav {
             display:none;
-            position: fixed; /* 네비게이션 메뉴를 고정시켜 화면에서 이동하지 않도록 합니다.
+            height: 70px;
             left: 0; /* 화면 우측에 위치합니다. */
             z-index: 999; /* 다른 콘텐츠 위에 표시됩니다. */
-            width: 15vw;
-            height: 50vh;
-            background-color: #F1EEE9;
-            box-shadow: 0px 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+            background-color: transparent;
             transform: translateY(-100%);
             transition: transform 0.2s ease-in-out;
         }
 
-        nav ul {
+        .category-nav ul {
             padding: 0;
             margin: 0;
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
+            justify-content: center; /* 수평 가운데 정렬 */
             list-style: none;
             gap: 20px;
             padding: 20px 0px 0px 20px;
@@ -87,7 +85,7 @@
             font-size: 20px;
         }
 
-        nav a {
+        .category-nav a {
             color: inherit;
             text-decoration: none;
         }
@@ -97,6 +95,33 @@
             transform: translateY(0%);
         }
 
+        #categorySearch {
+            list-style: none;
+            padding: 0;
+        }
+
+        #categorySearch li {
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        #categorySearch li button {
+            border: none;
+            background: transparent;
+            padding: 0;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        #categorySearch li button img {
+            width: 50px; /* 이미지 크기 조정 */
+            height: 50px;
+            transition: transform 0.3s ease; /* 호버 효과를 위한 변환 효과 */
+        }
+
+        #categorySearch li button:hover img {
+            transform: scale(1.2); /* 호버 시 이미지를 확대합니다. */
+        }
 
     </style>
     <div class="nav-body">
@@ -110,15 +135,26 @@
                 </label>
                 <input type="checkbox" id="checkbox">
             </header>
-            <nav>
-                <ul>
-                    <li><a>1</a></li>
-                    <li><a>2</a></li>
-                    <li><a>3</a></li>
-                    <li><a>4</a></li>
+            <nav class="category-nav">
+                <ul id="categorySearch">
+                    <li><button data-category="men"><img th:src="@{/img/M.png}" alt="남성의류">남성의류</button></li>
+                    <li><button data-category="women"><img th:src="@{/img/W.png}" alt="여성의류">여성의류</button></li>
+                    <li><button data-category="shoes"><img th:src="@{/img/shoes.png}" alt="신발">신발</button></li>
                 </ul>
             </nav>
         </div>
     </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 버튼에 클릭 이벤트 리스너 추가
+            document.querySelectorAll('#categorySearch button').forEach(button => {
+                button.addEventListener('click', function() {
+                    var category = this.getAttribute('data-category'); // 버튼의 data-category 속성 값 가져오기
+                    window.location.href = `/list?category=${encodeURIComponent(category)}`; // data-category 속성 값 포함된 URL로 리디렉션
+                 });
+            });
+        });
+    </script>
 </div>
 </html>

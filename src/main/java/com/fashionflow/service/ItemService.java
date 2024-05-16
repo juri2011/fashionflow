@@ -12,6 +12,8 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -369,5 +371,41 @@ public class ItemService {
             throw new RuntimeException("상품 삭제 중에 오류가 발생했습니다.", e);
         }
     }
+
+
+    // 조회수 내림차순으로 상위 8개의 상품 조회
+    public List<Item> getTop8products() {
+        return itemRepository.findTop8ByOrderByViewCountDesc(PageRequest.of(0, 8, Sort.by(Sort.Direction.DESC, "viewCount")));
+    }
+
+    public List<ListingItemDTO> getTop8productswithImg() {
+        List<Item> topItems = getTop8products();
+
+        // Item 객체를 ListingItemDTO로 변환
+        List<ListingItemDTO> listingItemDTOs = topItems.stream().map(item -> {
+            // 각 Item에 대한 대표 이미지 조회
+            ItemImg repImg = itemImgRepository.findFirstByItemIdAndRepimgYn(item.getId(), "Y").orElse(null);
+
+            // ListingItemDTO 객체 생성 및 필드 설정
+            ListingItemDTO listingItemDTO = new ListingItemDTO();
+            listingItemDTO.setId(item.getId());
+            listingItemDTO.setItemName(item.getItemName());
+            listingItemDTO.setPrice(item.getPrice());
+            listingItemDTO.setRegdate(item.getRegdate());
+            listingItemDTO.setCategoryId(item.getCategory().getId());
+            listingItemDTO.setItemStatus(item.getItemStatus());
+            listingItemDTO.setSellStatus(item.getSellStatus());
+            // 대표 이미지가 존재하는 경우, 이미지 이름 설정
+            if (repImg != null) {
+                listingItemDTO.setImgName(repImg.getImgName());
+            }
+
+            return listingItemDTO;
+
+        }).collect(Collectors.toList());
+
+        return listingItemDTOs;
+    }
+
 
 }

@@ -7,29 +7,32 @@
 </head>
 <body>
 <div class="container mt-5">
-    <h1 class="mb-3">비밀번호 재설정</h1>
-    <form id="resetPasswordForm" th:action="@{/api/v1/auth/reset-password}" method="post" class="needs-validation" novalidate>
-        <input type="hidden" id="email" name="email" th:value="${email}"/>
+    <div class="container">
 
-        <div class="form-group">
-            <label for="newPassword">새 비밀번호:</label>
-            <input type="password" id="newPassword" name="newPassword" class="form-control" required>
-            <div class="invalid-feedback">
-                새 비밀번호를 입력해주세요.
+        <h1 class="mb-3">비밀번호 재설정</h1>
+        <form id="resetPasswordForm" th:action="@{/api/v1/auth/reset-password}" method="post" class="needs-validation" novalidate>
+            <input type="hidden" id="email" name="email" th:value="${email}"/>
+
+            <div class="form-group">
+                <label for="newPassword">새 비밀번호:</label>
+                <input type="password" id="newPassword" name="newPassword" class="form-control" required>
+                <div class="invalid-feedback">
+                    새 비밀번호를 입력해주세요.
+                </div>
             </div>
-        </div>
 
-        <div class="form-group">
-            <label for="confirmPassword">비밀번호 확인:</label>
-            <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required>
-            <div class="invalid-feedback">
-                비밀번호가 일치하지 않습니다.
+            <div class="form-group">
+                <label for="confirmPassword">비밀번호 확인:</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required>
+                <div class="invalid-feedback">
+                    비밀번호가 일치하지 않습니다.
+                </div>
             </div>
-        </div>
 
-        <button type="submit" class="btn btn-primary">비밀번호 변경</button>
-        <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
-    </form>
+            <button type="submit" class="btn btn-primary">비밀번호 변경</button>
+            <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+        </form>
+    </div>
 </div>
 
 <!-- Optional JavaScript -->

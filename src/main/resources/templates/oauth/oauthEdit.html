@@ -20,79 +20,81 @@
 </th:block>
 
 <div layout:fragment="content">
+    <div class="container">
 
-    <!-- 닉네임 중복 -->
-    <div th:if="${duplicateErrorMessage}" class="error-message">
-        <p th:text="${duplicateErrorMessage}"></p>
-    </div>
-    <!-- 비밀번호, 비밀번호 확인 불일치 -->
-    <div th:if="${pwdErrorMessage}" class="error-message">
-        <p th:text="${pwdErrorMessage}"></p>
-    </div>
-    <!-- 유효성 검사 결과를 출력하는 부분 -->
-    <div class="error-message" th:if="${errors}">
-        <p>다음 항목을 확인해주세요:</p>
-        <ul>
-            <li th:each="error : ${errors}">
-                <span th:text="${error.defaultMessage}"></span>
-            </li>
-        </ul>
-    </div>
+        <!-- 닉네임 중복 -->
+        <div th:if="${duplicateErrorMessage}" class="error-message">
+            <p th:text="${duplicateErrorMessage}"></p>
+        </div>
+        <!-- 비밀번호, 비밀번호 확인 불일치 -->
+        <div th:if="${pwdErrorMessage}" class="error-message">
+            <p th:text="${pwdErrorMessage}"></p>
+        </div>
+        <!-- 유효성 검사 결과를 출력하는 부분 -->
+        <div class="error-message" th:if="${errors}">
+            <p>다음 항목을 확인해주세요:</p>
+            <ul>
+                <li th:each="error : ${errors}">
+                    <span th:text="${error.defaultMessage}"></span>
+                </li>
+            </ul>
+        </div>
 
 
-    <form role="form" method="post" action="/oauth/oauthEdit">
-        <div class="form-group mb-3">
-            <label for="name">이름</label>
-            <input type="text" name="name" id="name" class="form-control" placeholder="이름을 입력해주세요" readonly th:value="${currentMember.name}">
-        </div>
-        <div class="form-group mb-3">
-            <label for="email">이메일주소</label>
-            <input type="email" name="email" id="email" class="form-control" placeholder="이메일을 입력해주세요" readonly th:value="${currentMember.email}">
-        </div>
-        <div class="form-group mb-3">
-            <label for="nickname">닉네임</label>
-            <input type="text" name="nickname" id="nickname" class="form-control" placeholder="닉네임을 입력해주세요" th:value="${currentMember.nickname}">
-        </div>
-        <div class="form-group mb-3">
-            <label for="phone">전화번호</label>
-            <input type="text" name="phone" id="phone" class="form-control" placeholder="전화번호를 입력해주세요" readonly th:value="${currentMember.phone}">
-        </div>
-        <div class="form-group mb-3">
-            <label for="birth">생년월일</label>
-            <input type="date" name="birth" id="birth" class="form-control" readonly th:value="${currentMember.birth}">
-        </div>
-        <div class="form-group mb-3">
-            <label for="gender">성별</label>
-            <select name="gender" id="gender" class="form-control">
-                <option value="m" th:selected="${currentMember.gender == 'M'}">남성</option>
-                <option value="f" th:selected="${currentMember.gender == 'F'}">여성</option>
-                <option value="secret" th:selected="${currentMember.gender == 'SECRET'}">기타</option>
-            </select>
-        </div>
-        <div class="form-row">
-            <div class="form-group col-md-3 mb-3">
-                <label for="sample6_postcode">우편번호</label>
-                <input type="text" name="userStnum" id="sample6_postcode" class="form-control" placeholder="우편번호" th:value="${currentMember.userStnum}" readonly>
-                <input type="button" onclick="sample6_execDaumPostcode()" value="우편번호 찾기"><br>
+        <form role="form" method="post" action="/oauth/oauthEdit">
+            <div class="form-group mb-3">
+                <label for="name">이름</label>
+                <input type="text" name="name" id="name" class="form-control" placeholder="이름을 입력해주세요" readonly th:value="${currentMember.name}">
             </div>
-            <div class="form-group col-md-6 mb-3">
-                <label for="sample6_address">주소</label>
-                <input type="text" name="userAddr" id="sample6_address" class="form-control" placeholder="주소" th:value="${currentMember.userAddr}" readonly>
+            <div class="form-group mb-3">
+                <label for="email">이메일주소</label>
+                <input type="email" name="email" id="email" class="form-control" placeholder="이메일을 입력해주세요" readonly th:value="${currentMember.email}">
             </div>
-            <div class="form-group col-md-3 mb-3">
-                <label for="sample6_detailAddress">상세주소</label>
-                <input type="text" name="userDaddr" id="sample6_detailAddress" class="form-control" placeholder="상세주소를 입력해주세요" th:value="${currentMember.userDaddr}">
+            <div class="form-group mb-3">
+                <label for="nickname">닉네임</label>
+                <input type="text" name="nickname" id="nickname" class="form-control" placeholder="닉네임을 입력해주세요" th:value="${currentMember.nickname}">
             </div>
-        </div>
-        <div class="mb-3">
-            <button type="submit" class="btn btn-primary">수정</button>
+            <div class="form-group mb-3">
+                <label for="phone">전화번호</label>
+                <input type="text" name="phone" id="phone" class="form-control" placeholder="전화번호를 입력해주세요" readonly th:value="${currentMember.phone}">
+            </div>
+            <div class="form-group mb-3">
+                <label for="birth">생년월일</label>
+                <input type="date" name="birth" id="birth" class="form-control" readonly th:value="${currentMember.birth}">
+            </div>
+            <div class="form-group mb-3">
+                <label for="gender">성별</label>
+                <select name="gender" id="gender" class="form-control">
+                    <option value="m" th:selected="${currentMember.gender == 'M'}">남성</option>
+                    <option value="f" th:selected="${currentMember.gender == 'F'}">여성</option>
+                    <option value="secret" th:selected="${currentMember.gender == 'SECRET'}">기타</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-3 mb-3">
+                    <label for="sample6_postcode">우편번호</label>
+                    <input type="text" name="userStnum" id="sample6_postcode" class="form-control" placeholder="우편번호" th:value="${currentMember.userStnum}" readonly>
+                    <input type="button" onclick="sample6_execDaumPostcode()" value="우편번호 찾기"><br>
+                </div>
+                <div class="form-group col-md-6 mb-3">
+                    <label for="sample6_address">주소</label>
+                    <input type="text" name="userAddr" id="sample6_address" class="form-control" placeholder="주소" th:value="${currentMember.userAddr}" readonly>
+                </div>
+                <div class="form-group col-md-3 mb-3">
+                    <label for="sample6_detailAddress">상세주소</label>
+                    <input type="text" name="userDaddr" id="sample6_detailAddress" class="form-control" placeholder="상세주소를 입력해주세요" th:value="${currentMember.userDaddr}">
+                </div>
+            </div>
+            <div class="mb-3">
+                <button type="submit" class="btn btn-primary">수정</button>
 
-            <button type="button" class="btn btn-danger" id="deleteMemberBtn">회원 탈퇴</button>
+                <button type="button" class="btn btn-danger" id="deleteMemberBtn">회원 탈퇴</button>
 
-            <!-- csrf 토큰 임시 해제 -->
-            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-        </div>
-    </form>
+                <!-- csrf 토큰 임시 해제 -->
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            </div>
+        </form>
+    </div>
 </div>
 
 </html>

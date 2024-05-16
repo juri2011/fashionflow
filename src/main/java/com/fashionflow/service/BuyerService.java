@@ -105,12 +105,14 @@ public class BuyerService {
 
         // 리뷰된 판매자 아이템 리스트
         List<Item> reviewedSellerItemList = new ArrayList<>();
+
         for(Item sellerItem : sellerItemList) {
             ItemBuy reviewedItem = itemBuyRepository.findItemBuyByItem(sellerItem);
             if(reviewedItem.isReviewExists()) {
                 reviewedSellerItemList.add(sellerItem);
             }
         }
+
         // 평균 매너점수 연산
         if(reviewedSellerItemList.size()==1){
             Double avgScore = (currentScore + reviewDTO.getScore()) / 2;

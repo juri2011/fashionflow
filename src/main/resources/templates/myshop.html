@@ -63,131 +63,134 @@
 <h1>상점페이지 입니다.</h1>
 
 <div layout:fragment="content">
-    <!-- 상품 등록 버튼 -->
-    <form th:action="@{/members/item/new}" method="get">
-        <button type="submit" class="btn btn-primary">내 상품 등록</button>
-    </form>
-    <!-- 탭 메뉴 -->
-    <div class="tab">
-        <button class="tablinks" onclick="openTab(event, 'Home')">상품 관리</button>
-        <button class="tablinks" onclick="openTab(event, 'Items')">상품 후기</button>
-        <button class="tablinks" onclick="openTab(event, 'Register')">찜</button>
-    </div>
+    <div class="container">
 
-    <!-- 탭 내용 -->
-    <div  id="Home" class="tabcontent" style="display:block;">
-        <h3>상품 관리</h3>
-        <hr>
-        <table>
-            <thead>
-            <tr>
-                <th>상품 이미지</th>
-                <th>상품명</th>
-                <th>상품 상태</th>
-                <th>가격</th>
-                <th>거래 지역</th>
-                <th>판매 상태</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="item : ${items}">
-                <td>
-                    <!-- 이미지가 있을 경우, 첫 번째 이미지를 표시 -->
-                    <img th:if="${not #lists.isEmpty(item.itemImgDTOList)}"
-                         th:src="@{'/images/' + ${item.itemImgDTOList.get(0).imgName}}"
-                         alt="상품 이미지" style="width:100px;">
-
-                    <!-- 이미지 리스트가 비어있을 경우, 대체 이미지 표시 -->
-                    <img th:unless="${not #lists.isEmpty(item.itemImgDTOList)}"
-                         th:src="@{/img/default.PNG}"
-                         alt="대체 이미지" style="width:100px;">
-                </td>
-                <td>
-                    <!-- 상품명을 클릭하면 상세 페이지로 이동 -->
-                    <a th:href="@{'/members/item/' + ${item.id}}" th:text="${item.itemName}"></a>
-                </td>
-                <td>
-                    <span th:switch="${item.itemStatus.name()}">
-                        <span th:case="'NEW'">새상품 (미개봉)</span>
-                        <span th:case="'NO_SIGNS_OF_USE'">사용감 없음</span>
-                        <span th:case="'SOME_SIGNS_OF_USE'">사용감 적음</span>
-                        <span th:case="'SIGNIFICANT_SIGNS_OF_USE'">사용감 많음</span>
-                        <span th:case="'FAULTY'">파손, 고장 상품</span>
-                    </span>
-                </td>
-                <td th:text="${item.price}"></td>
-                <td th:text="${item.address}"></td>
-                <td>
-                    <span th:switch="${item.sellStatus.name()}">
-                        <span th:case="'SELLING'">판매중</span>
-                        <span th:case="'SUSPENDED'">판매중단</span>
-                        <span th:case="'SOLD_OUT'">판매완료</span>
-                    </span>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <div id="Items" class="tabcontent">
-        <h3>상품 후기</h3>
-        <hr>
-        <div th:each="review : ${getItemReviewListWithImg}" class="review-box">
-            <form method="post" class="review-box">
-
-                <input type="hidden" name="id" th:value="${review.id}" />
-                <img th:if="${review.imgName != null}" th:src="${review.imgName}" alt="Product Image" class="product-image" style="width:100px;">
-                <span th:if="${review.itemName}" th:text="'상품명: ' + ${review.itemName}" ></span>
-                <span th:if="${review.price}" th:text="'가격: ' + ${review.price}" ></span>
-                <span th:if="${review.score}" th:text="'매너점수: ' + ${review.score}" ></span>
-                <span th:if="${review.regDate}" th:text="'거래일: ' + ${#temporals.format(review.regDate, 'yyyy-MM-dd')}" ></span>
-                <!-- 리뷰 태그 정보 출력 -->
-                <span th:if="${review.reviewTags}">
-                    <span th:each="tag : ${review.reviewTags}" th:text="${tag.description}"></span>
-                </span>
-            </form>
+        <!-- 상품 등록 버튼 -->
+        <form th:action="@{/members/item/new}" method="get">
+            <button type="submit" class="btn btn-primary">내 상품 등록</button>
+        </form>
+        <!-- 탭 메뉴 -->
+        <div class="tab">
+            <button class="tablinks" onclick="openTab(event, 'Home')">상품 관리</button>
+            <button class="tablinks" onclick="openTab(event, 'Items')">상품 후기</button>
+            <button class="tablinks" onclick="openTab(event, 'Register')">찜</button>
         </div>
-    </div>
 
-    <div id="Register" class="tabcontent">
-        <h3>찜</h3>
-        <hr>
-        <div th:each="heart : ${getHeartItemsWithImagesByUserEmail}" class="heart-box">
-            <form method="post" class="heart-box" th:action="@{/heart/removeHeart/{heartId}(heartId=${heart.id})}">
-                <input type="hidden" name="id" th:value="${heart.id}" />
-                <a th:href="'/item/' + ${heart.id}">
-                    <img th:if="${heart.imgName != null}" th:src="${heart.imgName}" alt="Product Image" class="product-image" style="width:100px;">
-                </a>
-                <span th:if="${heart.itemName}" th:text="'상품명: ' + ${heart.itemName}" ></span>
-                <span th:if="${heart.price}" th:text="'가격: ' + ${heart.price}" ></span>
-                <button type="submit">찜 삭제</button>
-            </form>
+        <!-- 탭 내용 -->
+        <div  id="Home" class="tabcontent" style="display:block;">
+            <h3>상품 관리</h3>
+            <hr>
+            <table>
+                <thead>
+                <tr>
+                    <th>상품 이미지</th>
+                    <th>상품명</th>
+                    <th>상품 상태</th>
+                    <th>가격</th>
+                    <th>거래 지역</th>
+                    <th>판매 상태</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item : ${items}">
+                    <td>
+                        <!-- 이미지가 있을 경우, 첫 번째 이미지를 표시 -->
+                        <img th:if="${not #lists.isEmpty(item.itemImgDTOList)}"
+                             th:src="@{'/images/' + ${item.itemImgDTOList.get(0).imgName}}"
+                             alt="상품 이미지" style="width:100px;">
+
+                        <!-- 이미지 리스트가 비어있을 경우, 대체 이미지 표시 -->
+                        <img th:unless="${not #lists.isEmpty(item.itemImgDTOList)}"
+                             th:src="@{/img/default.PNG}"
+                             alt="대체 이미지" style="width:100px;">
+                    </td>
+                    <td>
+                        <!-- 상품명을 클릭하면 상세 페이지로 이동 -->
+                        <a th:href="@{'/members/item/' + ${item.id}}" th:text="${item.itemName}"></a>
+                    </td>
+                    <td>
+                        <span th:switch="${item.itemStatus.name()}">
+                            <span th:case="'NEW'">새상품 (미개봉)</span>
+                            <span th:case="'NO_SIGNS_OF_USE'">사용감 없음</span>
+                            <span th:case="'SOME_SIGNS_OF_USE'">사용감 적음</span>
+                            <span th:case="'SIGNIFICANT_SIGNS_OF_USE'">사용감 많음</span>
+                            <span th:case="'FAULTY'">파손, 고장 상품</span>
+                        </span>
+                    </td>
+                    <td th:text="${item.price}"></td>
+                    <td th:text="${item.address}"></td>
+                    <td>
+                        <span th:switch="${item.sellStatus.name()}">
+                            <span th:case="'SELLING'">판매중</span>
+                            <span th:case="'SUSPENDED'">판매중단</span>
+                            <span th:case="'SOLD_OUT'">판매완료</span>
+                        </span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
         </div>
+
+        <div id="Items" class="tabcontent">
+            <h3>상품 후기</h3>
+            <hr>
+            <div th:each="review : ${getItemReviewListWithImg}" class="review-box">
+                <form method="post" class="review-box">
+
+                    <input type="hidden" name="id" th:value="${review.id}" />
+                    <img th:if="${review.imgName != null}" th:src="${review.imgName}" alt="Product Image" class="product-image" style="width:100px;">
+                    <span th:if="${review.itemName}" th:text="'상품명: ' + ${review.itemName}" ></span>
+                    <span th:if="${review.price}" th:text="'가격: ' + ${review.price}" ></span>
+                    <span th:if="${review.score}" th:text="'매너점수: ' + ${review.score}" ></span>
+                    <span th:if="${review.regDate}" th:text="'거래일: ' + ${#temporals.format(review.regDate, 'yyyy-MM-dd')}" ></span>
+                    <!-- 리뷰 태그 정보 출력 -->
+                    <span th:if="${review.reviewTags}">
+                        <span th:each="tag : ${review.reviewTags}" th:text="${tag.description}"></span>
+                    </span>
+                </form>
+            </div>
+        </div>
+
+        <div id="Register" class="tabcontent">
+            <h3>찜</h3>
+            <hr>
+            <div th:each="heart : ${getHeartItemsWithImagesByUserEmail}" class="heart-box">
+                <form method="post" class="heart-box" th:action="@{/heart/removeHeart/{heartId}(heartId=${heart.id})}">
+                    <input type="hidden" name="id" th:value="${heart.id}" />
+                    <a th:href="'/item/' + ${heart.id}">
+                        <img th:if="${heart.imgName != null}" th:src="${heart.imgName}" alt="Product Image" class="product-image" style="width:100px;">
+                    </a>
+                    <span th:if="${heart.itemName}" th:text="'상품명: ' + ${heart.itemName}" ></span>
+                    <span th:if="${heart.price}" th:text="'가격: ' + ${heart.price}" ></span>
+                    <button type="submit">찜 삭제</button>
+                </form>
+            </div>
+        </div>
+
+
+        <th:block layout:fragment="script">
+            <script th:inline="javascript">
+                function openTab(evt, cityName) {
+                    var i, tabcontent, tablinks;
+                    tabcontent = document.getElementsByClassName("tabcontent");
+                    for (i = 0; i < tabcontent.length; i++) {
+                        tabcontent[i].style.display = "none";
+                    }
+                    tablinks = document.getElementsByClassName("tablinks");
+                    for (i = 0; i < tablinks.length; i++) {
+                        tablinks[i].className = tablinks[i].className.replace(" active", "");
+                    }
+                    document.getElementById(cityName).style.display = "block";
+                    evt.currentTarget.className += " active";
+                }
+
+                // 페이지 로드 시 기본적으로 '상품 관리' 탭을 활성화
+                document.addEventListener('DOMContentLoaded', function () {
+                    openTab(new Event('click'), 'Home');
+                });
+             </script>
+        </th:block>
     </div>
-
-
-    <th:block layout:fragment="script">
-        <script th:inline="javascript">
-            function openTab(evt, cityName) {
-                var i, tabcontent, tablinks;
-                tabcontent = document.getElementsByClassName("tabcontent");
-                for (i = 0; i < tabcontent.length; i++) {
-                    tabcontent[i].style.display = "none";
-                }
-                tablinks = document.getElementsByClassName("tablinks");
-                for (i = 0; i < tablinks.length; i++) {
-                    tablinks[i].className = tablinks[i].className.replace(" active", "");
-                }
-                document.getElementById(cityName).style.display = "block";
-                evt.currentTarget.className += " active";
-            }
-
-            // 페이지 로드 시 기본적으로 '상품 관리' 탭을 활성화
-            document.addEventListener('DOMContentLoaded', function () {
-                openTab(new Event('click'), 'Home');
-            });
-         </script>
-    </th:block>
 </div>
 
 </body>

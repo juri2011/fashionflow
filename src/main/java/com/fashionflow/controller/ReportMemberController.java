@@ -3,6 +3,7 @@ package com.fashionflow.controller;
 import com.fashionflow.dto.ReportCommandDTO;
 import com.fashionflow.dto.ReportItemDTO;
 import com.fashionflow.dto.ReportMemberDTO;
+import com.fashionflow.service.MemberService;
 import com.fashionflow.service.ReportItemService;
 import com.fashionflow.service.ReportMemberService;
 import jakarta.persistence.EntityNotFoundException;
@@ -27,8 +28,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ReportMemberController {
 
-    //private final ReportItemService reportItemService;
     private final ReportMemberService reportMemberService;
+    private final MemberService memberService;
 
     @GetMapping("/report/memberdetail/{id}")
     public String reportDetail(Model model, @PathVariable("id") Long id){
@@ -55,8 +56,8 @@ public class ReportMemberController {
             return new ResponseEntity<String>(sb.toString(), HttpStatus.BAD_REQUEST);
         }
 
-        if(principal == null) return new ResponseEntity<String>("로그인이 필요합니다.", HttpStatus.BAD_REQUEST);
-        String email = principal.getName();
+        if(memberService.currentMemberEmail() == null) return new ResponseEntity<String>("로그인이 필요합니다.", HttpStatus.BAD_REQUEST);
+        String email = memberService.currentMemberEmail();
         System.out.println(email);
 
         reportMemberDTO.setReporterMemberEmail(email);

@@ -64,11 +64,10 @@
 
         nav {
             display:none;
-            position: fixed; /* 네비게이션 메뉴를 고정시켜 화면에서 이동하지 않도록 합니다.
+            height: 70px;
             left: 0; /* 화면 우측에 위치합니다. */
             z-index: 999; /* 다른 콘텐츠 위에 표시됩니다. */
-            background-color: #F1EEE9;
-            box-shadow: 0px 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+            background-color: transparent;
             transform: translateY(-100%);
             transition: transform 0.2s ease-in-out;
         }
@@ -78,6 +77,7 @@
             margin: 0;
             display: flex;
             flex-direction: row;
+            justify-content: center; /* 수평 가운데 정렬 */
             list-style: none;
             gap: 20px;
             padding: 20px 0px 0px 20px;
@@ -137,9 +137,9 @@
             </header>
             <nav>
                 <ul id="categorySearch">
-                    <li><button data-category="men"><img src="img/M.png" alt="남성의류">남성의류</button></li>
-                    <li><button data-category="women"><img src="img/W.png" alt="여성의류">여성의류</button></li>
-                    <li><button data-category="shoes"><img src="img/shoes.png" alt="신발">신발</button></li>
+                    <li><button data-category="men"><img th:src="@{/img/M.png}" alt="남성의류">남성의류</button></li>
+                    <li><button data-category="women"><img th:src="@{/img/W.png}" alt="여성의류">여성의류</button></li>
+                    <li><button data-category="shoes"><img th:src="@{/img/shoes.png}" alt="신발">신발</button></li>
                 </ul>
             </nav>
         </div>

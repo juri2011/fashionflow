@@ -27,8 +27,16 @@
             position:relative; top: 50%; left: 50%; transform: translate(-50%, -50%);
         }
 
-        #container{
-            min-width: 800px;
+        .content{
+            display:block;
+        }
+
+        .container {
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 80%;
+            margin: 20px auto;
         }
 
         #item-container{ padding: 5px; }
@@ -66,7 +74,7 @@
         <!--<input type="hidden" id="itemId" th:value="${itemFormDTO.id}">-->
         <input type="hidden" id="currentMemberEmail" th:value="${currentMember}">
 
-        <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+        <nav class="breadcrumb-nav" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item">전체</li>
                 <li class="breadcrumb-item" th:text="${itemFormDTO.categoryDTO.parent.name}"></li>

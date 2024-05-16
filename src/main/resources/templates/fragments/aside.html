@@ -42,7 +42,7 @@
           var list = document.querySelector('.recent-view');
           items.forEach(function(item) {
             var listItem = document.createElement('li');
-            listItem.className = 'recent-view-item';
+            listItem.className = 'recent-view-item list-group-item';
             listItem.innerHTML = '<a href="/item/' + item.itemId + '">' +
                                  '<img src="' + (item.imgName ? '/images/' + item.imgName : '/img/default.PNG') + '" alt="상품 이미지" />' +
                                  '<span>' + item.itemName + '</span>' +

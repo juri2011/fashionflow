@@ -62,7 +62,7 @@
             transform: rotate(-22deg);
         }
 
-        nav {
+        .category-nav {
             display:none;
             height: 70px;
             left: 0; /* 화면 우측에 위치합니다. */
@@ -72,7 +72,7 @@
             transition: transform 0.2s ease-in-out;
         }
 
-        nav ul {
+        .category-nav ul {
             padding: 0;
             margin: 0;
             display: flex;
@@ -85,7 +85,7 @@
             font-size: 20px;
         }
 
-        nav a {
+        .category-nav a {
             color: inherit;
             text-decoration: none;
         }
@@ -135,7 +135,7 @@
                 </label>
                 <input type="checkbox" id="checkbox">
             </header>
-            <nav>
+            <nav class="category-nav">
                 <ul id="categorySearch">
                     <li><button data-category="men"><img th:src="@{/img/M.png}" alt="남성의류">남성의류</button></li>
                     <li><button data-category="women"><img th:src="@{/img/W.png}" alt="여성의류">여성의류</button></li>

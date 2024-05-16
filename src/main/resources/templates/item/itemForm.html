@@ -58,6 +58,12 @@
                 display: none; /* 기본적으로 지도를 숨김 */
             }
 
+        .tag-block{
+            display: inline-block;
+            margin-right: 5px;
+            padding: 5px;
+        }
+
 
     </style>
 </th:block>
@@ -79,13 +85,12 @@
                 </div>
             </div>
 
-            <div th:if="${not #lists.isEmpty(itemFormDTO.itemImgDTOList)}">
-                <div class="form-group" th:each="itemImgDto, status: ${itemFormDTO.itemImgDTOList}">
-                    <div class="custom-file img-div">
-                        <input type="file" class="custom-file-input" name="itemImgFile">
-                        <input type="hidden" name="itemImgIds" th:value="${itemFormDTO.id}">
-                        <label class="custom-file-label" th:text="${not #strings.isEmpty(itemImgDto.oriImgName)} ? ${itemImgDto.oriImgName} : '상품이미지' + ${status.index+1}"></label>
-                    </div>
+        <div th:if="${not #lists.isEmpty(itemFormDTO.itemImgDTOList)}">
+            <div class="form-group" th:each="itemImgDto, status: ${itemFormDTO.itemImgDTOList} ">
+                <div class="custom-file img-div">
+                    <input type="file" class="custom-file-input" name="itemImgFile">
+                    <input type="hidden" name="itemImgIds" th:value="${itemFormDTO.id}">
+                    <label class="custom-file-label" th:text="${not #strings.isEmpty(itemImgDto.oriImgName)} ? ${itemImgDto.oriImgName} : '상품이미지' + ${status.index+1}"></label>
                 </div>
             </div>
 
@@ -349,11 +354,15 @@
 
 
     function updateTagsDisplay() {
+        $('#selectedTagsDisplay').empty();
         var displayText = selectedTags.map(code => {
             var option = document.querySelector(`#tagSelect option[value="${code}"]`);
             return option ? option.textContent : code;
-        }).join(', ');  // 선택된 태그들을 쉼표로 구분하여 한 줄로 연결
-        document.getElementById('selectedTagsDisplay').textContent = displayText || '태그를 선택해 주세요.';
+        });
+        console.log(displayText);
+        displayText.forEach((tag, i) => {
+            $('#selectedTagsDisplay').append('<span data-code="'+selectedTags[i]+'" class="tag-block badge text-bg-secondary">'+tag+'</span>');
+        });
     }
 
 
@@ -363,6 +372,28 @@ $(document).ready(function(){
         if (!validateForm()) {
             event.preventDefault(); // 폼 제출을 중지
         }
+    });
+
+    $('#selectedTagsDisplay').on('click', '.tag-block', function() {
+
+        //태그 블록 삭제
+        $(event.target).remove();
+
+        for(let i=0; i<selectedTags.length; i++){
+            //selectedTags 배열에서 삭제(태그 중복 등록 방지를 위한 배열)
+            if(selectedTags[i] === $(event.target).data('code')){
+                selectedTags.splice(i,1);
+
+                //input 삭제
+                $('input[name="tagSelectList"]').each(function() {
+                    if($(this).val() === $(event.target).data('code')){
+                        $(this).remove();
+                    }
+                });
+                i--;
+            }
+        }
+
     });
 });
 
@@ -418,5 +449,4 @@ function validateForm() {
 
 
 </script>
-
 

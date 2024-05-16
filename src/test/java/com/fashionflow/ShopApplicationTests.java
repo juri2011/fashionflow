@@ -59,7 +59,7 @@ class ShopApplicationTests {
                 .phone("010-2000-8000")
                 .birth(birthday)
                 .gender(Gender.f)
-                .mannerScore(50)
+                .mannerScore(5.0)
                 .userStnum("12345")
                 .userAddr("경기도 ㅇㅇ시 ㅇㅇ구 ㅇㅇ로 123")
                 .userDaddr("oo아파트 100동 101호")

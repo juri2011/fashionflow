@@ -63,33 +63,35 @@
                 display: none; /* 기본적으로 지도를 숨김 */
             }
 
+        .tag-block{
+            display: inline-block;
+            margin-right: 5px;
+            padding: 5px;
+        }
+
     </style>
 </th:block>
 
 <div layout:fragment="content">
     <div class="container">
 
-        <form id="ModifyForm" role="form" method="post" enctype="multipart/form-data" th:object="${itemFormDTO}" onsubmit="return validateForm();">
-            <p class="h2">상품 수정</p>
-            <hr>
-            <input type="hidden" th:field="*{id}">
-
-            <div class="form-group">
-                <div class="custom-file img-div" th:each="img, iterStat: ${itemFormDTO.itemImgDTOList}">
-                    <input type="file" class="custom-file-input" name="itemImgFile" th:id="'itemImgFile-' + ${iterStat.index}">
-                    <input type="hidden" name="itemImgIds" th:value="${img.id}">
-                    <label class="custom-file-label" th:text="${not #strings.isEmpty(img.oriImgName)} ? ${img.oriImgName} : '상품이미지 ' + ${iterStat.index + 1}"></label>
-                </div>
+        <div class="form-group">
+            <div class="custom-file img-div" th:each="img, iterStat: ${itemFormDTO.itemImgDTOList}">
+                <input type="file" class="custom-file-input" name="itemImgFile" th:id="'itemImgFile-' + ${iterStat.index}">
+                <input type="hidden" name="itemImgIds" th:value="${img.id}">
+                <label class="custom-file-label" th:text="${not #strings.isEmpty(img.oriImgName)} ? ${img.oriImgName} : '상품이미지 ' + ${iterStat.index + 1}"></label>
+                <div class="delete-image" th:if="${img.repimgYn == 'N'}"><button type="button">파일 삭제</button></div>
             </div>
-            <!-- If fewer than 4 images are uploaded, show empty image upload fields -->
-            <div th:if="${itemFormDTO.itemImgDTOList.size() &lt; 4}">
-                <div class="form-group">
-                    <div class="custom-file img-div" th:each="num, iterStat2: ${#numbers.sequence(itemFormDTO.itemImgDTOList.size(), 3)}">
-                        <input type="file" class="custom-file-input" name="itemImgFile" th:id="'itemImgFile-' + ${num}">
-                        <label class="custom-file-label" th:text="'상품이미지 ' + ${num + 1}"></label>
-                    </div>
+        </div>
+        <!-- If fewer than 4 images are uploaded, show empty image upload fields -->
+        <div class="form-group new-img-group">
+            <th:block th:if="${itemFormDTO.itemImgDTOList.size() &lt; 4}">
+                <div class="custom-file img-div" th:each="num, iterStat2: ${#numbers.sequence(itemFormDTO.itemImgDTOList.size(), 3)}">
+                    <input type="file" class="custom-file-input" name="itemImgFile" th:id="'itemImgFile-' + ${num}">
+                    <label class="custom-file-label"></label>
                 </div>
-            </div>
+            </th:block>
+        </div>
 
             <div class="input-group">
                 <div class="input-group-prepend">
@@ -193,12 +195,11 @@
             </div>
             <div class="form-group">
 
-                <div id="selectedTagsDisplay" class="alert alert-info">
-                    <th:block th:each="itemTag : ${itemFormDTO.itemTagDTOList}">
-                        <span class="tag-block badge text-bg-secondary" th:data-code="${#strings.toString(itemTag.itemTagName)}"
-                              th:text="${#strings.toString(itemTag.itemTagName.description)}"></span>
-                    </th:block>
-                </div>
+            <div id="selectedTagsDisplay" class="alert alert-info">
+                <th:block th:each="itemTag : ${itemFormDTO.itemTagDTOList}">
+                    <span class="tag-block badge text-bg-secondary" th:data-code="${#strings.toString(itemTag.itemTagName)}"
+                          th:text="${#strings.toString(itemTag.itemTagName.description)}"></span>
+                </th:block>
             </div>
 
             <p class="h2">가격 및 배송비</p>
@@ -350,22 +351,8 @@
 
     // 선택된 태그 출력, 추가
    var selectedTags = [];  // 선택된 태그의 코드를 저장하는 배열
-   var isAddTagExecutedOnce = false;
 
-    function addTag() {
-
-        var tagSelect = document.getElementById('tagSelect');
-        var selectedOption = tagSelect.options[tagSelect.selectedIndex];
-        // 선택된 옵션을 확인하고 배열에 없으면 추가
-        if (selectedOption.value !== "" && !selectedTags.includes(selectedOption.value)) {
-            selectedTags.push(selectedOption.value); // 배열에 태그 코드 추가
-            updateTagsDisplay();  // 화면에 선택된 태그들을 업데이트
-            tagSelect.selectedIndex = 0;  // 셀렉트 박스를 초기화
-
-            str = '<input type="hidden" name="tagSelectList" value="'+ selectedOption.value +'"/>';
-            $('#ModifyForm').append(str);
-        }
-    }
+     function addTag() {
 
         var tagSelect = document.getElementById('tagSelect');
         var selectedOption = tagSelect.options[tagSelect.selectedIndex];
@@ -467,6 +454,16 @@ $(document).ready(function(){
         }
 
     });
+
+    $('.delete-image').on('click', 'button',function(){
+        alert('이미지 삭제');
+        $(this).closest('.img-div').remove();
+        let str = '<div class="custom-file img-div">'
+        str += '<input type="file" class="custom-file-input" name="itemImgFile">'
+        str += '<label class="custom-file-label"></label></div>';
+        $('.new-img-group').append(str);
+    });
+
 });
 
 function validateForm() {
@@ -527,5 +524,4 @@ function validateForm() {
 
 
 </script>
-
 

@@ -16,6 +16,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class HeartController {
     private final HeartService heartService;
+    private final MemberService memberService;
 
     @PostMapping("/heart/addHeart")
     public @ResponseBody ResponseEntity addHeart(@RequestBody Map<String, Long> requestData, Principal principal){
@@ -23,14 +24,19 @@ public class HeartController {
         System.out.println("상품번호 : " + itemId);
         String msg = null;
         try{
-            System.out.println("사용자 이메일 : " + principal.getName());
-            msg = heartService.addHeart(itemId, principal.getName());
-        }catch(NullPointerException e){
-            return new ResponseEntity<String>(e.getMessage(), HttpStatus.UNAUTHORIZED);
-        }catch(Exception e){
+            // 현재 로그인된 사용자의 이메일 가져오기
+            String userEmail = memberService.currentMemberEmail();
+
+            // 로그인하지 않은 사용자인 경우
+            if ("anonymousUser".equals(userEmail)) {
+                return new ResponseEntity<String>("로그인이 필요합니다.", HttpStatus.UNAUTHORIZED);
+            }
+
+            System.out.println("사용자 이메일 : " + userEmail);
+            msg = heartService.addHeart(itemId, userEmail);
+        } catch(Exception e){
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-
 
         //사용자가 이미 찜한 상품인지 확인
         //사용자가 찜하지 않았으면 찜 목록에 추가
@@ -39,10 +45,12 @@ public class HeartController {
         return new ResponseEntity<String>(msg, HttpStatus.OK);
     }
 
+
     @PostMapping("/heart/removeHeart/{heartId}")
-    public String removeHeart(@PathVariable("heartId") Long heartId, Principal principal, RedirectAttributes redirectAttributes) {
-        String userEmail = principal.getName();
+    public String removeHeart(@PathVariable("heartId") Long heartId, RedirectAttributes redirectAttributes) {
         try {
+            // 현재 로그인된 사용자의 이메일 가져오기
+            String userEmail = memberService.currentMemberEmail();
             // 찜 항목 삭제
             heartService.removeHeart(heartId, userEmail);
             // 삭제 후 /myshop 페이지로 리다이렉트

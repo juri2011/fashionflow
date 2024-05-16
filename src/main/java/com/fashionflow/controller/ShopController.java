@@ -29,6 +29,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ShopController {
 
+    private final MemberService memberService;
 
     private final ItemService itemService;
 
@@ -40,7 +41,14 @@ public class ShopController {
 
 
     @GetMapping("/members/item/new")
-    public String itemForm(Model model) {
+    public String itemForm(@AuthenticationPrincipal User user, Model model) {
+        // 현재 로그인된 사용자의 정보 가져오기
+        String userEmail = memberService.currentMemberEmail();
+        // 비회원인 경우 로그인 페이지로 리디렉션
+        if (userEmail.equals("anonymousUser")) {
+            return "/error/loginError";
+        }
+
         // 새 ItemFormDTO 객체를 모델에 추가
         model.addAttribute("itemFormDTO", new ItemFormDTO());
 
@@ -56,6 +64,8 @@ public class ShopController {
     }
 
 
+
+
     @GetMapping("/getSubcategories/{parentId}")
     public ResponseEntity<List<CategoryDTO>> getSubcategories(@PathVariable("parentId") Long parentId) {
         List<CategoryDTO> subcategories = categoryService.findSubcategoriesByParentId(parentId);
@@ -66,41 +76,55 @@ public class ShopController {
     @PostMapping("/members/item/new")
     public String saveItem(@Valid ItemFormDTO itemFormDTO, BindingResult bindingResult,
                            @RequestParam("itemImgFile") List<MultipartFile> itemImgFileList,
-                           @RequestParam("tagSelectList") List<String> tagSelectList, // 태그 선택 정보 추가
-                           Principal principal, Model model) {
+                           @RequestParam("tagSelectList") List<String> tagSelectList,
+                           Model model) {
 
+        // 현재 로그인된 사용자의 이메일 가져오기
+        String userEmail = memberService.currentMemberEmail();
+
+        if (userEmail.equals("anonymousUser")) {
+            return "/error/loginError";
+        }
 
         if (bindingResult.hasErrors()) {
             return "/item/itemForm";  // 입력 폼으로 리턴
         }
 
         try {
-            String email = principal.getName(); // 사용자 이메일 가져오기
-            itemService.saveItem(itemFormDTO, itemImgFileList, tagSelectList, email); // 태그 정보도 함께 저장
-            return "redirect:/";
+            // 상품 저장
+            itemService.saveItem(itemFormDTO, itemImgFileList, tagSelectList, userEmail); // 태그 정보도 함께 저장
+            return "redirect:/myshop";
         } catch (Exception e) {
             model.addAttribute("errorMessage", "상품 등록 실패");
             return "/item/itemForm";
         }
     }
 
+
     @GetMapping("/myshop")
     public String showMyShop(@AuthenticationPrincipal User user, Model model) {
-        String userEmail = user.getUsername(); // 현재 로그인한 사용자의 이메일을 가져옴
+        // 현재 로그인된 사용자의 이메일 가져오기
+        String userEmail = memberService.currentMemberEmail();
+
+        if (userEmail.equals("anonymousUser")) {
+            return "/error/loginError";
+        }
+
+        // 현재 사용자의 상품 목록, 리뷰 목록, 좋아요한 상품 목록 가져오기
         List<ItemFormDTO> items = itemService.getItemsWithImagesByUserEmail(userEmail);
-
-        // 현재 사용자의 이메일로 등록된 리뷰만 가져오도록 수정
         List<ReviewDTO> getItemReviewListWithImg = reviewService.getItemReviewListWithImg(userEmail);
-
-        // 현재 사용자의 이메일로 등록된 리뷰만 가져오도록 수정
         List<HeartDTO> getHeartItemsWithImagesByUserEmail = heartService.getHeartItemsWithImagesByUserEmail(userEmail);
 
-
+        // 모델에 데이터 추가
         model.addAttribute("items", items);
-        model.addAttribute("getItemReviewListWithImg", getItemReviewListWithImg); // 리뷰가 이미 작성되었는지 여부를 모델에 추가
-        model.addAttribute("getHeartItemsWithImagesByUserEmail", getHeartItemsWithImagesByUserEmail); // 리뷰가 이미 작성되었는지 여부를 모델에 추가
-        return "myshop"; // HTML 파일 이름과 일치
+        model.addAttribute("getItemReviewListWithImg", getItemReviewListWithImg);
+        model.addAttribute("getHeartItemsWithImagesByUserEmail", getHeartItemsWithImagesByUserEmail);
+
+        // myshop.html 페이지로 이동
+        return "myshop";
     }
+
+
 
 
 
@@ -124,6 +148,7 @@ public class ShopController {
     public String updateItem(@PathVariable("itemId") Long itemId,
                              @ModelAttribute("itemFormDTO") ItemFormDTO itemFormDTO,
                              @RequestParam("itemImgFile") List<MultipartFile> itemImgFileList,
+                             @RequestParam(value = "itemImgIds", required = false) List<String> itemImgIdStringList,
                              @RequestParam("tagSelectList") List<String> tagSelectList,
                              RedirectAttributes redirectAttributes) {
         for(String tagSelect : tagSelectList){
@@ -141,7 +166,7 @@ public class ShopController {
         }
 
         try {
-            itemService.updateItem(itemId, itemFormDTO, itemImgFileList);
+            itemService.updateItem(itemId, itemFormDTO, itemImgFileList, itemImgIdStringList);
             return "redirect:/myshop";
         } catch (Exception e) {
             redirectAttributes.addAttribute("itemId", itemId);

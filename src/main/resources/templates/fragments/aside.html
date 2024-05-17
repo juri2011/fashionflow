@@ -6,13 +6,7 @@
       최근 본 상품
     </div>
     <ul class="recent-view list-group list-group-flush">
-      <li class="recent-view-item list-group-item" th:each="item : ${session.recentViewedItems}">
-        <a th:href="@{'/item/' + ${item.itemId}}">
-          <img th:if="${item.imgName != null}" th:src="'/images/'+${item.imgName}"  alt="상품 이미지" />
-          <img th:unless="${item.imgName != null}" th:src="@{/img/default.PNG}"  alt="대체 이미지" />
-          <span th:text="${item.itemName}">상품명</span>
-        </a>
-      </li>
+
     </ul>
   </div>
   <style>
@@ -25,8 +19,23 @@
       z-index: 1000;
     }
     .recent-viewed-items img {
-      width: 50px;
-      height: auto;
+      width: 45px;
+      height: 45px;
+      float: left;
+      margin-right: 10px;
+    }
+    .item-name span {
+      color: black;
+      display: -webkit-box;
+      -webkit-line-clamp: 2; /* 라인 수 제한 */
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: normal; /* 띄어쓰기와 자동 줄바꿈 활성화 */
+      max-width: 90px; /* 최대 너비 설정, 상황에 따라 조정 필요 */
+    }
+    .item-name a {
+      text-decoration: none; /* 밑줄 없앰 */
     }
   </style>
 
@@ -43,9 +52,9 @@
           items.forEach(function(item) {
             var listItem = document.createElement('li');
             listItem.className = 'recent-view-item list-group-item';
-            listItem.innerHTML = '<a href="/item/' + item.itemId + '">' +
+            listItem.innerHTML = '<a class="item-name" href="/item/' + item.itemId + '" style="text-decoration: none;">' +
                                  '<img src="' + (item.imgName ? '/images/' + item.imgName : '/img/default.PNG') + '" alt="상품 이미지" />' +
-                                 '<span>' + item.itemName + '</span>' +
+                                 '<span>' + decodeURIComponent(item.itemName.replace(/\+/g, ' ')) + '</span>' +
                                  '</a>';
             list.appendChild(listItem);
           });

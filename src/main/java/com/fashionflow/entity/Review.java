@@ -18,13 +18,18 @@ public class Review {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+/*
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="item_id")
     private Item item;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="member_id")
-    private Member member;
+    private Member member;*/
+
+    private Long itemId;
+    private String memberEmail;
+    private String sellerEmail;
 
     @Lob
     private String content;

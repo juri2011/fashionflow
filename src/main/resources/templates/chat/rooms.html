@@ -49,12 +49,37 @@
                             <span th:text="${room.buyer.nickname}">
                             </span>
                             <div class="vr"></div>
-                            <img style="width: 100px; height:100px;"
-                                 th:if="${room.item.itemRepImgDTO}!=null"
-                                 th:src="'/images/'+${room.item.itemRepImgDTO.imgName}">
-                            <img style="width: 100px; height:100px;"
-                                 th:if="${room.item.itemRepImgDTO}==null" src="/img/default.png">
-                            <a th:href="@{/chat/room(roomId=${room.roomId})}">[[${room.name}]]</a>
+
+                            <th:block th:if="${room.item} != null">
+                                <img style="width: 100px; height:100px;"
+                                     th:if="${room.item.itemRepImgDTO}!=null"
+                                     th:src="'/images/'+${room.item.itemRepImgDTO.imgName}">
+                                <img style="width: 100px; height:100px;"
+                                     th:if="${room.item.itemRepImgDTO}==null" src="/img/default.png">
+                                <a th:href="@{/chat/room(roomId=${room.roomId})}">[[${room.name}]]</a>
+                            </th:block>
+                            <th:block th:if="${room.item} == null">
+                                <img style="width: 100px; height:100px;" src="/img/default.png">
+                                <a th:href="@{/chat/room(roomId=${room.roomId})}">[[${room.name}]]</a>
+                            </th:block>
+
+                        </div>
+                        <div th:if="${room.buyer} == null">
+                            <img style="width: 100px; height:100px;" src="/img/default.png">
+                            <span>존재하지 않는 사용자</span>
+                            <div class="vr"></div>
+                            <th:block th:if="${room.item} != null">
+                                <img style="width: 100px; height:100px;"
+                                     th:if="${room.item.itemRepImgDTO}!=null"
+                                     th:src="'/images/'+${room.item.itemRepImgDTO.imgName}">
+                                <img style="width: 100px; height:100px;"
+                                     th:if="${room.item.itemRepImgDTO}==null" src="/img/default.png">
+                                <a th:href="@{/chat/room(roomId=${room.roomId})}">[[${room.name}]]</a>
+                            </th:block>
+                            <th:block th:if="${room.item} == null">
+                                <img style="width: 100px; height:100px;" src="/img/default.png">
+                                <a th:href="@{/chat/room(roomId=${room.roomId})}">[[${room.name}]]</a>
+                            </th:block>
                         </div>
                     </li>
                 </ul>

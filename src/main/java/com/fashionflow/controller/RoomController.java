@@ -75,7 +75,11 @@ public class RoomController {
             if(chatRoom.getSellerEmail().equals(currentMemberEmail) ||
                chatRoom.getBuyerEmail().equals(currentMemberEmail)){
                 ChatRoomDTO chatRoomDTO = ChatRoomDTO.entityToDto(chatRoom);
-                chatRoomDTO.setItem(itemService.getItemDetail(chatRoom.getItemId()));
+                try{
+                    chatRoomDTO.setItem(itemService.getItemDetail(chatRoom.getItemId()));
+                }catch(EntityNotFoundException e){
+                    chatRoomDTO.setItem(null);
+                }
                 try{
                     chatRoomDTO.setSeller(memberService.getMemberFormDTOByEmail(chatRoom.getSellerEmail()));
                 }catch(EntityNotFoundException e){
@@ -94,26 +98,17 @@ public class RoomController {
             }
         }
 
+        System.out.println("==============sell=============");
+        sellRooms.forEach(room -> System.out.println("========================" + room));
+        System.out.println("==============buy=============");
+        buyRooms.forEach(room -> System.out.println("========================" + room));
+
         model.addAttribute("sellList", sellRooms);
         model.addAttribute("buyList", buyRooms);
 
         return "chat/rooms";
     }
 
-
-    //채팅방 개설
-    /*@PostMapping("/room")
-    public String create(@RequestParam("name") String name, RedirectAttributes rttr){
-
-        log.info("# Create Chat Room , name: " + name);
-        ChatRoomDTO chatRoomDTO = ChatRoomDTO.create(name);
-        ChatRoom chatRoom = ChatRoom.createChatRoom(chatRoomDTO);
-        System.out.println(chatRoom);
-        chatRoomRepository.save(chatRoom);
-        rttr.addFlashAttribute("roomName", chatRoomDTO);
-        return "redirect:/chat/rooms";
-    }
-    */
     //채팅방 개설
     @PostMapping("/room")
     public String createRoom(@RequestParam("itemId") Long itemId,

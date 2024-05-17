@@ -5,6 +5,65 @@
       layout:decorate="~{layouts/layout1}">
 
 <head>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            let index = 1;
+            const slidesContainer = document.querySelector('.slides');
+            const slides = document.querySelectorAll('.slide');
+            const totalSlides = slides.length;
+            const updatedSlides = document.querySelectorAll('.slide');
+            const slideWidth = updatedSlides[0].clientWidth;
+
+            // Transition 비활성화
+            slidesContainer.style.transition = 'none';
+
+            // 초기 위치 설정 및 적용
+            slidesContainer.style.transform = `translateX(${-slideWidth * index}px)`;
+            slidesContainer.offsetHeight;
+
+            // Transition 활성화
+            slidesContainer.style.transition = 'transform 0.5s ease-in-out';
+
+            function showSlide(n) {
+                    slidesContainer.style.transform = `translateX(${-slideWidth * n}px)`;
+                    index = n;
+
+                    if (n >= updatedSlides.length - 1) {
+                        setTimeout(() => {
+                            slidesContainer.style.transition = 'none';
+                            slidesContainer.style.transform = `translateX(${-slideWidth}px)`;
+                            index = 1;
+                            // 강제 reflow/repaint를 다시 한 번 실행하여 transition 없이 변경사항 적용
+                            slidesContainer.offsetHeight;
+                            slidesContainer.style.transition = 'transform 0.5s ease-in-out';
+                        }, 500); // Time must match the transition duration
+                    } else if (n <= 0) {
+                        setTimeout(() => {
+                            slidesContainer.style.transition = 'none';
+                            slidesContainer.style.transform = `translateX(${-slideWidth * (updatedSlides.length - 2)}px)`;
+                            index = updatedSlides.length - 2;
+                            // 강제 reflow/repaint를 다시 한 번 실행하여 transition 없이 변경사항 적용
+                            slidesContainer.offsetHeight;
+                            slidesContainer.style.transition = 'transform 0.5s ease-in-out';
+                        }, 500); // Time must match the transition duration
+                    }
+                }
+
+                function autoSlide() {
+                    showSlide(index + 1);
+                }
+
+                setInterval(autoSlide, 5000);
+
+                document.querySelector(".prev").addEventListener("click", function () {
+                    showSlide(index - 1);
+                });
+
+                document.querySelector(".next").addEventListener("click", function () {
+                    showSlide(index + 1);
+                });
+            });
+    </script>
 
     <style>
 
@@ -16,6 +75,7 @@
         }
 
         .slider {
+            width:1180px;
             height:400px;
             overflow: hidden;
             position: relative;
@@ -23,7 +83,7 @@
         }
 
         .slides {
-            width: 300%;
+            width: 500%;
             height: 100%;
             display: flex;
             flex-direction: row;
@@ -31,7 +91,7 @@
         }
 
         .slide{
-            width: calc(100% / 3);
+            width: calc(100% / 5);
             justify-content: center;
             align-items: center;
             display: flex;
@@ -167,9 +227,11 @@
             <img src="/img/next.png" alt="다음" class="next">
             <div class="slides">
 
+                <div class="slide"><a href="https://cafe.naver.com/fashionflow"><img src="/img/result.jpeg" alt="슬라이드 이미지 3"></a></div>
                 <div class="slide"><a href="http://localhost:8094/members/register"><img src="/img/Banner1.png" alt="슬라이드 이미지 1"></a></div>
                 <div class="slide"><a href="https://cafe.naver.com/fashionflow"><img src="/img/Banner2.png" alt="슬라이드 이미지 2"></a></div>
                 <div class="slide"><a href="https://cafe.naver.com/fashionflow"><img src="/img/result.jpeg" alt="슬라이드 이미지 3"></a></div>
+                <div class="slide"><a href="http://localhost:8094/members/register"><img src="/img/Banner1.png" alt="슬라이드 이미지 1"></a></div>
             </div>
         </div>
 
@@ -192,38 +254,6 @@
 
         </div>
     </div>
-    <script>
-        let index = 0;
-        let slides = document.getElementsByClassName("slide");
-        const totalSlides = slides.length;
-
-        function showSlide(n) {
-            if (n >= totalSlides) {
-                index = 0;
-            } else if (n < 0) {
-                index = totalSlides - 1;
-            }
-
-            let slideWidth = slides[index].clientWidth;
-            document.querySelector('.slides').style.transform = `translateX(${-slideWidth * index}px)`;
-        }
-
-        function autoSlide() {
-            showSlide(++index);
-        }
-
-        setInterval(autoSlide, 3500);
-
-        showSlide(index);
-
-        document.querySelector(".prev").addEventListener("click", function() {
-            showSlide(--index);
-        });
-
-        document.querySelector(".next").addEventListener("click", function() {
-            showSlide(++index);
-        });
-    </script>
 </div>
 </body>
 

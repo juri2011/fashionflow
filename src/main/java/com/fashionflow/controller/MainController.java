@@ -1,5 +1,6 @@
 package com.fashionflow.controller;
 
+import com.fashionflow.service.MemberService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -20,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MainController {
 
+    private final MemberService memberService;
     private final ItemService itemService;
 
     @GetMapping("/")

@@ -21,10 +21,15 @@ import java.util.List;
 public class BuyerController {
 
     private final BuyerService buyerService;
+    private final MemberService memberService;
 
     // 구매내역 페이지 이동
     @GetMapping("/orders")
     public String orders(Model model) {
+
+        if(memberService.findMemberByCurrentEmail()==null){
+            return "redirect:/";
+        }
 
         //구매자 구매내역 리스트
         List<BuyerDTO> getItemBuyListWithImg = buyerService.getItemBuyListWithImg();

@@ -19,12 +19,11 @@ public class SecurityConfig{
 
         http.authorizeRequests(auth -> auth
                 .requestMatchers("/**").permitAll() // 루트 URL은 인증 없이 접근 허용
-                .requestMatchers("/members/memberEdit").authenticated() // 루트 URL은 인증 없이 접근 허용
                 .anyRequest().authenticated());
 
         // OAuth2.0 설정
         http.oauth2Login(oauth2Login -> oauth2Login
-                .loginPage("/login") // 사용자 지정 로그인 페이지 경로
+                .loginPage("/members/login") // 사용자 지정 로그인 페이지 경로
                 .defaultSuccessUrl("/oauth/login", true) // OAuth 로그인 성공 후 리다이렉션될 경로
                 .failureUrl("/login")); // 로그인 실패 시 리다이렉션될 경로
 

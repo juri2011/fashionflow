@@ -87,6 +87,10 @@ public class MemberController {
     //회원 수정 페이지
     @GetMapping("/memberEdit")
     public String memberEditPage(Model model) {
+        if(memberService.findMemberByCurrentEmail()==null){
+            return "redirect:/";
+        }
+
         Member currentMember = memberService.findMemberByCurrentEmail();
 
         model.addAttribute("currentMember", currentMember);

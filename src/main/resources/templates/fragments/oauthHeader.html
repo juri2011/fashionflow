@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<div class="oauthHeader" th:fragment="oauthHeader" style="background-color: #F1EEE9;">
+    <style>
+        .header {
+            border-top: 3px solid #EEEEEE;
+            overflow: hidden; /* 컨텐츠가 밀리지 않도록 설정 */
+        }
+        .header-box{
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 1250px;
+            height: 160px;
+            margin: 0 auto;
+            padding: 0px;
+        }
+        .search-form {
+            display: flex;
+            justify-content: center;
+            width: 40%; /* 검색창의 너비를 줄입니다. */
+            height: 50px;
+            border-radius: 25px;
+            border: 2px solid #BFBDBA;
+            background-color: #fff;
+        }
+        .search-input {
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            width: calc(100% - 40px);
+            border-radius: 25px;
+            min-width: 0;
+        }
+        .search-button {
+            padding: 10px 30px;
+            cursor: pointer;
+            background-color: #8C8A88;
+            border: none;
+            color: white;
+            font-size: 14px;
+            border-radius: 25px;
+            white-space: nowrap;
+        }
+        .links {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+        .link {
+            margin: 0 10px;
+            text-decoration: none;
+            color: black;
+            font-size: 16px;
+            font-weight: bold;
+
+        }
+
+    </style>
+    <div class="header-box">
+        <a href="#" id="logoutLogo" class="logo">
+            <img src="/img/logo.png" alt="Shop" style="height: 60px; width: 250px;">
+        </a>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var logoutLink = document.getElementById('logoutLogo');
+            logoutLink.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                var csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+                var csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', '/members/logout', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.setRequestHeader(csrfHeader, csrfToken);
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                        window.location.href = '/';
+                    }
+                };
+                xhr.send();
+            });
+        });
+    </script>
+</div>
+</html>

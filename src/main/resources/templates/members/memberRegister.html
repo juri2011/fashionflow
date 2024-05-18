@@ -181,7 +181,7 @@
                 </div>
 
             </div>
-            <div class="mb-3 center-btn">
+            <div class="mb-3" style="display: flex; justify-content: flex-end;">
                 <button type="submit" class="btn btn-primary">회원가입</button>
                 <!-- csrf 토큰 임시 해제 -->
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">

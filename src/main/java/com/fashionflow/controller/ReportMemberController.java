@@ -83,7 +83,8 @@ public class ReportMemberController {
         System.out.println("현재 페이지 ================="+page.orElse(0));
 
         /* 경로에 페이지 번호가 없으면 0페이지 조회 */
-        Pageable pageable = PageRequest.of(page.orElse(0), 2);
+        Pageable pageable = PageRequest.of(page.map(integer -> integer - 1).orElse(0), 5);
+        //Pageable pageable = PageRequest.of(page.orElse(0), 5);
         Page<ReportMemberDTO> reportMembers = reportMemberService.getReportMemberDTOPage(pageable);
 
         //로그인한 사용자에 대해 자신이 작성한 리뷰항목 구분

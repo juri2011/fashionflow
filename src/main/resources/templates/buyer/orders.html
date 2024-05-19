@@ -15,26 +15,33 @@
 
         .purchase-box {
             border: 1px solid #ccc;
-            padding: 10px;
+            padding: 0 30px;
             margin-bottom: 10px;
+            transition: all 0.3s ease; /* 부드러운 전환 효과 */
+            height: 100px; /* 초기 높이 설정 */
+            width: 100%; /* 초기 너비 설정 */
         }
-
         .purchase-form {
             display: flex;
             flex-direction: row;
+            justify-content: space-between;
         }
 
         .purchase-img-container {
-            width: 250px;
-            height: 250px;
+            display:flex;
+            width: 100px;
+            height: 100px;
+            justify-content: center;
+            align-items: center;
         }
 
         .purchase-img-container a{
-            width: 100%;
-            height: 100%;
-            display: flex;
+            display: block;
+            width: 90px;
+            height: 90px;
             justify-content: center;
             align-items: center;
+            border: 1px solid #B0AEA9;
         }
 
         .purchase-text-container{
@@ -52,11 +59,12 @@
             overflow: hidden;
             max-height: 3em;
             height: 4em;
-            width: 100%;
+            width: 40%;
             display: -webkit-box;
             -webkit-box-orient: vertical;
             -webkit-line-clamp: 2;
             font-size: 20px;
+            line-height: 4em;
             text-overflow: ellipsis;
             white-space: normal;
             word-wrap: break-word;
@@ -103,7 +111,7 @@
     <hr>
 
     <!-- 구매내역 목록 -->
-    <div th:each="purchase : ${getItemBuyListWithImg}" class="purchase-box">
+    <div th:each="purchase : ${getItemBuyListWithImg}" class="purchase-box" data-id="${purchase.id}">
         <form th:action="@{/buyer/reviews}" method="post" class="purchase-form">
 
 
@@ -113,36 +121,33 @@
                     <img th:if="${purchase.imgName != null}" th:src="${purchase.imgName}" alt="Product Image" class="product-image">
                 </a>
             </div>
-            <div class="purchase-text-container">
                 <span th:if="${purchase.itemName}" th:text="${purchase.itemName}" class="purchase-name"></span>
-                <span th:if="${purchase.price}" th:text="'가격: ' + ${purchase.price} + '  원'"></span>
-                <div style="display: flex; flex-direction:row; justify-content: space-between;">
-                    <span th:if="${purchase.buyDate}" th:text="'거래일: ' + ${#temporals.format(purchase.buyDate, 'yyyy-MM-dd')}" ></span>
-                    <div th:unless="${purchase.reviewExists}">
-                        <button type="button" class="review-button">리뷰 남기기</button>
+                <span th:if="${purchase.price}" th:text="'가격: ' + ${purchase.price} + '  원'" style="width: 15%;"></span>
+                <span th:if="${purchase.buyDate}" th:text="'거래일: ' + ${#temporals.format(purchase.buyDate, 'yyyy-MM-dd')}" style="width: 15%;"></span>
 
-                        <!-- 리뷰 입력 텍스트 박스 -->
-                        <textarea class="review-textbox" name="content" placeholder="리뷰를 작성해주세요"></textarea>
-                        <!-- 리뷰 입력 텍스트 박스 아래에 추가 -->
-                        <label for="scoreRange" class="form-label" style="display: none;">점수 선택:</label>
-                        <input type="range" class="form-range score-range" id="scoreRange" name="score" min="1" max="10" value="5" style="display: none;">
-                        <span id="scoreValue" style="display: none;">5 점</span> <!-- 점수 표시 -->
-                        <!-- 리뷰 태그 체크박스 -->
-                        <div class="review-tags" style="display: none;">
-                            <label><input type="checkbox" name="reviewTags" value="FRIENDLY">친절해요</label>
-                            <label><input type="checkbox" name="reviewTags" value="AFFORDABLE">저렴해요</label>
-                            <label><input type="checkbox" name="reviewTags" value="FAST_DELIVERY">배송이 빨라요</label>
-                        </div>
+                <div th:unless="${purchase.reviewExists}">
+                    <button type="button" class="review-button">리뷰 남기기</button>
 
-                        <button type="submit" class="submit-review" style="display: none;">제출</button>
-
-                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+                    <!-- 리뷰 입력 텍스트 박스 -->
+                    <textarea class="review-textbox" name="content" placeholder="리뷰를 작성해주세요"></textarea>
+                    <!-- 리뷰 입력 텍스트 박스 아래에 추가 -->
+                    <label for="scoreRange" class="form-label" style="display: none;">점수 선택:</label>
+                    <input type="range" class="form-range score-range" id="scoreRange" name="score" min="1" max="10" value="5" style="display: none;">
+                    <span id="scoreValue" style="display: none;">5 점</span> <!-- 점수 표시 -->
+                    <!-- 리뷰 태그 체크박스 -->
+                    <div class="review-tags" style="display: none;">
+                        <label><input type="checkbox" name="reviewTags" value="FRIENDLY">친절해요</label>
+                        <label><input type="checkbox" name="reviewTags" value="AFFORDABLE">저렴해요</label>
+                        <label><input type="checkbox" name="reviewTags" value="FAST_DELIVERY">배송이 빨라요</label>
                     </div>
-                    <div th:if="${purchase.reviewExists}">
-                        <p>리뷰 완료</p>
-                    </div>
+
+                    <button type="submit" class="submit-review" style="display: none;">제출</button>
+
+                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
                 </div>
-            </div>
+                <div th:if="${purchase.reviewExists}">
+                    <p>리뷰 완료</p>
+                </div>
         </form>
 
     </div>
@@ -155,8 +160,13 @@
                     </a>
                 </li>
                 <!-- 페이지 번호 링크 -->
-                <li th:each="pageNum : ${#numbers.sequence(getItemBuyListWithImg.number - 3 <= 0 ? 1 : getItemBuyListWithImg.number - 3,
-                                                    getItemBuyListWithImg.totalPages <= getItemBuyListWithImg.number + 5 ? getItemBuyListWithImg.totalPages : getItemBuyListWithImg.number + 5)}"
+                <li th:each="pageNum : ${#numbers.sequence(
+                        getItemBuyListWithImg.totalPages < 5 ? 1 :
+                            (getItemBuyListWithImg.number - 1 < 1 ? 1 :
+                                (getItemBuyListWithImg.number + 3 > getItemBuyListWithImg.totalPages ? getItemBuyListWithImg.totalPages - 4 : getItemBuyListWithImg.number - 1)),
+                        getItemBuyListWithImg.number + 3 >= getItemBuyListWithImg.totalPages ? getItemBuyListWithImg.totalPages :
+                            (getItemBuyListWithImg.totalPages < 5 ? getItemBuyListWithImg.totalPages :
+                                (getItemBuyListWithImg.number - 1 < 1 ? 5 : getItemBuyListWithImg.number + 3)))}"
                     th:classappend="${pageNum == getItemBuyListWithImg.number + 1} ? 'active' : ''">
                     <a th:href="@{/buyer/orders(page=${pageNum - 1})}" th:text="${pageNum}">1</a>
                 </li>

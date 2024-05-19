@@ -6,18 +6,69 @@
     <meta charset="UTF-8">
     <title>구매내역</title>
     <style>
-        /* 각 박스의 스타일 */
+        .container {
+            justify-content: center;
+            align-items: center;
+            width: 80%;
+            margin: 20px auto;
+        }
+
         .purchase-box {
             border: 1px solid #ccc;
             padding: 10px;
             margin-bottom: 10px;
         }
 
-        /* 상품 이미지 스타일 */
-        .product-image {
-            max-width: 100px;
-            max-height: 100px;
+        .purchase-form {
+            display: flex;
+            flex-direction: row;
         }
+
+        .purchase-img-container {
+            width: 250px;
+            height: 250px;
+        }
+
+        .purchase-img-container a{
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .purchase-text-container{
+            display:flex;
+            flex-direction: column;
+            width: 30%;
+            justify-content: space-between;
+            margin: 0 30px;
+            padding: 40px 0;
+            border: 1px solid black;
+        }
+
+        .purchase-name{
+            color: black;
+            overflow: hidden;
+            max-height: 3em;
+            height: 4em;
+            width: 100%;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            font-size: 20px;
+            text-overflow: ellipsis;
+            white-space: normal;
+            word-wrap: break-word;
+        }
+
+        /* 상품 이미지 스타일 */
+        .product-image{
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
 
         /* 리뷰 남기기 버튼 스타일 */
         .review-button {
@@ -51,102 +102,127 @@
     <h1>구매내역</h1>
     <hr>
 
-    <h2>구매완료</h2>
-
     <!-- 구매내역 목록 -->
     <div th:each="purchase : ${getItemBuyListWithImg}" class="purchase-box">
         <form th:action="@{/buyer/reviews}" method="post" class="purchase-form">
 
 
             <input type="hidden" name="id" th:value="${purchase.id}" />
-            <img th:if="${purchase.imgName != null}" th:src="${purchase.imgName}" alt="Product Image" class="product-image">
-
-
-
-
-            <span th:if="${purchase.itemName}" th:text="'상품명: ' + ${purchase.itemName}" ></span>
-            <span th:if="${purchase.price}" th:text="'가격: ' + ${purchase.price}" ></span>
-            <span th:if="${purchase.buyDate}" th:text="'거래일: ' + ${#temporals.format(purchase.buyDate, 'yyyy-MM-dd')}" ></span>
-
-
-            <div th:unless="${purchase.reviewExists}">
-                <button type="button" class="review-button">리뷰 남기기</button>
-
-                <!-- 리뷰 입력 텍스트 박스 -->
-                <textarea class="review-textbox" name="content" placeholder="리뷰를 작성해주세요"></textarea>
-                <!-- 리뷰 입력 텍스트 박스 아래에 추가 -->
-                <label for="scoreRange" class="form-label" style="display: none;">점수 선택:</label>
-                <input type="range" class="form-range score-range" id="scoreRange" name="score" min="1" max="10" value="5" style="display: none;">
-                <span id="scoreValue" style="display: none;">5 점</span> <!-- 점수 표시 -->
-                <!-- 리뷰 태그 체크박스 -->
-                <div class="review-tags" style="display: none;">
-                    <label><input type="checkbox" name="reviewTags" value="FRIENDLY">친절해요</label>
-                    <label><input type="checkbox" name="reviewTags" value="AFFORDABLE">저렴해요</label>
-                    <label><input type="checkbox" name="reviewTags" value="FAST_DELIVERY">배송이 빨라요</label>
-                </div>
-
-                <button type="submit" class="submit-review" style="display: none;">제출</button>
-
-                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+            <div class="purchase-img-container">
+                <a th:href="@{/item/{id}(id=${purchase.id})}">
+                    <img th:if="${purchase.imgName != null}" th:src="${purchase.imgName}" alt="Product Image" class="product-image">
+                </a>
             </div>
-            <div th:if="${purchase.reviewExists}">
-                <p>리뷰 완료</p>
+            <div class="purchase-text-container">
+                <span th:if="${purchase.itemName}" th:text="${purchase.itemName}" class="purchase-name"></span>
+                <span th:if="${purchase.price}" th:text="'가격: ' + ${purchase.price} + '  원'"></span>
+                <div style="display: flex; flex-direction:row; justify-content: space-between;">
+                    <span th:if="${purchase.buyDate}" th:text="'거래일: ' + ${#temporals.format(purchase.buyDate, 'yyyy-MM-dd')}" ></span>
+                    <div th:unless="${purchase.reviewExists}">
+                        <button type="button" class="review-button">리뷰 남기기</button>
+
+                        <!-- 리뷰 입력 텍스트 박스 -->
+                        <textarea class="review-textbox" name="content" placeholder="리뷰를 작성해주세요"></textarea>
+                        <!-- 리뷰 입력 텍스트 박스 아래에 추가 -->
+                        <label for="scoreRange" class="form-label" style="display: none;">점수 선택:</label>
+                        <input type="range" class="form-range score-range" id="scoreRange" name="score" min="1" max="10" value="5" style="display: none;">
+                        <span id="scoreValue" style="display: none;">5 점</span> <!-- 점수 표시 -->
+                        <!-- 리뷰 태그 체크박스 -->
+                        <div class="review-tags" style="display: none;">
+                            <label><input type="checkbox" name="reviewTags" value="FRIENDLY">친절해요</label>
+                            <label><input type="checkbox" name="reviewTags" value="AFFORDABLE">저렴해요</label>
+                            <label><input type="checkbox" name="reviewTags" value="FAST_DELIVERY">배송이 빨라요</label>
+                        </div>
+
+                        <button type="submit" class="submit-review" style="display: none;">제출</button>
+
+                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+                    </div>
+                    <div th:if="${purchase.reviewExists}">
+                        <p>리뷰 완료</p>
+                    </div>
+                </div>
             </div>
         </form>
-    </div>
 
+    </div>
+        <div>
+            <ul class="pagination">
+                <!-- 이전 페이지 링크 -->
+                <li th:classappend="${getItemBuyListWithImg.hasPrevious()} ? '' : 'disabled'">
+                    <a th:href="@{/buyer/orders(page=${getItemBuyListWithImg.number - 1})}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                <!-- 페이지 번호 링크 -->
+                <li th:each="pageNum : ${#numbers.sequence(getItemBuyListWithImg.number - 3 <= 0 ? 1 : getItemBuyListWithImg.number - 3,
+                                                    getItemBuyListWithImg.totalPages <= getItemBuyListWithImg.number + 5 ? getItemBuyListWithImg.totalPages : getItemBuyListWithImg.number + 5)}"
+                    th:classappend="${pageNum == getItemBuyListWithImg.number + 1} ? 'active' : ''">
+                    <a th:href="@{/buyer/orders(page=${pageNum - 1})}" th:text="${pageNum}">1</a>
+                </li>
+                <!-- 다음 페이지 링크 -->
+                <li th:classappend="${getItemBuyListWithImg.hasNext()} ? '' : 'disabled'">
+                    <a th:href="@{/buyer/orders(page=${getItemBuyListWithImg.number + 1})}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script>
+            document.querySelectorAll('.review-button').forEach(function(button) {
+                button.addEventListener('click', function(event) {
+                    event.preventDefault(); // 기본 이벤트 막기
+
+                    var form = this.closest('.purchase-form');
+                    var reviewTextbox = form.querySelector('.review-textbox'); // 리뷰박스
+                    var scoreRange = form.querySelector('.score-range'); // 점수 범위
+                    var scoreLabel = form.querySelector('.form-label'); // 점수
+                    var scoreValue = form.querySelector('#scoreValue'); // 점수 표시
+                    var submitButton = form.querySelector('.submit-review'); // 제출 버튼
+                    var reviewTagsDiv = form.querySelector('.review-tags'); // 태그
+
+                    // 표시/숨김 토글
+                    if (reviewTextbox.style.display !== 'block') {
+                        reviewTextbox.style.display = 'block';
+                        scoreRange.style.display = 'block';
+                        scoreLabel.style.display = 'block';
+                        scoreValue.style.display = 'block';
+                        submitButton.style.display = 'block';
+                        reviewTagsDiv.style.display = 'block';
+                    } else {
+                        reviewTextbox.style.display = 'none';
+                        scoreRange.style.display = 'none';
+                        scoreLabel.style.display = 'none';
+                        scoreValue.style.display = 'none';
+                        submitButton.style.display = 'none';
+                        reviewTagsDiv.style.display = 'none';
+                    }
+
+                    // 점수 표시 업데이트
+                    scoreRange.oninput = function() {
+                        scoreValue.textContent = this.value + " 점";
+                    };
+                });
+            });
+
+            document.querySelectorAll('.submit-review').forEach(function(submitButton) {
+                submitButton.addEventListener('click', function(event) {
+                    var form = this.closest('.purchase-form');
+                    var scoreRange = form.querySelector('.score-range');
+                    var selectedScore = scoreRange.value;
+
+                    if (selectedScore === "") {
+                        alert("점수를 선택하세요.");
+                        event.preventDefault(); // 제출 중지
+                    }
+                });
+            });
+
+        </script>
+    </div>
 </div>
 </body>
 </html>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script>
-    document.querySelectorAll('.review-button').forEach(function(button) {
-        button.addEventListener('click', function(event) {
-            event.preventDefault(); // 기본 이벤트 막기
 
-            var form = this.closest('.purchase-form');
-            var reviewTextbox = form.querySelector('.review-textbox'); // 리뷰박스
-            var scoreRange = form.querySelector('.score-range'); // 점수 범위
-            var scoreLabel = form.querySelector('.form-label'); // 점수
-            var scoreValue = form.querySelector('#scoreValue'); // 점수 표시
-            var submitButton = form.querySelector('.submit-review'); // 제출 버튼
-            var reviewTagsDiv = form.querySelector('.review-tags'); // 태그
-
-            // 표시/숨김 토글
-            if (reviewTextbox.style.display === 'none') {
-                reviewTextbox.style.display = 'block';
-                scoreRange.style.display = 'block';
-                scoreLabel.style.display = 'block';
-                scoreValue.style.display = 'block';
-                submitButton.style.display = 'block';
-                reviewTagsDiv.style.display = 'block';
-            } else {
-                reviewTextbox.style.display = 'none';
-                scoreRange.style.display = 'none';
-                scoreLabel.style.display = 'none';
-                scoreValue.style.display = 'none';
-                submitButton.style.display = 'none';
-                reviewTagsDiv.style.display = 'none';
-            }
-
-            // 점수 표시 업데이트
-            scoreRange.oninput = function() {
-                scoreValue.textContent = this.value + " 점";
-            };
-        });
-    });
-
-    document.querySelectorAll('.submit-review').forEach(function(submitButton) {
-        submitButton.addEventListener('click', function(event) {
-            var form = this.closest('.purchase-form');
-            var scoreRange = form.querySelector('.score-range');
-            var selectedScore = scoreRange.value;
-
-            if (selectedScore === "") {
-                alert("점수를 선택하세요.");
-                event.preventDefault(); // 제출 중지
-            }
-        });
-    });
-
-</script>

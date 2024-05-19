@@ -40,6 +40,9 @@ public class MemberController {
     //회원가입 페이지 이동
     @GetMapping("/register")
     public String registerPage(Model model) {
+        if(memberService.findMemberByCurrentEmail()!=null){
+            return ("redirect:/");
+        }
         model.addAttribute("memberFormDTO", new MemberFormDTO());
         return "members/memberRegister";
     }
@@ -47,6 +50,7 @@ public class MemberController {
     // 회원 정보 입력
     @PostMapping("/register")
     public ModelAndView registerMember(@Valid MemberFormDTO memberFormDTO, BindingResult bindingResult) {
+
 
         ModelAndView modelAndView = new ModelAndView();
 

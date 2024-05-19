@@ -8,6 +8,8 @@ import com.fashionflow.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -32,8 +34,10 @@ public class BuyerController {
 
         int pageSize = 5;
 
+        Pageable pageable = PageRequest.of(page, pageSize, Sort.by("buyDate").descending());
+
         //구매자 구매내역 리스트
-        Page<BuyerDTO> getItemBuyListWithImg = buyerService.getItemBuyListWithImg(PageRequest.of(page, pageSize));
+        Page<BuyerDTO> getItemBuyListWithImg = buyerService.getItemBuyListWithImg(pageable);
 
 
         model.addAttribute("getItemBuyListWithImg", getItemBuyListWithImg);

@@ -351,12 +351,17 @@
         $(document).ready(function(){
             $('.reportBtn').on('click', function(){
                 const currentMemberEmail = $('#currentMemberEmail').val();
+                const shopMemberEmail = $('#shopMemberEmail').val();
                 if(currentMemberEmail === 'anonymousUser' || !currentMemberEmail){
                     alert('로그인이 필요합니다.');
                     location.href = "/members/login";
                     return;
+                }else if(currentMemberEmail === shopMemberEmail){
+                    alert('등록한 상품은 신고할 수 없습니다.');
+                    return;
+                }else{
+                    $('#detailPopup').show();
                 }
-                $('#detailPopup').show();
             });
             $('.closePopup').on('click', function(){
                 $('#detailPopup').hide();
@@ -398,12 +403,18 @@
             //사용자 신고
             $('.reportMemberBtn').on('click', function(){
                 const currentMemberEmail = $('#currentMemberEmail').val();
+                const shopMemberEmail = $('#shopMemberEmail').val();
                 if(currentMemberEmail === 'anonymousUser' || !currentMemberEmail){
                     alert('로그인이 필요합니다.');
                     location.href = "/members/login";
                     return;
+                }else if(currentMemberEmail === shopMemberEmail){
+                    alert('자신은 신고할 수 없습니다.');
+                    return;
+                }else{
+                    $('#detailPopupMember').show();
                 }
-                $('#detailPopupMember').show();
+
             });
             $('.reportConfirmMember').on('click', function(){
                 reportMember();

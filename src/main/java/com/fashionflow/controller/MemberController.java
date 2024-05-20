@@ -28,11 +28,16 @@ public class MemberController {
     //로그인 페이지 이동
     @GetMapping("/login")
     public String loginPage(){
+        if(memberService.findUnregisteredOAuthMember()){
+            return "redirect:/oauth/login";
+        }
+
         return "members/memberLoginForm";
     }
 
     @GetMapping("/login/error")
     public String loginError(Model model){
+
         model.addAttribute("loginErrorMsg", "아이디 비밀번호를 확인해주세요");
         return "members/memberLoginForm";
     }
@@ -166,6 +171,9 @@ public class MemberController {
     //아이디 찾기 페이지
     @GetMapping("/findId")
     public String findIdPage(){
+        if(memberService.findUnregisteredOAuthMember()){
+            return "redirect:/oauth/login";
+        }
         return "/members/findId";
     }
 

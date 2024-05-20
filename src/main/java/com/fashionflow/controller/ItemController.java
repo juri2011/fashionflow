@@ -59,7 +59,9 @@ public class ItemController {
     //상품 리스트 출력
     @GetMapping("/item/{itemId}")
     public String itemDetail(Model model, @PathVariable("itemId") Long itemId, HttpServletRequest request, HttpServletResponse response) throws Exception {
-
+        if(memberService.findUnregisteredOAuthMember()){
+            return "redirect:/oauth/login";
+        }
         ItemFormDTO itemFormDTO = itemService.getItemDetail(itemId); //상품 상세정보(이미지, 태그, 카테고리 포함)
         Long heartCount = heartService.countHeartById(itemId); //상품 찜한 갯수
         MemberDetailDTO shopMember = memberService.getShopMember(itemFormDTO.getMemberId(), itemId);

@@ -27,7 +27,7 @@ public class MainController {
     @GetMapping("/")
     public String main(Model model){
 
-        if(memberService.currentMemberEmail()!= null && memberService.findMemberByCurrentEmail() == null){
+        if(memberService.findUnregisteredOAuthMember()){
             return "redirect:/oauth/login";
         }
 

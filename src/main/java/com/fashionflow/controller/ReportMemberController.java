@@ -41,7 +41,7 @@ public class ReportMemberController {
 
     @PostMapping("/report/reportMember")
     public @ResponseBody ResponseEntity reportMember(@RequestBody @Valid ReportMemberDTO reportMemberDTO,
-                                                     BindingResult bindingResult, Principal principal){
+                                                     BindingResult bindingResult){
 
         System.out.println(reportMemberDTO);
 
@@ -56,7 +56,8 @@ public class ReportMemberController {
             return new ResponseEntity<String>(sb.toString(), HttpStatus.BAD_REQUEST);
         }
 
-        if(memberService.currentMemberEmail() == null) return new ResponseEntity<String>("로그인이 필요합니다.", HttpStatus.BAD_REQUEST);
+        if(memberService.currentMemberEmail() == null || memberService.currentMemberEmail().equals("anonymousUser"))
+            return new ResponseEntity<String>("로그인이 필요합니다.", HttpStatus.BAD_REQUEST);
         String email = memberService.currentMemberEmail();
         System.out.println(email);
 
@@ -145,8 +146,9 @@ public class ReportMemberController {
 
             return new ResponseEntity<String>(sb.toString(), HttpStatus.BAD_REQUEST);
         }
-        if(principal == null) return new ResponseEntity<String>("로그인이 필요합니다.", HttpStatus.BAD_REQUEST);
-        String email = principal.getName();
+        if(memberService.currentMemberEmail() == null || memberService.currentMemberEmail().equals("anonymousUser"))
+            return new ResponseEntity<String>("로그인이 필요합니다.", HttpStatus.BAD_REQUEST);
+        String email = memberService.currentMemberEmail();
         System.out.println(email);
 
         reportMemberDTO.setReporterMemberEmail(email);

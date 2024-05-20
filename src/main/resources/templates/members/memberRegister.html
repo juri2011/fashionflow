@@ -29,6 +29,26 @@
                 $(this).siblings(".custom-file-label").html(fileName);
             });
         }
+
+        function previewProfileImage(event) {
+    var input = event.target;
+    var reader = new FileReader();
+
+    reader.onload = function() {
+        var dataURL = reader.result;
+        var output = document.getElementById('profileImagePreview');
+        output.src = dataURL;
+        output.style.display = 'block';
+    };
+
+    if (input.files && input.files[0]) {
+        reader.readAsDataURL(input.files[0]);
+    } else {
+        var output = document.getElementById('profileImagePreview');
+        output.src = '#';
+        output.style.display = 'none';
+    }
+}
     </script>
 </th:block>
 
@@ -42,7 +62,7 @@
             padding: 40px;
         }
 
-        .form-group {
+        .form-group, .custom-file-input {
             display: flex;
             flex-direction: column;
             margin-bottom: 20px;
@@ -215,8 +235,12 @@
             <div class="form-group mb-3">
                 <label for="profileImageFile">프로필 이미지</label>
                 <div class="custom-file">
-                    <input type="file" class="custom-file-input" id="profileImageFile" name="profileImageFile">
-                    <label class="custom-file-label" for="profileImageFile">이미지 파일 선택...</label>
+                    <input type="file" class="custom-file-input" id="profileImageFile" name="profileImageFile" onchange="previewProfileImage(event)">
+                </div>
+                <!-- 이미지 미리보기 영역 추가 -->
+                <div class="form-control">
+                    <label for="profileImageFile">미리보기</label>
+                    <img id="profileImagePreview" src="#" alt="프로필 이미지 미리보기" style="display: none; max-width: 200px; max-height: 200px; margin: 0 auto;">
                 </div>
             </div>
 

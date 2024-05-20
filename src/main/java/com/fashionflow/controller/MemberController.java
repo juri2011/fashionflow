@@ -28,11 +28,16 @@ public class MemberController {
     //로그인 페이지 이동
     @GetMapping("/login")
     public String loginPage(){
+        if(memberService.findUnregisteredOAuthMember()){
+            return "redirect:/oauth/login";
+        }
+
         return "members/memberLoginForm";
     }
 
     @GetMapping("/login/error")
     public String loginError(Model model){
+
         model.addAttribute("loginErrorMsg", "아이디 비밀번호를 확인해주세요");
         return "members/memberLoginForm";
     }
@@ -40,6 +45,9 @@ public class MemberController {
     //회원가입 페이지 이동
     @GetMapping("/register")
     public String registerPage(Model model) {
+        if(memberService.findMemberByCurrentEmail()!=null){
+            return ("redirect:/");
+        }
         model.addAttribute("memberFormDTO", new MemberFormDTO());
         return "members/memberRegister";
     }
@@ -47,6 +55,7 @@ public class MemberController {
     // 회원 정보 입력
     @PostMapping("/register")
     public ModelAndView registerMember(@Valid MemberFormDTO memberFormDTO, BindingResult bindingResult) {
+
 
         ModelAndView modelAndView = new ModelAndView();
 
@@ -87,6 +96,10 @@ public class MemberController {
     //회원 수정 페이지
     @GetMapping("/memberEdit")
     public String memberEditPage(Model model) {
+        if(memberService.findMemberByCurrentEmail()==null){
+            return "redirect:/";
+        }
+
         Member currentMember = memberService.findMemberByCurrentEmail();
 
         model.addAttribute("currentMember", currentMember);
@@ -158,6 +171,9 @@ public class MemberController {
     //아이디 찾기 페이지
     @GetMapping("/findId")
     public String findIdPage(){
+        if(memberService.findUnregisteredOAuthMember()){
+            return "redirect:/oauth/login";
+        }
         return "/members/findId";
     }
 

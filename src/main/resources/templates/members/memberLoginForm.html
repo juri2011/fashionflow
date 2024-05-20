@@ -2,9 +2,10 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layout1}">
-
+<head>
 <!-- 사용자 CSS 추가 -->
-<th:block layout:fragment="css">
+    <title>로그인</title>
+
     <style>
         .container {
             display: flex;
@@ -17,7 +18,7 @@
             display: flex;
             flex-direction: column;
             margin-bottom: 20px;
-            width: 100%; /* 입력 필드의 너비를 조정합니다. */
+            width: 550px; /* 입력 필드의 너비를 조정합니다. */
         }
 
         .emailFormControl, .passwordControl {
@@ -56,13 +57,13 @@
             margin: 10px 0;
         }
 
-        a {
+        oauth-container a {
             color: #6A6866; /* 링크 색상 */
             text-decoration: none; /* 밑줄 제거 */
             margin-top: 20px;
         }
 
-        a:hover {
+        oauth-container a:hover {
             text-decoration: underline; /* 호버 시 밑줄 추가 */
         }
 
@@ -82,7 +83,7 @@
 
 
     </style>
-</th:block>
+</head>
 
 <div layout:fragment="content">
     <div class="container">
@@ -100,7 +101,7 @@
                 <p th:if="${loginErrorMsg}" class="error" th:text="${loginErrorMsg}"></p>
                 <button class="loginBtns">로그인</button>
                 <button type="button" class="loginBtns" onClick="location.href='/members/register'">회원가입</button>
-                <button type="button" class="loginBtns" onClick="location.href='/members/findId'">아이디 찾기</button>
+                <button type="button" class="loginBtns" onClick="location.href='/members/findId'">이메일 찾기</button>
                 <button type="button" class="loginBtns" onClick="location.href='/EmailVerify'">비밀번호 찾기</button>
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf?.token}">
             </div>

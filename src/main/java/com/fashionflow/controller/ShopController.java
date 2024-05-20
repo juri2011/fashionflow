@@ -42,6 +42,9 @@ public class ShopController {
 
     @GetMapping("/members/item/new")
     public String itemForm(@AuthenticationPrincipal User user, Model model) {
+        if(memberService.findUnregisteredOAuthMember()){
+            return "redirect:/oauth/login";
+        }
         // 현재 로그인된 사용자의 정보 가져오기
         String userEmail = memberService.currentMemberEmail();
         // 비회원인 경우 로그인 페이지로 리디렉션
@@ -103,6 +106,9 @@ public class ShopController {
 
     @GetMapping("/myshop")
     public String showMyShop(@AuthenticationPrincipal User user, Model model) {
+        if(memberService.findUnregisteredOAuthMember()){
+            return "redirect:/oauth/login";
+        }
         // 현재 로그인된 사용자의 이메일 가져오기
         String userEmail = memberService.currentMemberEmail();
 
@@ -130,6 +136,9 @@ public class ShopController {
 
     @GetMapping("/members/item/{itemId}")
     public String modifyItemForm(@PathVariable("itemId") Long itemId, Model model) {
+        if(memberService.findUnregisteredOAuthMember()){
+            return "redirect:/oauth/login";
+        }
         // 상품 상세 정보 가져오기
         ItemFormDTO itemFormDTO = itemService.getItemDetail(itemId);
         model.addAttribute("itemFormDTO", itemFormDTO);

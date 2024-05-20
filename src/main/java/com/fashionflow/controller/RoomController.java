@@ -46,6 +46,9 @@ public class RoomController {
     //채팅방 목록 조회
     @GetMapping("/rooms")
     public String rooms(Model model){
+        if(memberService.findUnregisteredOAuthMember()){
+            return "redirect:/oauth/login";
+        }
 
         log.info("# All Chat Rooms");
         List<ChatRoomDTO> rooms = new ArrayList<>();
@@ -60,6 +63,9 @@ public class RoomController {
     // 내가 속해있는 채팅방만
     @GetMapping("/flowtalk")
     public String myRoom(@AuthenticationPrincipal User user, Model model) {
+        if(memberService.findUnregisteredOAuthMember()){
+            return "redirect:/oauth/login";
+        }
         String userEmail = memberService.currentMemberEmail();
         if (userEmail.equals("anonymousUser")) {
             return "/error/loginError";
@@ -168,6 +174,9 @@ public class RoomController {
     //채팅방 조회
     @GetMapping("/room")
     public String getRoom(@RequestParam("roomId") String roomId, Model model){
+        if(memberService.findUnregisteredOAuthMember()){
+            return "redirect:/oauth/login";
+        }
 
         log.info("# get Chat Room, roomID : " + roomId);
 
@@ -229,6 +238,7 @@ public class RoomController {
 
     @GetMapping("/getUsername")
     public @ResponseBody ResponseEntity getUsername(){
+
         try{
             Member member = memberService.findMemberByCurrentEmail();
             String username = member.getNickname();

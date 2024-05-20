@@ -33,6 +33,9 @@ public class ReportMemberController {
 
     @GetMapping("/report/memberdetail/{id}")
     public String reportDetail(Model model, @PathVariable("id") Long id){
+        if(memberService.findUnregisteredOAuthMember()){
+            return "redirect:/oauth/login";
+        }
         ReportMemberDTO reportMemberDTO = reportMemberService.getReportMemberDTOById(id);
         System.out.println(reportMemberDTO);
         model.addAttribute("reportMember",reportMemberDTO);
@@ -79,6 +82,9 @@ public class ReportMemberController {
     @GetMapping({"/report/member", "/report/member/{page}"})
     public String reportNew(Model model, Principal principal,
                             @PathVariable("page") Optional<Integer> page){
+        if(memberService.findUnregisteredOAuthMember()){
+            return "redirect:/oauth/login";
+        }
 
         System.out.println("현재 페이지 ================="+page.orElse(0));
 
@@ -110,6 +116,7 @@ public class ReportMemberController {
     //사용자 신고 정보 가져오기
     @GetMapping("/reportMember/{id}")
     public @ResponseBody ResponseEntity get(@PathVariable("id") Long id){
+
         System.out.println(id);
         ReportMemberDTO reportMemberDTO = reportMemberService.getReportMemberDTOById(id);
         return new ResponseEntity<>(reportMemberDTO,HttpStatus.OK);

@@ -11,15 +11,29 @@ import com.fashionflow.repository.ProfileImageRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @Transactional
@@ -36,6 +50,17 @@ class MemberServiceTest {
 
     @Autowired
     ItemSellRepository itemSellRepository;
+
+    @InjectMocks
+    private MemberService memberService;
+
+    @Mock
+    private SecurityContext securityContext;
+
+    @BeforeEach
+    void setUp() {
+        SecurityContextHolder.setContext(securityContext);
+    }
 
     @Test
     public void getItemImgTest(){
@@ -118,4 +143,24 @@ class MemberServiceTest {
 
         return memberDetailDTO;
     }
+
+    @Test
+    public void currentMemberEmail() {
+        // OAuth2 인증 상황 가정
+        OAuth2AuthenticationToken authentication = mock(OAuth2AuthenticationToken.class);
+        OAuth2User oauthUser = mock(OAuth2User.class);
+        Map<String, Object> attributes = new HashMap<>();
+        attributes.put("email", "user@example.com");
+
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(oauthUser);
+        when(authentication.getAuthorizedClientRegistrationId()).thenReturn("google");
+        when(oauthUser.getAttributes()).thenReturn(attributes);
+
+        String email = memberService.currentMemberEmail();
+
+        assertEquals("user@example.com", email);
+    }
+
+
 }

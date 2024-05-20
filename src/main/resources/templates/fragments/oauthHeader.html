@@ -2,13 +2,11 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
-<div class="header" th:fragment="header">
+<div class="oauthHeader" th:fragment="oauthHeader" style="background-color: #F1EEE9;">
     <style>
         .header {
-            background-color: #F1EEE9;
             border-top: 3px solid #EEEEEE;
             overflow: hidden; /* 컨텐츠가 밀리지 않도록 설정 */
-
         }
         .header-box{
             display: flex;
@@ -62,27 +60,29 @@
 
     </style>
     <div class="header-box">
-        <a href="/" class="logo">
+        <a href="#" id="logoutLogo" class="logo">
             <img src="/img/logo.png" alt="Shop" style="height: 60px; width: 250px;">
         </a>
-        <form class="search-form" action="/list" method="get">
-            <input class="search-input" type="search" placeholder="Search" aria-label="Search" name="query">
-            <button class="search-button" type="submit">검색</button>
-        </form>
-        <div class="links">
-            <a href="/members/item/new" class="link" >판매하기</a>
-            <a href="/myshop" class="link" >내상점</a>
-            <a href="/chat/flowtalk" class="link">플로우톡</a>
-        </div>
     </div>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const searchForm = document.querySelector('.search-form');
-            searchForm.addEventListener('submit', function(e) {
+            var logoutLink = document.getElementById('logoutLogo');
+            logoutLink.addEventListener('click', function(e) {
                 e.preventDefault();
-                let searchQuery = document.querySelector('.search-input').value;
-                window.location.href = `/list?query=${encodeURIComponent(searchQuery)}`; // 사용자를 검색어가 포함된 URL로 리디렉션
+
+                var csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+                var csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', '/members/logout', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.setRequestHeader(csrfHeader, csrfToken);
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                        window.location.href = '/';
+                    }
+                };
+                xhr.send();
             });
         });
     </script>

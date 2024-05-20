@@ -22,6 +22,11 @@ public class ChatController {
 
     @GetMapping("/chat")
     public String chatGET(Principal principal, Model model){
+
+        if(memberService.findUnregisteredOAuthMember()){
+            return "redirect:/oauth/login";
+        }
+
         System.out.println("@ChatController, chat GET()");
 
         //회원 정보가 없으면 '익명' 처리 -> 그러나 채팅방은 기본적으로 회원 전용이므로 에러메시지와 동일...
@@ -37,7 +42,9 @@ public class ChatController {
 
     @GetMapping("/getUsername")
     public @ResponseBody ResponseEntity getUsername(){
+
         try{
+
             Member member = memberService.findMemberByCurrentEmail();
             String username = member.getNickname();
             return new ResponseEntity<String>(username, HttpStatus.OK);

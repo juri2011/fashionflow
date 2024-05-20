@@ -5,6 +5,8 @@
       layout:decorate="~{layouts/layout1}" xmlns:sec="http://www.w3.org/1999/xhtml">
 
 <head>
+    <title>상품목록</title>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
             let currentPage = 0;
@@ -89,10 +91,14 @@
 
 
                                 productElement.innerHTML = `
-                                    <img src="/images/${product.imgName}" alt="Product Image" class="product-image clickable">
-                                    <span>상품명: <span class="product-name clickable">${product.itemName}</span></span>
-                                    <span>가격: ${formatPrice(product.price)}</span>
-                                    <span>${dateDisplay}</span>
+                                    <span>
+                                        <div class="image-container">
+                                            <img src="/images/${product.imgName}" alt="Product Image" class="product-image clickable">
+                                        </div>
+                                    </span>
+                                    <span class="product-name clickable">${product.itemName}</span>
+                                    <span class="product-price">${formatPrice(product.price)} 원</span>
+                                    <span class="product-date">${dateDisplay}</span>
 
                                 `;
                                 document.querySelector('.product-list').appendChild(productElement);
@@ -250,6 +256,8 @@
                 section.style.display = section.style.display === 'block' ? 'none' : 'block';
             }
 
+
+
     </script>
 
     <style>
@@ -269,12 +277,12 @@
         }
 
         .sortBtns button {
-            margin-left: 10px; /* 버튼 사이의 간격 설정 */
+            margin-left: 10px;
             margin-bottom: 20px;
             padding: 10px 20px;
             font-size: 16px;
             font-weight: bold;
-            color: #000; /* 글씨 색 검은색 */
+            color: #000;
             border: none;
             border-radius: 50px;
             cursor: pointer;
@@ -295,41 +303,34 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* 그림자 효과 추가 */
         }
 
-        /* 스크롤 바 스타일 */
         .sidebar::-webkit-scrollbar {
             width: 8px;
         }
 
-        /* 스크롤 바 thumb 스타일 */
         .sidebar::-webkit-scrollbar-thumb {
             background-color: #888;
             border-radius: 4px;
         }
 
-        /* 스크롤 바 track 스타일 */
         .sidebar::-webkit-scrollbar-track {
             background-color: #f1f1f1;
         }
 
 
-        /* 스크롤바 전체를 위한 스타일 */
         .sidebar::-webkit-scrollbar {
-            width: 5px; /* 스크롤바의 너비 */
+            width: 5px;
         }
 
-        /* 스크롤바의 트랙(바탕)을 위한 스타일 */
         .sidebar::-webkit-scrollbar-track {
-            background: #f1f1f1; /* 트랙의 배경색 */
+            background: #f1f1f1;
         }
 
-        /* 스크롤바의 핸들을 위한 스타일 */
         .sidebar::-webkit-scrollbar-thumb {
-            background: #c1c1c1; /* 핸들의 배경색 */
+            background: #c1c1c1;
         }
 
-        /* 스크롤바의 핸들에 호버됐을 때를 위한 스타일 */
         .sidebar::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8; /* 핸들의 호버 색상 */
+            background: #a8a8a8;
         }
 
 
@@ -344,32 +345,53 @@
 
 
         .sidebar p.active + div {
-            display: block; /* 클릭된 경우 보여집니다. */
+            display: block;
         }
 
-        /* 최소 및 최대 가격 입력란의 디자인 개선 */
         #priceRangeSelect label {
             display: block;
             margin-bottom: 5px;
         }
 
         #productSelect p, #priceRangeSelect label:first-of-type, #categorySelect p, #saleStatusSelect p {
-            font-size: 20px; /* 글씨 크기 키우기 */
-            font-weight: bold; /* 볼드체 */
-            margin-bottom: 5px; /* 하단 여백 추가 */
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 5px;
         }
 
-        /* 섹션 박스 스타일 */
         #productSelect > div, #priceRangeSelect, #categorySelect, #saleStatusSelect {
-            border: 1px solid #ccc; /* 경계선 */
-            padding: 10px; /* 내부 여백 */
-            margin-bottom: 20px; /* 하단 여백 */
-            border-radius: 5px; /* 경계선 둥글게 */
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .categoryIcon {
+            cursor: pointer;
+            display: inline-block;
+            align-items: center;
+            justify-content: center;
+            margin: 3px;
+            padding: 3px;
+            border: 1px solid  #F1EEE9;
+            background-color: #F0F0F0;
+            border-radius: 5px;
+            color: #0D0D0D;
+        }
+
+        .categoryIcon.checked {
+            background-color: #8C8A88;
+            color: #F9F9F9;
+            border-radius: 5px;
+        }
+
+        .categoryBtns {
+            display: none;
         }
 
         #minPrice,
         #maxPrice {
-            width: calc(100% - 10px); /* 입력란이 테두리 내에 꽉 차도록 설정 */
+            width: calc(100% - 10px);
             padding: 5px;
             border: 1px solid #ccc;
             border-radius: 5px;
@@ -410,26 +432,56 @@
 
         .product-item::before {
             content: ''; /* 가상 요소는 content 속성이 필수 */
-            position: absolute; /* 부모 요소(.product-item)를 기준으로 위치 */
-            top: -10px; /* 액자의 테두리를 위해 상품 박스 바깥으로 위치 조정 */
+            position: absolute;
+            top: -10px;
             left: -10px;
             right: -10px;
             bottom: -10px;
-            border: 2px solid #F1EEE9; /* 액자 테두리 색상 - 무채색 계열의 회색 사용 */
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15); /* 액자에 더 깊이감 있는 그림자 효과 추가 */
-            z-index: -1; /* 상품 내용이 액자 테두리 위로 오도록 설정 */
+            border: 2px solid #F1EEE9;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            z-index: -1;
         }
 
+        .image-container {
+            width: 235px;
+            height: 235px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: auto;
+            margin-bottom: 10px;
+        }
 
-        .product-image {
-            margin-bottom: 20px;
-            width: 90%;
-            height: 70%;
-            height: auto;
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
 
         .clickable {
             cursor: pointer;
+        }
+
+        .product-name{
+            color: black;
+            overflow: hidden;
+            text-align: center;
+            max-height: 3em;
+            height: 4em;
+            width: 100%;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            text-overflow: ellipsis;
+            white-space: normal;
+            word-wrap: break-word;
+            margin-bottom: 10px;
+        }
+
+
+        .product-price {
+            margin-bottom: 10px;
         }
     </style>
 </head>
@@ -441,38 +493,39 @@
         <div class="container">
 
             <div class="sortBtns">
-                <button id="sortDate">등록일순</button>
-                <button id="sortPrice">가격순</button>
+                <button id="sortDate" sec:authorize="isAuthenticated()">등록일순</button>
+                <button id="sortPrice" sec:authorize="isAuthenticated()">가격순</button>
             </div>
-            <div class="product-list"></div>
+            <div class="product-list">
+            </div>
 
             <div class="sidebar" sec:authorize="isAuthenticated()">
                     <div id="productSelect">
                         <br/>
                         <p onclick="toggleSection('menSelect')">남성의류</p>
                         <div id="menSelect" style="display: none;">
-                            <label><input class="categoryBtns" type="checkbox" name="category" value="4"> 아우터</label><br>
-                            <label><input class="categoryBtns" type="checkbox" name="category" value="5"> 상의</label><br>
-                            <label><input class="categoryBtns" type="checkbox" name="category" value="6"> 바지</label><br>
-                            <label><input class="categoryBtns" type="checkbox" name="category" value="7"> 셋업/세트</label><br>
+                            <label class="categoryIcon"><input class="categoryBtns" type="checkbox" name="category" value="4"> #아우터</label>
+                            <label class="categoryIcon"><input class="categoryBtns" type="checkbox" name="category" value="5"> #상의</label>
+                            <label class="categoryIcon"><input class="categoryBtns" type="checkbox" name="category" value="6"> #바지</label>
+                            <label class="categoryIcon"><input class="categoryBtns" type="checkbox" name="category" value="7"> #셋업/세트</label>
                         </div>
                         <br/>
                         <p onclick="toggleSection('womanSelect')">여성의류</p>
                         <div id="womanSelect" style="display: none;">
-                            <label><input class="categoryBtns" type="checkbox" name="category" value="8"> 아우터</label><br>
-                            <label><input class="categoryBtns" type="checkbox" name="category" value="9"> 상의</label><br>
-                            <label><input class="categoryBtns" type="checkbox" name="category" value="10"> 바지</label><br>
-                            <label><input class="categoryBtns" type="checkbox" name="category" value="11"> 치마</label><br>
-                            <label><input class="categoryBtns" type="checkbox" name="category" value="12"> 원피스</label><br>
-                            <label><input class="categoryBtns" type="checkbox" name="category" value="13"> 셋업/세트</label><br>
+                            <label class="categoryIcon"><input class="categoryBtns" type="checkbox" name="category" value="8"> #아우터</label>
+                            <label class="categoryIcon"><input class="categoryBtns" type="checkbox" name="category" value="9"> #상의</label>
+                            <label class="categoryIcon"><input class="categoryBtns" type="checkbox" name="category" value="10"> #바지</label>
+                            <label class="categoryIcon"><input class="categoryBtns" type="checkbox" name="category" value="11"> #치마</label>
+                            <label class="categoryIcon"><input class="categoryBtns" type="checkbox" name="category" value="12"> #원피스</label>
+                            <label class="categoryIcon"><input class="categoryBtns" type="checkbox" name="category" value="13"> #셋업/세트</label>
                         </div>
                         <br/>
                         <p onclick="toggleSection('shoesSelect')">신발</p>
                         <div id="shoesSelect" style="display: none;">
-                            <label><input class="categoryBtns" type="checkbox" name="category" value="14"> 스니커즈</label><br>
-                            <label><input class="categoryBtns" type="checkbox" name="category" value="15"> 남성화</label><br>
-                            <label><input class="categoryBtns" type="checkbox" name="category" value="16"> 여성화</label><br>
-                            <label><input class="categoryBtns" type="checkbox" name="category" value="17"> 스포츠화</label><br>
+                            <label class="categoryIcon"><input class="categoryBtns" type="checkbox" name="category" value="14"> #스니커즈</label>
+                            <label class="categoryIcon"><input class="categoryBtns" type="checkbox" name="category" value="15"> #남성화</label>
+                            <label class="categoryIcon"><input class="categoryBtns" type="checkbox" name="category" value="16"> #여성화</label>
+                            <label class="categoryIcon"><input class="categoryBtns" type="checkbox" name="category" value="17"> #스포츠화</label>
                         </div>
                         <br/>
                     </div>
@@ -485,22 +538,37 @@
                         <button id="applyPriceFilter">적용</button>
                     </div>
                     <br/>
-                    <p>상품 상태</p>
                     <div id="categorySelect">
-                        <label><input type="checkbox" value="1"> 새상품(미개봉)</label><br>
-                        <label><input type="checkbox" value="2"> 사용감 없음</label><br>
-                        <label><input type="checkbox" value="3"> 사용감 적음</label><br>
-                        <label><input type="checkbox" value="4"> 사용감 많음</label><br>
-                        <label><input type="checkbox" value="5"> 파손, 고장 상품</label><br>
+                        <p>상품 상태</p>
+                        <label class="categoryIcon"><input class="categoryBtns" type="checkbox" value="1"> 새상품(미개봉)</label><br>
+                        <label class="categoryIcon"><input class="categoryBtns" type="checkbox" value="2"> 사용감 없음</label><br>
+                        <label class="categoryIcon"><input class="categoryBtns" type="checkbox" value="3"> 사용감 적음</label><br>
+                        <label class="categoryIcon"><input class="categoryBtns" type="checkbox" value="4"> 사용감 많음</label><br>
+                        <label class="categoryIcon"><input class="categoryBtns" type="checkbox" value="5"> 파손, 고장 상품</label><br>
                     </div>
                     <br/>
-                    <p>판매 상태</p>
                     <div id="saleStatusSelect">
-                        <label><input type="checkbox" name="saleStatus" value="1"> 판매중</label><br>
-                        <label><input type="checkbox" name="saleStatus" value="3"> 판매완료</label><br>
+                        <p>판매 상태</p>
+                        <label class="categoryIcon"><input class="categoryBtns" type="checkbox" name="saleStatus" value="1"> 판매중</label><br>
+                        <label class="categoryIcon"><input class="categoryBtns" type="checkbox" name="saleStatus" value="3"> 판매완료</label><br>
                     </div>
                 </div>
         </div>
+        <script>
+            document.querySelectorAll('.categoryIcon').forEach(item => {
+                item.addEventListener('click', function() {
+                    const checkbox = this.querySelector('.categoryBtns');
+                    checkbox.checked = !checkbox.checked;
+
+                    // 체크박스 상태에 따라 'checked' 클래스를 추가하거나 제거
+                    if (checkbox.checked) {
+                        this.classList.add('checked'); // 'checked' 클래스 추가
+                    } else {
+                        this.classList.remove('checked'); // 'checked' 클래스 제거
+                    }
+                });
+            });
+        </script>
     </div>
 
 </body>

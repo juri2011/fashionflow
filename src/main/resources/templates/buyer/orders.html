@@ -283,7 +283,7 @@
         </form>
 
     </div>
-        <div>
+        <div th:if="${getItemBuyListWithImg.totalElements > 0}">
             <ul class="pagination">
                 <!-- 이전 페이지 링크 -->
                 <li th:classappend="${getItemBuyListWithImg.hasPrevious()} ? '' : 'disabled'">

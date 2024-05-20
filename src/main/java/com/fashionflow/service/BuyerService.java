@@ -7,6 +7,9 @@ import com.fashionflow.entity.*;
 import com.fashionflow.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -32,27 +35,20 @@ public class BuyerService {
 
 
     //구매한 아이템 리스트
-    public List<ItemBuy> getItemBuyList() {
+    public Page<BuyerDTO> getItemBuyListWithImg(Pageable pageable) {
+
         Long memberId = memberService.findMemberByCurrentEmail().getId();
-        Sort sort = Sort.by(Sort.Direction.DESC, "buyDate"); // 거래일 내림차순 정렬
-        return itemBuyRepository.findByMemberId(memberId, sort);
-    }
+        Page<ItemBuy> itemBuyPage = itemBuyRepository.findByMemberId(memberId, pageable);
 
-    public List<BuyerDTO> getItemBuyListWithImg() {
-        List<BuyerDTO> buyerDTO = new ArrayList<>();
-
-        for (ItemBuy itemBuy : getItemBuyList()) {
+        List<BuyerDTO> buyerDTO = itemBuyPage.getContent().stream().map(itemBuy -> {
             ItemImg img = itemImgRepository.findByItemIdAndRepimgYn(itemBuy.getItem().getId(), "Y")
-                    .orElse(null); // 대표 이미지가 없는 경우를 대비한 처리
+                    .orElse(null);
+            String imgName = img != null ? "/images/" + img.getImgName() : "/img/default.PNG";
+            return new BuyerDTO(itemBuy.getItem().getId(), itemBuy.getItem().getItemName(),
+                    itemBuy.getItem().getPrice(), imgName, itemBuy.getBuyDate(), itemBuy.isReviewExists());
+        }).collect(Collectors.toList());
 
-            // 이미지가 존재하면 해당 경로를 사용하고, 그렇지 않으면 기본 이미지 경로를 사용합니다.
-            String imgName = img != null ? "/images/"+img.getImgName() : "/img/default.PNG";
-
-            BuyerDTO dto = new BuyerDTO(itemBuy.getItem().getId(), itemBuy.getItem().getItemName(), itemBuy.getItem().getPrice(), imgName, itemBuy.getBuyDate(), itemBuy.isReviewExists());
-            buyerDTO.add(dto);
-        }
-
-        return buyerDTO;
+        return new PageImpl<>(buyerDTO, pageable, itemBuyPage.getTotalElements());
     }
 
 

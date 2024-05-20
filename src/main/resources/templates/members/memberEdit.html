@@ -2,20 +2,135 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layout1}">
-
+<head>
+    <title>회원정보 수정</title>
+</head>
 <!-- 사용자 CSS 추가 -->
 <th:block layout:fragment="css">
     <style>
-        .error {
-            color: #bd2130;
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px;
         }
 
-        /* 읽기 전용 필드의 스타일 수정 */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+            width: 550px;
+        }
+
+        .form-control {
+            padding: 15px;
+            font-size: 14px;
+            border-radius: 20px;
+            border: 2px solid #DADADA; /* 경계선 색상 */
+            background-color: #FFFFFF; /* 배경 색상 */
+        }
+
+        label {
+            margin-bottom: 8px;
+            color: #8C8A88; /* 라벨 색상 */
+            font-weight: bold;
+        }
+
+        /* 유효성 검사 결과 리스트의 점 제거 */
+        .error-message ul {
+            list-style-type: none; /* 리스트 항목 앞의 점 제거 */
+            padding-left: 0; /* 왼쪽 패딩 제거 */
+        }
+
+        .btn-primary {
+            padding: 10px 30px;
+            margin-right: 10px;
+            cursor: pointer;
+            background-color: #8C8A88; /* 버튼 배경 색상 */
+            border: none;
+            color: white;
+            font-size: 14px;
+            border-radius: 20px;
+            white-space: nowrap;
+            transition: background-color 0.3s ease; /* 버튼 호버 효과 */
+        }
+
+        .btn-primary:hover {
+            background-color: #6A6866; /* 호버 시 색상 변경 */
+        }
+
+        .btn-group .btn {
+            margin-right: 5px; /* 버튼 간격 조정 */
+            padding: 15px; /* 패딩 */
+            font-size: 14px; /* 글자 크기 */
+            border-radius: 20px; /* 경계선 반경 */
+            border: 2px solid #DADADA; /* 경계선 색상 */
+            background-color: #FFFFFF; /* 배경 색상 */
+            color: #000000; /* 글자색 */
+            transition: all 0.3s ease; /* 부드러운 색상 전환 효과 */
+        }
+
+        .btn-group .btn:last-child {
+            margin-right: 0;
+        }
+
+        .btn.active {
+            background-color: #333333; /* 활성화된 버튼의 배경색 (무채색에 가까운 짙은 밤색) */
+            color: white; /* 활성화된 버튼의 글자색 */
+            border-color: #333333; /* 활성화된 버튼의 경계선 색상 */
+        }
+
+        /* 회원 탈퇴 버튼 스타일 */
+        .btn-danger {
+            padding: 10px 30px;
+            margin-right: 10px;
+            cursor: pointer;
+            border: none;
+            color: white;
+            font-size: 14px;
+            border-radius: 20px;
+            white-space: nowrap;
+            transition: background-color 0.3s ease;
+        }
+
+
+        .error {
+            color: #FF6B6B; /* 에러 메시지 색상 */
+            margin: 10px 0;
+        }
+
         input[readonly] {
             background-color: #f4f4f4; /* 배경색 */
             color: #555; /* 텍스트 색상 */
             cursor: not-allowed; /* 커서 모양 변경 */
         }
+
+        .postcode-wrapper {
+            display: flex;
+            justify-content: space-between; /* 필드와 버튼 사이의 공간을 균등하게 분배 */
+            align-items: center; /* 세로 중앙 정렬 */
+        }
+
+        .postcode-btn {
+            width: 60px; /* 원하는 너비로 조정 */
+            height: auto; /* 높이를 자동으로 조정하여 비율 유지 */
+            padding: 10px 15px; /* 조정된 패딩 */
+            margin-left: 10px; /* 우편번호 입력 필드와의 간격 */
+            font-size: 14px; /* 글자 크기 */
+            border-radius: 20px; /* 경계선 반경 */
+            border: 2px solid #DADADA; /* 경계선 색상 */
+            background-color: #FFFFFF; /* 배경 색상 */
+            color: #000000; /* 글자색 */
+            cursor: pointer; /* 커서 모양 변경 */
+            transition: all 0.3s ease; /* 부드러운 색상 전환 효과 */
+        }
+
+        .postcode-btn:hover {
+            background-color: #6A6866; /* 호버 시 색상 변경 */
+            color: white; /* 호버 시 글자색 변경 */
+            border-color: #6A6866; /* 호버 시 경계선 색상 변경 */
+        }
+
     </style>
 </th:block>
 
@@ -23,15 +138,15 @@
     <div class="container">
 
         <!-- 닉네임 중복 -->
-        <div th:if="${duplicateErrorMessage}" class="error-message">
+        <div th:if="${duplicateErrorMessage}" style="color:red;" class="error-message">
             <p th:text="${duplicateErrorMessage}"></p>
         </div>
         <!-- 비밀번호, 비밀번호 확인 불일치 -->
-        <div th:if="${pwdErrorMessage}" class="error-message">
+        <div th:if="${pwdErrorMessage}" style="color:red;" class="error-message">
             <p th:text="${pwdErrorMessage}"></p>
         </div>
         <!-- 유효성 검사 결과를 출력하는 부분 -->
-        <div class="error-message" th:if="${errors}">
+        <div class="error-message"  style="color:red;" th:if="${errors}">
             <p>다음 항목을 확인해주세요:</p>
             <ul>
                 <li th:each="error : ${errors}">
@@ -72,17 +187,20 @@
             </div>
             <div class="form-group mb-3">
                 <label for="gender">성별</label>
-                <select name="gender" id="gender" class="form-control">
-                    <option value="m" th:selected="${currentMember.gender == 'M'}">남성</option>
-                    <option value="f" th:selected="${currentMember.gender == 'F'}">여성</option>
-                    <option value="secret" th:selected="${currentMember.gender == 'SECRET'}">기타</option>
-                </select>
+                <div id="genderButtons" class="btn-group" role="group" aria-label="Gender Selection">
+                    <button type="button" class="btn gender-btn" data-value="m">남성</button>
+                    <button type="button" class="btn gender-btn" data-value="f">여성</button>
+                    <button type="button" class="btn gender-btn" data-value="secret">미선택</button>
+                </div>
+                <input type="hidden" name="gender" id="gender">
             </div>
             <div class="form-row">
                 <div class="form-group col-md-3 mb-3">
                     <label for="sample6_postcode">우편번호</label>
-                    <input type="text" name="userStnum" id="sample6_postcode" class="form-control" placeholder="우편번호" th:value="${currentMember.userStnum}" readonly>
-                    <input type="button" onclick="sample6_execDaumPostcode()" value="우편번호 찾기"><br>
+                    <div class="postcode-wrapper">
+                        <input type="text" name="userStnum" id="sample6_postcode" class="form-control" placeholder="우편번호" th:value="${currentMember.userStnum}"  style="width:40%" readonly>
+                        <img src="/img/search.png" alt="우편번호 찾기" class="btn-primary postcode-btn" onclick="sample6_execDaumPostcode()">
+                    </div>
                 </div>
                 <div class="form-group col-md-6 mb-3">
                     <label for="sample6_address">주소</label>
@@ -93,10 +211,11 @@
                     <input type="text" name="userDaddr" id="sample6_detailAddress" class="form-control" placeholder="상세주소를 입력해주세요" th:value="${currentMember.userDaddr}">
                 </div>
             </div>
-            <div class="mb-3">
-                <button type="submit" class="btn btn-primary">수정</button>
+            <div class="mb-3 button" style="display: flex; justify-content: space-between;">
 
                 <button type="button" class="btn btn-danger" id="deleteMemberBtn">회원 탈퇴</button>
+                <button type="submit" class="btn btn-primary">수정</button>
+
 
                 <!-- csrf 토큰 임시 해제 -->
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
@@ -168,5 +287,12 @@
         });
     });
 
+    $(document).ready(function() {
+        $('.gender-btn').click(function() {
+            $('.gender-btn').removeClass('active'); // 다른 버튼의 active 클래스 제거
+            $(this).addClass('active'); // 클릭된 버튼에 active 클래스 추가
+            $('#gender').val($(this).data('value')); // 숨겨진 input의 값 설정
+        });
+    });
 
 </script>

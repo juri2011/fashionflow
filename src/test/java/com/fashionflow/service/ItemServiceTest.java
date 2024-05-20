@@ -1,25 +1,34 @@
 package com.fashionflow.service;
 
-import com.fashionflow.dto.CategoryDTO;
-import com.fashionflow.dto.ItemFormDTO;
-import com.fashionflow.dto.ItemImgDTO;
-import com.fashionflow.dto.ItemTagDTO;
+import com.fashionflow.dto.*;
 import com.fashionflow.entity.Item;
 import com.fashionflow.entity.ItemImg;
 import com.fashionflow.entity.ItemTag;
 import com.fashionflow.repository.ItemImgRepository;
 import com.fashionflow.repository.ItemRepository;
 import com.fashionflow.repository.ItemTagRepository;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @Transactional
@@ -33,6 +42,17 @@ class ItemServiceTest {
 
     @Autowired
     ItemTagRepository itemTagRepository;
+
+    @Autowired
+    ItemService itemService;
+
+    @Mock
+    private ObjectMapper objectMapper;
+
+    @BeforeEach
+    public void setup() {
+        MockitoAnnotations.openMocks(this);
+    }
 
     /* 상품 상세정보 + 이미지 가져오기 */
     /*
@@ -114,4 +134,19 @@ class ItemServiceTest {
     }
 
 
+    @Test
+    public void getRecentViewedItems() throws IOException {
+        // Given
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        Cookie[] cookies = new Cookie[] {
+                new Cookie("otherCookie", "someValue")
+        };
+        when(request.getCookies()).thenReturn(cookies);
+
+        // When
+        List<RecentViewItemDTO> actualItems = itemService.getRecentViewedItems(request);
+
+        // Then
+        assertEquals(new ArrayList<>(), actualItems);
+    }
 }

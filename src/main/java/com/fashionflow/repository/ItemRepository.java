@@ -1,5 +1,6 @@
 package com.fashionflow.repository;
 
+import com.fashionflow.constant.SellStatus;
 import com.fashionflow.entity.Item;
 import com.fashionflow.entity.Member;
 import com.fashionflow.entity.ProfileImage;
@@ -18,5 +19,5 @@ public interface ItemRepository extends JpaRepository<Item, Long>, JpaSpecificat
 
     public Item findItemById(Long id);
 
-    public List<Item> findTop8ByOrderByViewCountDesc(Pageable pageable);
+    List<Item> findTop8BySellStatusOrderByViewCountDesc(SellStatus sellStatus, Pageable pageable);
 }

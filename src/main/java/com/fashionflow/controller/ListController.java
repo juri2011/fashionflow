@@ -4,6 +4,7 @@ import com.fashionflow.dto.BuyerDTO;
 import com.fashionflow.dto.ListingItemDTO;
 import com.fashionflow.constant.ItemStatus;
 import com.fashionflow.entity.Item;
+import com.fashionflow.service.MemberService;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -34,9 +35,14 @@ import java.util.stream.Collectors;
 public class ListController {
 
     private final ListService listService;
+    private final MemberService memberService;
 
     @GetMapping("/list")
     public String listPage() {
+        if(memberService.findUnregisteredOAuthMember()){
+            return "redirect:/oauth/login";
+        }
+
         return "/list";
     }
 

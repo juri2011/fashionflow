@@ -116,10 +116,6 @@ public class MemberService implements UserDetailsService {
         // 현재 인증된 사용자 정보 가져오기
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
-            return null;
-        }
-
         // OAuth 2.0 인증
         if (authentication instanceof OAuth2AuthenticationToken) {
 

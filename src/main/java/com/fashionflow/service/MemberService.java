@@ -14,6 +14,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -115,6 +116,10 @@ public class MemberService implements UserDetailsService {
         // 현재 인증된 사용자 정보 가져오기
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
+        if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
+            return null;
+        }
+
         // OAuth 2.0 인증
         if (authentication instanceof OAuth2AuthenticationToken) {
 
@@ -151,8 +156,6 @@ public class MemberService implements UserDetailsService {
         }
         return null;
     }
-
-
 
 
     // 회원 정보 업데이트 메서드

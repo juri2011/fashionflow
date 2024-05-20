@@ -27,6 +27,10 @@ public class MainController {
     @GetMapping("/")
     public String main(Model model){
 
+        if(memberService.currentMemberEmail()!= null && memberService.findMemberByCurrentEmail() == null){
+            return "redirect:/oauth/login";
+        }
+
         List<ListingItemDTO> Top8products = itemService.getTop8productswithImg();
 
         model.addAttribute("Top8products", Top8products); // 리뷰가 이미 작성되었는지 여부를 모델에 추가

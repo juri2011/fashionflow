@@ -148,13 +148,6 @@ public class RoomController {
             return "redirect:/";
         }
     }
-    
-    //채팅방 조회
-    @GetMapping("/room")
-    public String getRoom(@RequestParam("roomId") String roomId, Model model){
-        if(memberService.findUnregisteredOAuthMember()){
-            return "redirect:/oauth/login";
-        }
 
     private ChatRoomDTO getChatRoomDTO(ChatRoom chatRoom){
 
@@ -203,7 +196,9 @@ public class RoomController {
     //채팅방 조회
     @GetMapping("/room")
     public String getRoom(@RequestParam("roomId") String roomId, Model model){
-
+        if(memberService.findUnregisteredOAuthMember()){
+            return "redirect:/oauth/login";
+        }
         log.info("# get Chat Room, roomID : " + roomId);
 
         ChatRoom chatRoom = chatRoomRepository.findByUuid(roomId).orElseThrow(() ->

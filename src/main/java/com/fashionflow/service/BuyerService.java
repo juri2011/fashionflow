@@ -61,8 +61,9 @@ public class BuyerService {
 
         //리뷰 저장
         Review review = Review.builder()
-                .item(item)
-                .member(member)
+                .itemId(item != null ? item.getId() : null)
+                .memberEmail(member != null ? member.getEmail() : null)
+                .sellerEmail(item != null ? item.getMember().getEmail() : null)
                 .content(reviewDTO.getContent())
                 .score(reviewDTO.getScore())
                 .regDate(LocalDateTime.now())

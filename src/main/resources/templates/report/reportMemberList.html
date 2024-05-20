@@ -267,18 +267,18 @@
         <ul class="pagination justify-content-center">
 
             <li class="page-Member" th:classappend="${reportMemberList.first}?'disabled'">
-                <a th:onclick="'javascript:page(' + ${reportMemberList.number - 1} + ')'" aria-label='Previous' class="page-link">
+                <a th:onclick="'javascript:page(' + ${reportMemberList.number} + ')'" aria-label='Previous' class="page-link">
                     <span aria-hidden='true'>Previous</span>
                 </a>
             </li>
 
             <li class="page-Member" th:each="page: ${#numbers.sequence(start, end)}" th:classappend="${reportMemberList.number eq page-1}?'active':''">
-                <a th:onclick="'javascript:page(' + ${page - 1} + ')'" th:inline="text" class="page-link">[[${page}]]</a>
+                <a th:onclick="'javascript:page(' + ${page} + ')'" th:inline="text" class="page-link">[[${page}]]</a>
                 <!--<a th:onclick="'javascript:page(' + ${page - 1} + ')'" th:inline="text" class="page-link">[[${page}]]</a>-->
             </li>
 
             <li class="page-Member" th:classappend="${reportMemberList.last}?'disabled'">
-                <a th:onclick="'javascript:page(' + ${reportMemberList.number + 1} + ')'" aria-label='Next' class="page-link">
+                <a th:onclick="'javascript:page(' + ${reportMemberList.number + 2} + ')'" aria-label='Next' class="page-link">
                     <span aria-hidden='true'>Next</span>
                 </a>
             </li>

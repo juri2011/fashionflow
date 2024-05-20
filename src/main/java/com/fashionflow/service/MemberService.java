@@ -1,11 +1,8 @@
 
 package com.fashionflow.service;
 
-import com.fashionflow.dto.MemberFormDTO;
-import com.fashionflow.entity.Member;
 import com.fashionflow.dto.*;
 import com.fashionflow.entity.*;
-import com.fashionflow.repository.ItemRepository;
 import com.fashionflow.repository.ItemSellRepository;
 import com.fashionflow.repository.MemberRepository;
 import com.fashionflow.repository.ProfileImageRepository;
@@ -21,17 +18,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Map;
-import java.util.Optional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -44,16 +38,16 @@ public class MemberService implements UserDetailsService {
 
     private final ItemSellRepository itemSellRepository;
 
+    private final ProfileImgService profileImgService;
+
     private final EntityManager em;
 
-    //회원 등록 메소드
-    public void registerMember(MemberFormDTO memberFormDTO, PasswordEncoder passwordEncoder) {
 
-
-
-        //Bcrypt 인코드
+    public void registerMember(MemberFormDTO memberFormDTO, PasswordEncoder passwordEncoder) throws Exception {
+        // Bcrypt 인코드
         String encodedPassword = passwordEncoder.encode(memberFormDTO.getPwd());
 
+        // Member 객체 생성
         Member member = Member.builder()
                 .name(memberFormDTO.getName())
                 .email(memberFormDTO.getEmail())
@@ -68,12 +62,24 @@ public class MemberService implements UserDetailsService {
                 .regdate(LocalDateTime.now())
                 .build();
 
-        //중복 확인
+        // 중복 확인
         checkDuplicate(member);
 
+        // 회원 저장
         memberRepository.save(member);
 
+        // 프로필 이미지 저장 및 회원에 연결
+        if (memberFormDTO.getProfileImageFile() != null) {
+            ProfileImage profileImage = new ProfileImage();
+            profileImgService.saveProfileImage(profileImage, memberFormDTO.getProfileImageFile());
+            profileImage.setMember(member);
+            member.setProfileImage(profileImage); // 연관 관계 설정
+
+            // 프로필 이미지 저장
+            profileImageRepository.save(profileImage);
+        }
     }
+
 
 
     //중복 체크 메소드

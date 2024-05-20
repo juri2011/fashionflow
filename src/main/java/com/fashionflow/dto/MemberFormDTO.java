@@ -2,19 +2,17 @@ package com.fashionflow.dto;
 
 import com.fashionflow.constant.Gender;
 import com.fashionflow.entity.Member;
+import com.fashionflow.entity.ProfileImage;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 import org.modelmapper.ModelMapper;
-import org.springframework.context.annotation.Profile;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
 
 @Getter
 @Setter
@@ -59,13 +57,13 @@ public class MemberFormDTO {
 
     private LocalDateTime regdate; // 가입일
 
-    private String intro; //사용자 소개
+    private String intro; // 사용자 소개
 
-    private Double mannerScore; //매너점수
+    private Double mannerScore; // 매너 점수
 
-    private ProfileImageDTO profileImageDTO; //프로필 사진
+    private ProfileImageDTO profileImageDTO; // 프로필 사진
 
-    private Long sellCount; //판매수
+    private Long sellCount; // 판매수
 
     private static ModelMapper modelMapper = new ModelMapper();
 
@@ -73,9 +71,15 @@ public class MemberFormDTO {
 
     private String providerId;
 
+    // MultipartFile 필드 추가
+    private MultipartFile profileImageFile;
+
     /* Member 엔티티를 DTO로 변환 : 비밀번호, 주소 등 민감한 정보가 같이 들어감 */
     public static MemberFormDTO entityToDTO(Member member){
         MemberFormDTO memberFormDTO = modelMapper.map(member, MemberFormDTO.class);
+        if (member.getProfileImage() != null) {
+            memberFormDTO.setProfileImageDTO(modelMapper.map(member.getProfileImage(), ProfileImageDTO.class));
+        }
         return memberFormDTO;
     }
 
@@ -89,6 +93,10 @@ public class MemberFormDTO {
                 .intro(member.getIntro())
                 .mannerScore(member.getMannerScore())
                 .build();
+        if (member.getProfileImage() != null) {
+            memberFormDTO.setProfileImageDTO(modelMapper.map(member.getProfileImage(), ProfileImageDTO.class));
+        }
         return memberFormDTO;
     }
+
 }

@@ -85,7 +85,7 @@
 <div layout:fragment="content">
     <div class="container">
 
-        <form action="/members/new" role="form" method="post"  th:object="${memberFormDto}">
+        <form action="/members/new" role="form" method="post" enctype="multipart/form-data"  th:object="${memberFormDto}">
             <div class="inputForm">
                 <label th:for="name">이름</label>
                 <input type="text" th:field="*{name}" class="inputField" placeholder="이름을 입력해주세요">

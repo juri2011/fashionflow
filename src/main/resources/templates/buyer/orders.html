@@ -226,6 +226,30 @@
             background-color: #ddd;
         }
 
+        .star {
+            position: relative;
+            font-size: 2rem;
+            color: #ddd;
+        }
+
+        .star input {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            left: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .star span {
+            width: 0;
+            position: absolute;
+            left: 0;
+            color: red;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
     </style>
 </head>
 <body>
@@ -261,8 +285,12 @@
 
                         <!-- 점수 -->
                         <div>
-                            <label for="scoreRange" class="form-label" >점수 선택: <span class="scoreValue">5 점</span></label>
-                            <input type="range" class="form-range score-range" id="scoreRange" name="score" min="1" max="10" value="5">
+                            <label for="scoreRange" class="form-label" >별점 : <span class="scoreValue">5 점</span></label>
+                            <span class="star" style="display: flex; flex-direction: column;">
+                                    ★★★★★
+                                <span class="star-foreground">★★★★★</span>
+                                <input type="range" oninput="drawStar(this)" class="form-range score-range" id="scoreRange" name="score" step="1" min="1" max="10" value="2.5">
+                            </span>
                         </div>
                         <!-- 리뷰 태그 체크박스 -->
                         <div class="review-tags">
@@ -349,7 +377,7 @@
 
                     scoreRange.addEventListener('input', function() {
 
-                        scoreValue.textContent = this.value + ' 점';
+                        scoreValue.textContent = (this.value / 2) + ' 점';
 
                         scoreValue.style.display = 'inline';
                     });
@@ -375,6 +403,11 @@
                 });
             });
 
+             const drawStar = (target) => {
+                const starContainer = target.closest('.star');
+                const starForeground = starContainer.querySelector('.star-foreground');
+                starForeground.style.width = `${target.value * 10}%`;
+            }
         </script>
     </div>
 </div>

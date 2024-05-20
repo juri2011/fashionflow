@@ -245,7 +245,7 @@
             width: 0;
             position: absolute;
             left: 0;
-            color: red;
+            color: #F4D74A;
             overflow: hidden;
             pointer-events: none;
         }
@@ -285,11 +285,10 @@
 
                         <!-- 점수 -->
                         <div>
-                            <label for="scoreRange" class="form-label" >별점 : <span class="scoreValue">5 점</span></label>
                             <span class="star" style="display: flex; flex-direction: column;">
                                     ★★★★★
                                 <span class="star-foreground">★★★★★</span>
-                                <input type="range" oninput="drawStar(this)" class="form-range score-range" id="scoreRange" name="score" step="1" min="1" max="10" value="2.5">
+                                <input type="range" oninput="drawStar(this)" class="form-range score-range" id="scoreRange" name="score" step="1" min="1" max="10" value="0">
                             </span>
                         </div>
                         <!-- 리뷰 태그 체크박스 -->

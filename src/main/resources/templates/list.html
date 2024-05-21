@@ -91,11 +91,11 @@
 
 
                                 productElement.innerHTML = `
-                                    <span>
+                                    <a>
                                         <div class="image-container">
                                             <img src="/images/${product.imgName}" alt="Product Image" class="product-image clickable">
                                         </div>
-                                    </span>
+                                    </a>
                                     <span class="product-name clickable">${product.itemName}</span>
                                     <span class="product-price">${formatPrice(product.price)} 원</span>
                                     <span class="product-date">${dateDisplay}</span>
@@ -415,6 +415,12 @@
             justify-content: space-around;
         }
 
+        .product-list a {
+            width: 100%;
+            height: 60%;
+            margin-bottom: 20px;
+        }
+
         .product-item {
             position: relative; /* 액자 효과를 위한 가상 요소의 위치 기준점 설정 */
             width: calc(25% - 40px);
@@ -443,8 +449,8 @@
         }
 
         .image-container {
-            width: 235px;
-            height: 235px;
+            width: 100%;
+            height: 100%;
             overflow: hidden;
             display: flex;
             justify-content: center;

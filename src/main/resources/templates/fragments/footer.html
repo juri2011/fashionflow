@@ -1,6 +1,30 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
     <div class="footer" th:fragment="footer">
+        <style>
+            .footer {
+                posistion: relative;
+                background-color: black; /* 푸터의 배경 색상을 헤더와 일치시킵니다. */
+                color: white; /* 텍스트 색상을 흰색으로 설정합니다. */
+                font-size: 14px; /* 폰트 크기를 조절합니다. */
+                text-align: center; /* 텍스트를 가운데 정렬합니다. */
+                padding: 20px 0; /* 상하 패딩을 추가합니다. */
+                margin-top: 30px;
+            }
+
+            .footer a {
+                color: #8C8A88; /* 링크 색상을 메인 부분의 버튼 색상과 일치시킵니다. */
+                text-decoration: none; /* 밑줄을 제거합니다. */
+                margin: 0 10px; /* 좌우 마진을 추가합니다. */
+            }
+
+            .footer a:hover {
+                color: white; /* 호버 시 링크 색상을 흰색으로 변경합니다. */
+                text-decoration: underline; /* 밑줄을 추가합니다. */
+            }
+        </style>
+
         <footer class="page-footer font-small cyan darken-3">
             <div class="footer-copyright text-center py-3">
                 2024 Shopping Mall Example WebSite
@@ -12,6 +36,7 @@
             <a href="https://www.flaticon.com/kr/free-icons/" title="확대경 아이콘">확대경 아이콘 제작자: DinosoftLabs - Flaticon</a>
             <a href="https://www.flaticon.com/free-icons/next" title="next icons">Next icons created by Roundicons - Flaticon</a>
             <a href="https://www.flaticon.com/free-icons/previous" title="previous icons">Next icons created by Roundicons - Flaticon</a>
+            <a href="https://www.flaticon.com/kr/free-icons/" title="검사 아이콘">검사 아이콘 제작자: Freepik - Flaticon</a>
         </footer>
     </div>
 </html>

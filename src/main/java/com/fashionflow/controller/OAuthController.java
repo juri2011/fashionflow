@@ -177,7 +177,7 @@ public class OAuthController {
         try {
             memberService.updateMember(memberFormDTO, passwordEncoder);
             return "redirect:/";
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
             // 현재 멤버 정보를 가져와서 다시 모델에 추가
             Member currentMember = memberService.findMemberByCurrentEmail();
             model.addAttribute("currentMember", currentMember);

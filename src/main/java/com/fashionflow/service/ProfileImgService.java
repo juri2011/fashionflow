@@ -41,7 +41,6 @@ public class ProfileImgService {
 
     public void updateProfileImage(ProfileImage profileImage, MultipartFile profileImageFile) throws Exception {
         if (!profileImageFile.isEmpty()) {
-            // 기존 이미지 파일 삭제
             if (!StringUtils.isEmpty(profileImage.getImgName())) {
                 fileService.deleteFile(profileImgLocation + "/" + profileImage.getImgName());
             }
@@ -50,13 +49,9 @@ public class ProfileImgService {
             String imgName = fileService.uploadFile(profileImgLocation, oriImgName, profileImageFile.getBytes());
             String imgUrl = "/profile/" + imgName;
             profileImage.updateProfileImage(oriImgName, imgName, imgUrl);
-            // 변경 내용 저장
             profileImageRepository.save(profileImage);
         }
     }
-
-    // 회원 ID를 사용하여 해당 회원의 프로필 이미지를 가져오는 메서드
-    public ProfileImage getProfileImageByMemberId(Long memberId) {
-        return profileImageRepository.findByMemberId(memberId);
-    }
 }
+
+

@@ -11,6 +11,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -21,6 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -41,6 +43,11 @@ public class MemberService implements UserDetailsService {
     private final ProfileImgService profileImgService;
 
     private final EntityManager em;
+
+    private final FileService fileService;
+
+    @Value("${profileImgLocation}")
+    private String profileImgLocation;
 
 
     public void registerMember(MemberFormDTO memberFormDTO, PasswordEncoder passwordEncoder) throws Exception {
@@ -162,19 +169,36 @@ public class MemberService implements UserDetailsService {
 
 
     // 회원 정보 업데이트 메서드
-    public void updateMember(MemberFormDTO memberFormDTO, PasswordEncoder passwordEncoder) {
+    public void updateMember(MemberFormDTO memberFormDTO, PasswordEncoder passwordEncoder) throws Exception {
 
-        //Bcrypt 인코드
+        // 현재 멤버 정보 가져오기
+        Member currentMember = findMemberByCurrentEmail();
+
+        // 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(memberFormDTO.getPwd());
 
-        // 이메일로 사용자 조회
-        Member currentMember = memberRepository.findByEmail(memberFormDTO.getEmail());
-
-        Member exsitingMember = memberRepository.findByNickname(memberFormDTO.getNickname());
-
-        if(exsitingMember != null && !exsitingMember.getId().equals(currentMember.getId())){
-
+        // 닉네임 중복 검사
+        Member existingMember = memberRepository.findByNickname(memberFormDTO.getNickname());
+        if (existingMember != null && !existingMember.getId().equals(currentMember.getId())) {
             throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
+        }
+
+        // 프로필 이미지 업데이트
+        MultipartFile profileImageFile = memberFormDTO.getProfileImageFile();
+        if (profileImageFile != null && !profileImageFile.isEmpty()) {
+            // 기존 이미지가 있는지 확인
+            ProfileImage existingProfileImage = currentMember.getProfileImage();
+            if (existingProfileImage != null) {
+                // 기존 이미지 업데이트
+                profileImgService.updateProfileImage(existingProfileImage, profileImageFile);
+            } else {
+                // 새로운 이미지 저장
+                ProfileImage newProfileImage = new ProfileImage();
+                profileImgService.saveProfileImage(newProfileImage, profileImageFile);
+                newProfileImage.setMember(currentMember);
+                currentMember.setProfileImage(newProfileImage); // 연관 관계 설정
+                profileImageRepository.save(newProfileImage);
+            }
         }
 
 
@@ -188,6 +212,7 @@ public class MemberService implements UserDetailsService {
 
         memberRepository.save(currentMember);
     }
+
 
 
     // 회원 삭제 메소드

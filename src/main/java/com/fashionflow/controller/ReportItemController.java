@@ -51,7 +51,8 @@ public class ReportItemController {
         System.out.println("현재 페이지 ================="+page.orElse(0));
 
         /* 경로에 페이지 번호가 없으면 0페이지 조회 */
-        Pageable pageable = PageRequest.of(page.orElse(0), 2);
+        Pageable pageable = PageRequest.of(page.map(integer -> integer - 1).orElse(0), 5);
+        //Pageable pageable = PageRequest.of(page.orElse(0), 5);
         Page<ReportItemDTO> reportItems = reportItemService.getReportItemDTOPage(pageable);
 
         //로그인한 사용자에 대해 자신이 작성한 리뷰항목 구분
@@ -146,7 +147,8 @@ public class ReportItemController {
             return new ResponseEntity<String>(sb.toString(), HttpStatus.BAD_REQUEST);
         }
 
-        if(memberService.currentMemberEmail() == null) return new ResponseEntity<String>("로그인이 필요합니다.", HttpStatus.BAD_REQUEST);
+        if(memberService.currentMemberEmail() == null || memberService.currentMemberEmail().equals("anonymousUser"))
+            return new ResponseEntity<String>("로그인이 필요합니다.", HttpStatus.BAD_REQUEST);
         String email = memberService.currentMemberEmail();
         //System.out.println(email);
 

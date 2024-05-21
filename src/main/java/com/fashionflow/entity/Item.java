@@ -6,6 +6,8 @@ import com.fashionflow.dto.CategoryDTO;
 import com.fashionflow.dto.ItemFormDTO;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -46,10 +48,12 @@ public class Item {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="category_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Category category; //카테고리
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="member_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Member member;
 
     @Enumerated(EnumType.STRING)

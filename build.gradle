@@ -74,6 +74,10 @@ dependencies {
 	// 잭슨 LocalDateTime 변환
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
+	//slf4j
+	testCompileOnly 'org.projectlombok:lombok'
+	testAnnotationProcessor 'org.projectlombok:lombok'
+
 }
 
 tasks.named('test') {

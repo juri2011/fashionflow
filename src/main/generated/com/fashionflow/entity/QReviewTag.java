@@ -46,7 +46,7 @@ public class QReviewTag extends EntityPathBase<ReviewTag> {
 
     public QReviewTag(Class<? extends ReviewTag> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.review = inits.isInitialized("review") ? new QReview(forProperty("review"), inits.get("review")) : null;
+        this.review = inits.isInitialized("review") ? new QReview(forProperty("review")) : null;
     }
 
 }

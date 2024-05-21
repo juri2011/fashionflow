@@ -8,10 +8,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface ReviewRepository extends JpaRepository<Review, Long> {
+public interface ReviewRepository extends JpaRepository<Review, Long>{
 
-    Review findByMemberAndItem(Member member, Item item);
+    Review findByMemberEmailAndItemId(String email, Long itemId);
 
     // 아이템의 회원 이메일로 리뷰를 찾는 메소드 추가
-    List<Review> findReviewsByItemMemberEmailOrderByRegDateDesc(String email);
+    List<Review> findReviewsByMemberEmailOrderByRegDateDesc(String email);
+
+    //판매자 이름으로 리스트 조회
+    List<Review> findBySellerEmailOrderByRegDateDesc(String email);
 }

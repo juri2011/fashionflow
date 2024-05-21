@@ -82,7 +82,9 @@
         <div id="product-grid">
             <div th:each="product : ${Top8products}" class="product-item">
                 <a th:href="@{/item/{id}(id=${product.id})}">
-                    <img th:src="'/images/'+${product.imgName}" alt="Product Image" class="product-image clickable">
+                    <!-- 상품 이미지가 있을 경우 해당 이미지 표시, 없을 경우 대체 이미지 표시 -->
+                    <img th:src="${product.imgName != null ? '/images/' + product.imgName : '/img/default.PNG'}"
+                         alt="Product Image" class="product-image clickable">
                 </a>
                 <span>상품명:<a th:href="@{/item/{id}(id=${product.id})}"> <span class="product-name clickable" th:text="${product.itemName}"></span></a></span>
                 <span>가격: <span th:text="${product.price}"></span></span>

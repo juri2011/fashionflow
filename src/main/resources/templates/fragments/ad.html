@@ -19,31 +19,32 @@
             }
             .ad-img {
                 object-fit: contain;
-
             }
         </style>
         <div class="ad-container">
             <a href="" id="adLink">
                 <img src="" alt="Advertisement" class="ad-img" id="adImg">
             </a>
-            <!--<a href="https://www.nike.com">
-                 <img th:src="@{/img/nikeAD.jpg}" alt="Nike Ad" class="ad-img">
-            </a>-->
         </div>
         <script>
+            // 광고 목록 배열
             var ads = [
-                { img: "/img/nikeAD.jpg", link: "https://www.nike.com" },
-                { img: "/img/tomfordAD.jpg", link: "https://www.tomford.com/" },
-                { img: "/img/oakleyAD.jpg", link: "https://www.oakley.com/" },
-                { img: "/img/tagheuerAD.jpg", link: "https://www.tagheuer.com/" },
-                { img: "/img/cartierAD.jpg", link: "https://www.cartier.com/" }
+                { img: "/img/nikeAD.jpg", link: "https://www.nike.com" }, // Nike 광고
+                { img: "/img/tomfordAD.jpg", link: "https://www.tomford.com/" }, // Tom Ford 광고
+                { img: "/img/oakleyAD.jpg", link: "https://www.oakley.com/" }, // Oakley 광고
+                { img: "/img/tagheuerAD.jpg", link: "https://www.tagheuer.com/" }, // Tag Heuer 광고
+                { img: "/img/cartierAD.jpg", link: "https://www.cartier.com/" } // Cartier 광고
             ];
 
+            // 무작위 인덱스 생성
             var randomIndex = Math.floor(Math.random() * ads.length);
+
+            // 선택된 광고 정보 가져오기
             var selectedAd = ads[randomIndex];
 
-            document.getElementById('adImg').src = selectedAd.img;
-            document.getElementById('adLink').href = selectedAd.link;
+            // 선택된 광고 이미지와 링크를 페이지에 표시
+            document.getElementById('adImg').src = selectedAd.img; // 광고 이미지
+            document.getElementById('adLink').href = selectedAd.link; // 광고 링크
         </script>
     </div>
 </html>

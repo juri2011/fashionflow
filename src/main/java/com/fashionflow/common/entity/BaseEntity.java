@@ -15,10 +15,12 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Setter
 public abstract class BaseEntity extends BaseTimeEntity{
 
+    // 엔터티가 생성될 때 생성자를 저장, 업데이트 불가능
     @CreatedBy
     @Column(updatable = false)
     private String createBy;
 
+    // 엔터티가 마지막으로 수정될 때 수정자를 저장
     @LastModifiedBy
     private String modifiedBy;
 }

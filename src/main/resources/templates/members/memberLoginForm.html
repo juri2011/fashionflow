@@ -18,20 +18,20 @@
             display: flex;
             flex-direction: column;
             margin-bottom: 20px;
-            width: 550px; /* 입력 필드의 너비를 조정합니다. */
+            width: 550px;
         }
 
         .emailFormControl, .passwordControl {
             padding: 15px;
             font-size: 14px;
             border-radius: 20px;
-            border: 2px solid #DADADA; /* 경계선 색상 */
-            background-color: #FFFFFF; /* 배경 색상 */
+            border: 2px solid #DADADA;
+            background-color: #FFFFFF;
         }
 
         label {
             margin-bottom: 8px;
-            color: #8C8A88; /* 라벨 색상 */
+            color: #8C8A88;
             font-weight: bold;
         }
 
@@ -39,12 +39,12 @@
             padding: 10px 30px;
             margin-right: 10px;
             cursor: pointer;
-            background-color: #8C8A88; /* 버튼 배경 색상 */
+            background-color: #8C8A88;
             border: none;
             color: white;
             font-size: 14px;
             border-radius: 20px;
-            white-space: nowrap;
+            white-space: nowrap; /* 줄바꿈 방지 */
             transition: background-color 0.3s ease; /* 버튼 호버 효과 */
         }
 
@@ -53,13 +53,13 @@
         }
 
         .error {
-            color: #FF6B6B; /* 에러 메시지 색상 */
+            color: #FF6B6B;
             margin: 10px 0;
         }
 
         oauth-container a {
-            color: #6A6866; /* 링크 색상 */
-            text-decoration: none; /* 밑줄 제거 */
+            color: #6A6866;
+            text-decoration: none; /* 밑줄 제거용 */
             margin-top: 20px;
         }
 
@@ -69,44 +69,52 @@
 
         .OAuthImg {
             margin: 10px;
-            width: 200px; /* 이미지의 너비를 조정합니다. */
+            width: 200px;
             height: 50px;
-            display: block; /* 이미지를 블록 요소로 만듭니다. */
+            display: block; /* 이미지를 블록 요소 정의 */
         }
 
         /* OAuth 이미지를 가운데 정렬하기 위한 컨테이너 */
         .oauth-container {
             display: flex;
             justify-content: center;
-            flex-wrap: wrap; /* 화면 크기에 따라 이미지가 유동적으로 배열되도록 합니다. */
+            flex-wrap: wrap; /* 화면 크기에 따라 이미지가 유동적으로 배열 */
         }
 
 
     </style>
 </head>
 
+<!-- 컨텐츠 영역 -->
 <div layout:fragment="content">
     <div class="container">
 
+        <!-- 로그인 폼 -->
         <form role="form" method="post" action="/members/login">
+            <!-- 이메일 입력 폼 -->
             <div class="emailForm">
                 <label th:for="email">이메일주소</label>
                 <input type="email" name="email" class="emailFormControl" placeholder="이메일을 입력해주세요">
             </div>
+            <!-- 비밀번호 입력 폼 -->
             <div class="passwordForm">
                 <label th:for="password">비밀번호</label>
                 <input type="password" name="password" id="password" class="passwordControl" placeholder="비밀번호 입력">
             </div>
+            <!-- 로그인 오류 메시지 출력 -->
             <div class="mb-3">
                 <p th:if="${loginErrorMsg}" class="error" th:text="${loginErrorMsg}"></p>
+                <!-- 로그인, 회원가입, 이메일 찾기, 비밀번호 찾기 버튼 -->
                 <button class="loginBtns">로그인</button>
                 <button type="button" class="loginBtns" onClick="location.href='/members/register'">회원가입</button>
                 <button type="button" class="loginBtns" onClick="location.href='/members/findId'">이메일 찾기</button>
                 <button type="button" class="loginBtns" onClick="location.href='/EmailVerify'">비밀번호 찾기</button>
+                <!-- CSRF 토큰 -->
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf?.token}">
             </div>
         </form>
 
+        <!-- 소셜 로그인 버튼 -->
         <div class="oauth-container">
             <a href="/oauth2/authorization/google"><img th:src="@{/img/googleOAuth.png}" alt="구글 로그인" class="OAuthImg"></a>
             <a href="/oauth2/authorization/kakao"><img th:src="@{/img/kakaoOAuth.png}" alt="카카오 로그인" class="OAuthImg"></a>

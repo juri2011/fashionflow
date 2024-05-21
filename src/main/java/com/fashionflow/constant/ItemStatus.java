@@ -7,12 +7,15 @@ public enum ItemStatus {
     SIGNIFICANT_SIGNS_OF_USE("4"), // 사용감 많음
     FAULTY("5"); // 파손, 고장 상품
 
+    // 코드 값을 저장할 필드
     private final String code;
 
+    // 생성자
     ItemStatus(String code) {
         this.code = code;
     }
 
+    // 코드값 반환 메소드
     public String getCode() {
         return code;
     }

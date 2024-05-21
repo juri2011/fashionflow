@@ -55,30 +55,30 @@
             width: 90%;
             justify-content: space-between;
             padding-left: 15px;
-            gap: 20px;
+            gap: 20px; /* 간격 추가 */
             align-items: center;
         }
 
         .purchase-name, .purchase-price, .purchase-date {
-            white-space: nowrap;
+            white-space: nowrap; /* 줄 바꿈 방지 */
             overflow: hidden;
-            text-overflow: ellipsis;
+            text-overflow: ellipsis; /* 글씨 생략 */
             text-align: center;
             flex-grow: 0;
-            flex-shrink: 0;
+            flex-shrink: 0; /* 요소의 크기를 줄일 때 축소 방지 */
             text-align: left;
         }
 
         .purchase-name {
-            flex-basis: 40%;
+            flex-basis: 40%; /* 요소의 초기 크기를 설정 */
         }
 
         .purchase-price, .purchase-date {
-            flex-basis: 20%;
+            flex-basis: 20%; /* 요소의 초기 크기를 설정 */
         }
 
         .review-uncompleted, .review-completed {
-            flex-basis: 20%;
+            flex-basis: 20%; /* 요소의 초기 크기를 설정 */
             height: 40px;
             display: flex;
             align-items: center;
@@ -92,7 +92,7 @@
         .review-container {
             display: flex;
             flex-direction: row;
-            justify-content: space-between;
+            justify-content: space-between; /* 양끝 배치 후 여백 균등 정렬 */
             position: absolute;
             top: 0;
             left: 0;
@@ -126,7 +126,7 @@
             color: #333;
             font-size: 14px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            overflow-y: auto;
+            overflow-y: auto; /* 수직 방향으로만 스크롤이 필요한 경우 스크롤바를 추가 */
         }
 
         /* 점수 선택 바 너비 조정 */
@@ -237,7 +237,7 @@
             height: 100%;
             position: absolute;
             left: 0;
-            opacity: 0;
+            opacity: 0; /* 투명도 */
             cursor: pointer;
         }
 
@@ -272,6 +272,7 @@
                 </a>
             </div>
             <div class="purchase-text-container">
+                <!-- 이름, 가격, 구매일 -->
                 <a th:if="${purchase.itemName}" th:text="${purchase.itemName}" th:href="@{/item/{id}(id=${purchase.id})}" class="purchase-name" style="text-decoration: none; color: inherit;"></a>
                 <span th:if="${purchase.price}" th:text="'가격: ' + ${purchase.price} + '  원'" class="purchase-price"></span>
                 <span th:if="${purchase.buyDate}" th:text="'거래일: ' + ${#temporals.format(purchase.buyDate, 'yyyy-MM-dd')}" class="purchase-date" ></span>
@@ -369,18 +370,20 @@
 
                 const scoreRanges = document.getElementsByClassName('score-range');
 
+                // 각 range 요소에 대한 이벤트 리스너를 설정
                 Array.from(scoreRanges).forEach(function(scoreRange, index) {
-
+                    // 해당 range 요소가 속한 평점 표시 요소
                     const scoreValue = scoreRange.closest('.purchase-form').querySelector('.scoreValue');
 
-
                     scoreRange.addEventListener('input', function() {
-
+                        // range 값에 따라 평점 표시를 갱신합니다.
                         scoreValue.textContent = (this.value / 2) + ' 점';
 
+                        // 평점 표시를 보이게 설정합니다.
                         scoreValue.style.display = 'inline';
                     });
 
+                    // 초기 상태에서의 평점 표시를 설정합니다.
                     scoreValue.textContent = scoreRange.value + ' 점';
                     scoreValue.style.display = 'inline';
                 });
@@ -403,8 +406,11 @@
             });
 
              const drawStar = (target) => {
+                // target 요소의 부모 요소 중 클래스가 'star'인 요소를 찾음
                 const starContainer = target.closest('.star');
+                // starContainer 내부에서 클래스가 'star-foreground'인 요소를 찾음
                 const starForeground = starContainer.querySelector('.star-foreground');
+                // starForeground 요소의 너비를 설정하여 별점을 표시함
                 starForeground.style.width = `${target.value * 10}%`;
             }
         </script>

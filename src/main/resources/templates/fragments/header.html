@@ -22,7 +22,7 @@
         .search-form {
             display: flex;
             justify-content: center;
-            width: 40%; /* 검색창의 너비를 줄입니다. */
+            width: 40%;
             height: 50px;
             border-radius: 25px;
             border: 2px solid #BFBDBA;
@@ -32,7 +32,7 @@
             padding: 10px;
             font-size: 16px;
             border: none;
-            width: calc(100% - 40px);
+            width: calc(100% - 40px); /* 여백 추가 */
             border-radius: 25px;
             min-width: 0;
         }
@@ -57,18 +57,20 @@
             color: black;
             font-size: 16px;
             font-weight: bold;
-
         }
 
     </style>
     <div class="header-box">
+        <!-- 로고 -->
         <a href="/" class="logo">
             <img src="/img/logo.png" alt="Shop" style="height: 60px; width: 250px;">
         </a>
+        <!-- 검색 폼 -->
         <form class="search-form" action="/list" method="get">
             <input class="search-input" type="search" placeholder="Search" aria-label="Search" name="query">
             <button class="search-button" type="submit">검색</button>
         </form>
+        <!-- 링크 -->
         <div class="links">
             <a href="/members/item/new" class="link" >판매하기</a>
             <a href="/myshop" class="link" >내상점</a>

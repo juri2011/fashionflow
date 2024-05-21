@@ -33,6 +33,11 @@
 <!-- 사용자 CSS 추가 -->
 <th:block layout:fragment="css">
     <style>
+        .container {
+            width: 1250px;
+            padding: 40px;
+        }
+
         .input-group {
             margin-bottom: 15px;
         }
@@ -225,7 +230,6 @@
                 <button type="submit" th:formaction="@{/members/item/new}"  class="btn btn-primary">등록하기</button>
             </div>
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-        </div>
 
         </form>
     </div>

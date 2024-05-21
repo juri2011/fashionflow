@@ -144,6 +144,8 @@ public class OAuthController {
             // 중복 회원 예외 처리
             modelAndView.addObject("error", e.getMessage());
             modelAndView.setViewName("members/memberRegister");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
 
         return modelAndView;
@@ -177,7 +179,7 @@ public class OAuthController {
         try {
             memberService.updateMember(memberFormDTO, passwordEncoder);
             return "redirect:/";
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
             // 현재 멤버 정보를 가져와서 다시 모델에 추가
             Member currentMember = memberService.findMemberByCurrentEmail();
             model.addAttribute("currentMember", currentMember);

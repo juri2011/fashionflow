@@ -10,9 +10,8 @@
         }
 
         .summit-box {
-            display: flex; /* 부모 요소를 flex 컨테이너로 설정합니다. */
-            justify-content: space-around;
-            justify-content: flex-end; /* 아이템을 오른쪽으로 정렬합니다. */
+            display: flex;
+            justify-content: flex-end; /* 컨테이너 끝 부분에 배치 */
             width: 1250px;
             margin: 0 auto;
             padding: 0 35px;
@@ -35,49 +34,12 @@
             cursor: pointer;
         }
 
-    </style>
-
-    <div class="summit" th:fragment="summit" style="display: flex; justify-content: space-between; align-items: center;">
-        <div class="summit-box">
-            <ul style="display: flex; align-items: center; list-style-type: none; margin: 0; padding: 0;">
-                <li class="nav-item" sec:authorize="isAnonymous()" style="margin-right:20px">
-                    <a class="nav-link active" aria-current="page" href="/members/login" th:href="@{/members/login}">로그인</a>
-                </li>
-                <li class="top-item nav-item" sec:authorize="isAnonymous()">
-                    <a class="top-link nav-link active" aria-current="page" href="/members/register" th:href="@{/members/register}">회원가입</a>
-                </li>
-                <li class="top-item nav-item" sec:authorize="isAuthenticated()">
-                    <!-- 로그아웃 form -->
-                    <form action="/members/logout" method="post" style="margin-right:10px">
-                        <!-- CSRF 토큰 포함 -->
-                        <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
-                        <!-- 로그아웃 버튼 -->
-                        <button type="submit" aria-current="page" id="logout">로그아웃</button>
-                    </form>
-                </li>
-                <li class="top-item nav-item dropdown" sec:authorize="isAuthenticated()">
-                    <a class="top-link nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        마이페이지
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li>
-                            <a class="dropdown-item" href="/members/memberEdit">회원정보수정</a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="/buyer/orders">구매내역</a>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
-    </div>
-    <style>
         .summit {
             height: 40px;
             background-color: black;
             color: white;
             display: flex;
-            justify-content: space-between;
+            justify-content: space-between; /* 좌우 끝 배치후 여백 균등 배치 */
             align-items: center;
             padding: 0 80px;
         }
@@ -99,5 +61,48 @@
         }
 
     </style>
+
+    <!-- 로그인/회원가입/로그아웃 및 마이페이지 링크 -->
+    <div class="summit" th:fragment="summit" style="display: flex; justify-content: space-between; align-items: center;">
+        <div class="summit-box">
+            <!-- 네비게이션 메뉴 -->
+            <ul style="display: flex; align-items: center; list-style-type: none; margin: 0; padding: 0;">
+                <!-- 로그인 링크 -->
+                <li class="nav-item" sec:authorize="isAnonymous()" style="margin-right:20px">
+                    <a class="nav-link active" aria-current="page" href="/members/login" th:href="@{/members/login}">로그인</a>
+                </li>
+                <!-- 회원가입 링크 -->
+                <li class="top-item nav-item" sec:authorize="isAnonymous()">
+                    <a class="top-link nav-link active" aria-current="page" href="/members/register" th:href="@{/members/register}">회원가입</a>
+                </li>
+                <!-- 로그아웃 폼 -->
+                <li class="top-item nav-item" sec:authorize="isAuthenticated()">
+                    <form action="/members/logout" method="post" style="margin-right:10px">
+                        <!-- CSRF 토큰 포함 -->
+                        <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+                        <!-- 로그아웃 버튼 -->
+                        <button type="submit" aria-current="page" id="logout">로그아웃</button>
+                    </form>
+                </li>
+                <!-- 마이페이지 드롭다운 -->
+                <li class="top-item nav-item dropdown" sec:authorize="isAuthenticated()">
+                    <a class="top-link nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        마이페이지
+                    </a>
+                    <!-- 마이페이지 드롭다운 메뉴 -->
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <!-- 회원정보 수정 링크 -->
+                        <li>
+                            <a class="dropdown-item" href="/members/memberEdit">회원정보수정</a>
+                        </li>
+                        <!-- 구매내역 링크 -->
+                        <li>
+                            <a class="dropdown-item" href="/buyer/orders">구매내역</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
 </div>
 </html>

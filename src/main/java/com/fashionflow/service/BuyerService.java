@@ -24,42 +24,39 @@ import java.util.stream.Collectors;
 @Transactional
 public class BuyerService {
 
-    private final ItemBuyRepository itemBuyRepository;
-    private final ReviewRepository reviewRepository;
-    private final ItemRepository itemRepository;
-    private final MemberService memberService;
-    private final ItemImgRepository itemImgRepository;
-    private final MemberRepository memberRepository;
-    private final ReviewTagRepository reviewTagRepository;
+    private final ItemBuyRepository itemBuyRepository; // 아이템 구매 리포지토리
+    private final ReviewRepository reviewRepository; // 리뷰 리포지토리
+    private final ItemRepository itemRepository; // 아이템 리포지토리
+    private final MemberService memberService; // 회원 서비스
+    private final ItemImgRepository itemImgRepository; // 아이템 이미지 리포지토리
+    private final MemberRepository memberRepository; // 회원 리포지토리
+    private final ReviewTagRepository reviewTagRepository; // 리뷰 태그 리포지토리
 
-
-
-    //구매한 아이템 리스트
+    // 구매한 아이템 리스트를 가져오는 메소드
     public Page<BuyerDTO> getItemBuyListWithImg(Pageable pageable) {
 
-        Long memberId = memberService.findMemberByCurrentEmail().getId();
-        Page<ItemBuy> itemBuyPage = itemBuyRepository.findByMemberId(memberId, pageable);
+        Long memberId = memberService.findMemberByCurrentEmail().getId(); // 현재 이메일에 해당하는 회원 아이디 가져오기
+        Page<ItemBuy> itemBuyPage = itemBuyRepository.findByMemberId(memberId, pageable); // 회원 아이디로 구매한 아이템 페이지 가져오기
 
         List<BuyerDTO> buyerDTO = itemBuyPage.getContent().stream().map(itemBuy -> {
-            ItemImg img = itemImgRepository.findByItemIdAndRepimgYn(itemBuy.getItem().getId(), "Y")
+            ItemImg img = itemImgRepository.findByItemIdAndRepimgYn(itemBuy.getItem().getId(), "Y") // 대표 이미지 가져오기
                     .orElse(null);
-            String imgName = img != null ? "/images/" + img.getImgName() : "/img/default.PNG";
+            String imgName = img != null ? "/images/" + img.getImgName() : "/img/default.PNG"; // 이미지 이름 설정
             return new BuyerDTO(itemBuy.getItem().getId(), itemBuy.getItem().getItemName(),
                     itemBuy.getItem().getPrice(), imgName, itemBuy.getBuyDate(), itemBuy.isReviewExists());
         }).collect(Collectors.toList());
 
-        return new PageImpl<>(buyerDTO, pageable, itemBuyPage.getTotalElements());
+        return new PageImpl<>(buyerDTO, pageable, itemBuyPage.getTotalElements()); // 구매자 DTO 페이지 반환
     }
 
 
-    @Transactional //리뷰 등록 메소드
+    @Transactional // 리뷰 등록 메소드 트랜잭션
     public void registerReview(ReviewDTO reviewDTO){
 
+        Member member = memberService.findMemberByCurrentEmail(); // 현재 이메일로 회원 가져오기
+        Item item = itemRepository.findItemById(reviewDTO.getId()); // 아이템 ID로 아이템 가져오기
 
-        Member member = memberService.findMemberByCurrentEmail();
-        Item item = itemRepository.findItemById(reviewDTO.getId());
-
-        //리뷰 저장
+        // 리뷰 저장
         Review review = Review.builder()
                 .itemId(item != null ? item.getId() : null)
                 .memberEmail(member != null ? member.getEmail() : null)
@@ -69,9 +66,9 @@ public class BuyerService {
                 .regDate(LocalDateTime.now())
                 .build();
 
-        review = reviewRepository.save(review);
+        review = reviewRepository.save(review); // 리뷰 저장
 
-        // ReviewDTO에서 리뷰 태그 리스트를 가져옴
+        // 리뷰 태그 리스트 가져오기
         List<ReviewTagContent> reviewTags = reviewDTO.getReviewTags();
 
         if (reviewTags != null && !reviewTags.isEmpty()) {
@@ -80,22 +77,20 @@ public class BuyerService {
                 reviewTag.setReview(review); // 저장된 리뷰 객체 설정
                 reviewTag.setReviewTagContent(tagContent); // 태그 내용 설정
 
-                reviewTagRepository.save(reviewTag); // ReviewTag 저장
+                reviewTagRepository.save(reviewTag); // 리뷰 태그 저장
             }
         }
 
-
-
-        //아이템 리뷰 여부 변경
+        // 아이템 리뷰 여부 변경
         ItemBuy itemBuy = itemBuyRepository.findItemBuyByItem(item);
         if (itemBuy != null) {
             itemBuy.setReviewExists(true);
-            itemBuyRepository.save(itemBuy); // 변경사항 저장
+            itemBuyRepository.save(itemBuy); // 아이템 리뷰 여부 저장
         }
 
-        // seller의 mannerScore 업데이트
-        Member seller = item.getMember();
-        // 모든 판매자 아이템 리스트
+        // 판매자의 매너점수 업데이트
+        Member seller = item.getMember(); // 아이템 판매자 가져오기
+        // 모든 판매자 아이템 리스트 가져오기
         List<Item> sellerItemList = itemRepository.findByMemberId(seller.getId());
         // 현재 매너점수
         Double currentScore = seller.getMannerScore();
@@ -119,6 +114,7 @@ public class BuyerService {
             seller.updateMannerScore(avgScore);
         }
     }
+
 
 
 }

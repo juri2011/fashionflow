@@ -45,8 +45,8 @@
             color: white;
             font-size: 14px;
             border-radius: 20px;
-            white-space: nowrap;
-            transition: background-color 0.3s ease;
+            white-space: nowrap; /* 텍스트가 줄 바꿈되지 않도록 설정 */
+            transition: background-color 0.3s ease; /* 배경색 전환 효과 설정 */
         }
 
         .btn:hover {
@@ -70,27 +70,34 @@
 
 
 
+<!-- 컨텐츠 영역 -->
 <div layout:fragment="content">
     <div class="container">
 
+        <!-- 이메일 출력 -->
         <div>
             <p th:if="${email}">이메일: <span th:text="${email}"></span></p>
+            <!-- 오류 메시지 출력 -->
             <p th:if="${errorMessage}" class="error" th:text="${errorMessage}"></p>
         </div>
 
+        <!-- 이메일 찾기 폼 -->
         <form role="form" method="post" action="/members/findId">
             <div class="form-group mb-3">
                 <label for="name">이름</label>
-                <input type="text" Id="name"name="name" class="form-control" placeholder="이름을 입력해주세요">
+                <input type="text" id="name" name="name" class="form-control" placeholder="이름을 입력해주세요">
             </div>
             <div class="form-group mb-3">
                 <label for="phone">연락처</label>
-                <input type="text" Id="phone" name="phone" class="form-control" placeholder="연락처를 입력해주세요">
+                <input type="text" id="phone" name="phone" class="form-control" placeholder="연락처를 입력해주세요">
             </div>
             <div class="mb-3 button-group">
+                <!-- 로그인 오류 메시지 출력 -->
                 <p th:if="${loginErrorMsg}" class="error" th:text="${loginErrorMsg}"></p>
+                <!-- 이메일 찾기 및 회원가입 버튼 -->
                 <button type="submit" class="loginBtns">이메일 찾기</button>
                 <button type="button" class="loginBtns" onClick="location.href='/members/new'">회원가입</button>
+                <!-- CSRF 토큰 -->
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf?.token}">
             </div>
         </form>

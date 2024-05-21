@@ -58,6 +58,10 @@ public class Member {
     @Column(nullable = false)
     private String userDaddr; //상세주소
 
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "profile_id")
+    private ProfileImage profileImage;
+
     @Column(nullable = false)
     private LocalDateTime regdate; //가입일
 

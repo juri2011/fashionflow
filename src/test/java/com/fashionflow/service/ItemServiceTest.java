@@ -76,8 +76,8 @@ class ItemServiceTest {
     }
 */
     private ItemFormDTO getItemFormDTO(Long itemId,
-                                           List<ItemImgDTO> itemImgDTOList,
-                                           List<ItemTagDTO> itemTagDTOList){
+                                       List<ItemImgDTO> itemImgDTOList,
+                                       List<ItemTagDTO> itemTagDTOList){
         //Repository에서 파라미터(상품 번호)로 Item 엔티티 가져오기
         Item item = itemRepository.findById(itemId).orElseThrow(() ->
                 new EntityNotFoundException("해당 상품이 존재하지 않습니다. id = " + itemId));

@@ -26,19 +26,24 @@
     </style>
 
     <script>
-        // 스크롤
+        // 스크롤 이벤트 리스너 추가
         window.addEventListener('scroll', function() {
+            // 페이지의 스크롤 위치가 20px 이상인 경우
             if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
-                document.getElementById("topBtn").style.display = "block";
+            // 최상단으로 이동하는 버튼을 보이도록 설정
+            document.getElementById("topBtn").style.display = "block";
             } else {
-                document.getElementById("topBtn").style.display = "none";
+            // 스크롤 위치가 20px 미만인 경우 버튼을 숨깁니다.
+            document.getElementById("topBtn").style.display = "none";
             }
         });
 
-        // 버튼 클릭 시 페이지 최상단으로 이동
+        // 최상단으로 이동하는 함수
         function topFunction() {
-          document.documentElement.scrollTop = 0; // Chrome, Firefox, IE, Opera
-          document.body.scrollTop = 0; // Safari
+            // Chrome, Firefox, IE, Opera를 위한 스크롤 위치 설정
+            document.documentElement.scrollTop = 0;
+            // Safari를 위한 스크롤 위치 설정
+            document.body.scrollTop = 0;
         }
     </script>
 </div>

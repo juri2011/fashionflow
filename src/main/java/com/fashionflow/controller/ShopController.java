@@ -39,7 +39,7 @@ public class ShopController {
 
     private final HeartService heartService;
 
-
+    // 상품 등록 폼을 보여주는 메서드
     @GetMapping("/members/item/new")
     public String itemForm(@AuthenticationPrincipal User user, Model model) {
         if(memberService.findUnregisteredOAuthMember()){
@@ -59,23 +59,21 @@ public class ShopController {
         List<CategoryDTO> parentCategories = categoryService.findParentCategories();
         model.addAttribute("categories", parentCategories);
 
-        // 태그선택 옵션을 동적으로 생성
+        // 태그 선택 옵션을 동적으로 생성
         model.addAttribute("allTags", ItemTagName.values());
 
         // 상품 등록 폼 뷰 이름 반환
         return "item/itemForm";
     }
 
-
-
-
+    // 상위 카테고리에 따른 하위 카테고리를 가져오는 메서드
     @GetMapping("/getSubcategories/{parentId}")
     public ResponseEntity<List<CategoryDTO>> getSubcategories(@PathVariable("parentId") Long parentId) {
         List<CategoryDTO> subcategories = categoryService.findSubcategoriesByParentId(parentId);
         return ResponseEntity.ok(subcategories);
     }
 
-
+    // 새로운 상품을 저장하는 메서드
     @PostMapping("/members/item/new")
     public String saveItem(@Valid ItemFormDTO itemFormDTO, BindingResult bindingResult,
                            @RequestParam("itemImgFile") List<MultipartFile> itemImgFileList,
@@ -103,7 +101,7 @@ public class ShopController {
         }
     }
 
-
+    // 사용자의 상점 페이지를 보여주는 메서드
     @GetMapping("/myshop")
     public String showMyShop(@AuthenticationPrincipal User user, Model model) {
         if(memberService.findUnregisteredOAuthMember()){
@@ -130,10 +128,7 @@ public class ShopController {
         return "myshop";
     }
 
-
-
-
-
+    // 상품 수정 폼을 보여주는 메서드
     @GetMapping("/members/item/{itemId}")
     public String modifyItemForm(@PathVariable("itemId") Long itemId, Model model) {
         if(memberService.findUnregisteredOAuthMember()){
@@ -147,12 +142,10 @@ public class ShopController {
         List<CategoryDTO> parentCategories = categoryService.findParentCategories();
         model.addAttribute("categories", parentCategories);
 
-
-
-
         return "item/itemModifyForm";
     }
 
+    // 상품 정보를 업데이트하는 메서드
     @PostMapping("/members/item/{itemId}")
     public String updateItem(@PathVariable("itemId") Long itemId,
                              @ModelAttribute("itemFormDTO") ItemFormDTO itemFormDTO,
@@ -183,6 +176,7 @@ public class ShopController {
         }
     }
 
+    // 상품을 삭제하는 메서드
     @PostMapping("/members/item/delete/{itemId}")
     public String deleteItem(@PathVariable("itemId") Long itemId, RedirectAttributes redirectAttributes) {
         try {
@@ -197,7 +191,4 @@ public class ShopController {
             return "redirect:/myshop";
         }
     }
-
-
-
 }

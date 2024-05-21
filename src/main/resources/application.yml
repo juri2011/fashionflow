@@ -61,6 +61,7 @@ spring:
 
 
 
+
 itemImgLocation: C:/shop/item
 
 profileImgLocation: C:/shop/profile

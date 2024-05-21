@@ -242,7 +242,7 @@
                     <button type="button" class="btn gender-btn" data-value="f">여성</button>
                     <button type="button" class="btn gender-btn" data-value="secret">비공개</button>
                 </div>
-                <input type="hidden" name="gender" id="gender">
+                <input type="hidden" name="gender" id="gender" th:value="${currentMember.gender}">
             </div>
             <div class="form-row">
                 <div class="form-group col-md-3 mb-3">
@@ -351,11 +351,34 @@
         });
     });
 
-    $(document).ready(function() {
-        $('.gender-btn').click(function() {
-            $('.gender-btn').removeClass('active'); // 다른 버튼의 active 클래스 제거
-            $(this).addClass('active'); // 클릭된 버튼에 active 클래스 추가
-            $('#gender').val($(this).data('value')); // 숨겨진 input의 값 설정
+    // gender 버튼 함수
+    document.addEventListener("DOMContentLoaded", function() {
+        var genderButtons = document.querySelectorAll('.gender-btn');
+        var hiddenGenderInput = document.getElementById('gender');
+        var selectedGender = hiddenGenderInput.value;
+
+        // 기본값을 'secret'으로 설정
+        if (!selectedGender) {
+            selectedGender = 'secret';
+            hiddenGenderInput.value = 'secret';
+        }
+
+        // 페이지 로드 시 gender 값에 따라 버튼 활성화 (유효성 실패시 gender 리턴값)
+        genderButtons.forEach(function(button) {
+            if (button.getAttribute('data-value') === selectedGender) {
+                button.classList.add('active');
+            }
+        });
+
+        // 버튼 클릭 시 hidden input 값 변경 및 버튼 활성화 상태 변경
+        genderButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                hiddenGenderInput.value = button.getAttribute('data-value');
+                genderButtons.forEach(function(btn) {
+                    btn.classList.remove('active');
+                });
+                button.classList.add('active');
+            });
         });
     });
 

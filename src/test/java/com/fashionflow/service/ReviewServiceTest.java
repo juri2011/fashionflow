@@ -27,7 +27,7 @@ class ReviewServiceTest {
     @Test
     public void findReviewBySellerEmail(){
 
-        String userEmail = "dhwnfl13@gmail.com";
+        String userEmail = "test1@test.com";
 
         List<Review> reviews = reviewRepository.findAll().stream().filter(review -> {
             Optional<Item> item = itemRepository.findById(review.getItemId());

@@ -9,25 +9,30 @@
     <!-- 사용자 스크립트 추가 -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script th:inline="javascript">
-
+        /* 스크립트 시작 */
         $(document).ready(function(){
+            // 팝업 닫기 버튼 이벤트
             $('.closePopup').on('click', function(){
                 $('#detailPopup').hide();
-                //팝업창 내용 초기화
+                // 팝업창 내용 초기화
                 $('.memberName').text("");
                 $('#reportContent').text("");
                 $('.tagBox').empty();
                 $(".reportConfirm").removeData();
             });
+
+            // 신고 버튼 클릭 시 팝업 표시
             $('.reportBtn').on('click', function(){
                 $('#detailPopup').show();
             });
 
+            // 신고 처리 버튼 클릭 시
             $('.reportConfirm').on('click', function(){
                 updateReportItem($(this).data('id'), $(this).data('itemId'));
                 //$('#detailPopup').hide();
             });
 
+            // 태그 선택 시
             $('#tagSelect').on('input', function(){
                 let selectedOption = $('#tagSelect option:selected').val();
                 let selectedText = $('#tagSelect option:selected').text();
@@ -37,30 +42,29 @@
                     else $('.tagBox').append(tagBlock);
                 }
                 $('#tagSelect option:eq(0)').prop('selected', true);
-
             });
 
+            // 태그 박스에서 태그 클릭 시
             $('.tagBox').on('click', '.tagBlock', function() {
                 // 클릭된 동적으로 생성된 버튼에 대한 처리를 여기에 작성합니다.
                 console.log($(event.target).text());
                 $(event.target).remove();
-
             });
 
-
+            // 검색 버튼 클릭 시
             $("#searchBtn").on("click",function(e) {
                 e.preventDefault();
                 page(0);
             });
 
+            // 신고 삭제 버튼 클릭 시
             $('.deleteReport').on('click', function(){
                 //console.log($(this).data('id'));
-
                 deleteReportItem($(this).data('id'));
             });
 
+            // 신고 수정 버튼 클릭 시
             $('.updateReport').on('click', function(){
-
                 const id = $(this).data('id');
                 console.log(id);
 
@@ -81,16 +85,16 @@
                     $(".reportConfirm").data('itemId', report.reportedItemId);
                 });
 
-
                 $("#detailPopup").show();
-
             });
 
         });
 
+        // CSRF 토큰 설정
         const token = $("meta[name='_csrf']").attr("content");
         const header = $("meta[name='_csrf_header']").attr("content");
 
+        // 신고 수정 함수
         function updateReportItem(id, itemId){
             const url = "/reportItem/update";
 
@@ -125,18 +129,17 @@
                     location.href = '/report/item';
                 },
                 error: function (jqXHR, status, error) {
-
                     if (jqXHR.status == '401') {
                         alert('로그인 후 이용해주세요');
                         //location.href = '/members/login';
                     } else {
                         alert(jqXHR.responseText);
                     }
-
                 }
             });
         }
 
+        // 신고 아이템 조회 함수
         function getReportItem(id, callback, error){
             $.get("/reportItem/"+id, function(result){
                 if(callback) callback(result);
@@ -150,7 +153,7 @@
             });
         }
 
-
+        // 신고 삭제 함수
         function deleteReportItem(id){
             const url = "/delete/reportItem/"+id;
 
@@ -167,41 +170,28 @@
                     location.href = '/report/item';
                 },
                 error: function (jqXHR, status, error) {
-
                     if (jqXHR.status == '401') {
                         alert('로그인 후 이용해주세요');
                         //location.href = '/members/login';
                     } else {
                         alert(jqXHR.responseText);
                     }
-
                 }
             });
-
         }
 
-
+        // 페이지 이동 함수
         function page(page){
-            //var searchDateType = $("#searchDateType").val();
-            //var searchSellStatus = $("#searchSellStatus").val();
-            //var searchBy = $("#searchBy").val();
-            //var searchQuery = $("#searchQuery").val();
-
             location.href="/report/item/" + page;
-
-            //location.href="/admin/items/" + page + "?searchDateType=" + searchDateType
-            //+ "&searchSellStatus=" + searchSellStatus
-            //+ "&searchBy=" + searchBy
-            //+ "&searchQuery=" + searchQuery;
         }
-
     </script>
-
 
     <!-- 사용자 CSS 추가 -->
     <style>
+        /* 스타일 시작 */
         .content{ display:block; }
 
+        /* 팝업 스타일 */
         #detailPopup{
             display: none;
             width: 600px;
@@ -213,83 +203,86 @@
             z-index:9999;
         }
 
+        /* 태그 블록 스타일 */
         .tagBlock{
             display: inline-block;
             background-color:white;
             margin-right: 5px;
             padding: 5px;
         }
+
+        /* 페이지 아이템 스타일 */
         .page-item{
             cursor:pointer;
         }
+
+        /* 비활성화된 페이지 아이템 스타일 */
         .page-item.disabled{
             cursor:default;
         }
-
     </style>
 </head>
 <div layout:fragment="content">
+    <!-- 신고 리스트 테이블 -->
     <h1>신고 리스트</h1>
     <table class="table">
         <thead>
-            <tr>
-                <th>번호</th>
-                <th>내용</th>
-                <th>작성자</th>
-                <th>등록일</th>
-                <th>거래상태</th>
-            </tr>
+        <tr>
+            <th>번호</th>
+            <th>내용</th>
+            <th>작성자</th>
+            <th>등록일</th>
+            <th>거래상태</th>
+        </tr>
         </thead>
         <tbody>
-            <tr th:each="reportItem : ${reportItemList.getContent()}">
-                <td th:text="${reportItem.id}"></td>
-                <!-- 관리자나 작성자인 경우만 표시 -->
-                <td><a th:href="'/report/itemdetail/'+${reportItem.id}">
-                    <span th:text="${reportItem.content}"></span>
-                </a></td>
-                <td th:text="${reportItem.reporterMemberEmail}"></td>
-                <td th:text="${#temporals.format(reportItem.regdate, 'yyyy-MM-dd HH:mm:ss')}"></td>
-                <td th:switch="${#strings.toString(reportItem.reportStatus)}">
-                    <span th:case="WAITING" style="color:red">처리대기중</span>
-                    <span th:case="COMPLETE" style="color:green">처리완료</span>
-                </td>
-                <!--<td th:text="${reportItem.reportStatus}"></td>-->
-                <!-- 사용자의 아이디가 표시되는 경우에만 수정 가능 -->
-                <td th:if="${reportItem.isMyReport}">
-                    <button th:attr="data-id=${reportItem.id}" class="updateReport" type="button">수정</button>
-                    <button th:attr="data-id=${reportItem.id}" class="deleteReport" type="button">삭제</button></td>
+        <tr th:each="reportItem : ${reportItemList.getContent()}">
+            <td th:text="${reportItem.id}"></td>
+            <!-- 관리자나 작성자인 경우만 표시 -->
+            <td><a th:href="'/report/itemdetail/'+${reportItem.id}">
+                <span th:text="${reportItem.content}"></span>
+            </a></td>
+            <td th:text="${reportItem.reporterMemberEmail}"></td>
+            <td th:text="${#temporals.format(reportItem.regdate, 'yyyy-MM-dd HH:mm:ss')}"></td>
+            <td th:switch="${#strings.toString(reportItem.reportStatus)}">
+                <span th:case="WAITING" style="color:red">처리대기중</span>
+                <span th:case="COMPLETE" style="color:green">처리완료</span>
+            </td>
+            <!--<td th:text="${reportItem.reportStatus}"></td>-->
+            <!-- 사용자의 아이디가 표시되는 경우에만 수정 가능 -->
+            <td th:if="${reportItem.isMyReport}">
+                <button th:attr="data-id=${reportItem.id}" class="updateReport" type="button">수정</button>
+                <button th:attr="data-id=${reportItem.id}" class="deleteReport" type="button">삭제</button></td>
 
-            </tr>
+        </tr>
         </tbody>
     </table>
 
     <!-- 페이지네이션 추가 -->
-
     <div th:with="start=${(reportItemList.number/maxPage)*maxPage + 1}, end=(${(reportItemList.totalPages == 0) ? 1 : (start + (maxPage - 1) < reportItemList.totalPages ? start + (maxPage - 1) : reportItemList.totalPages)})" >
         <ul class="pagination justify-content-center">
-
+            <!-- 이전 페이지 -->
             <li class="page-item" th:classappend="${reportItemList.first}?'disabled'">
                 <a th:onclick="'javascript:page(' + ${reportItemList.number} + ')'" aria-label='Previous' class="page-link">
                     <span aria-hidden='true'>Previous</span>
                 </a>
             </li>
 
+            <!-- 페이지 번호 -->
             <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}" th:classappend="${reportItemList.number eq page-1}?'active':''">
                 <a th:onclick="'javascript:page(' + ${page} + ')'" th:inline="text" class="page-link">[[${page}]]</a>
-                <!--<a th:onclick="'javascript:page(' + ${page - 1} + ')'" th:inline="text" class="page-link">[[${page}]]</a>-->
             </li>
 
+            <!-- 다음 페이지 -->
             <li class="page-item" th:classappend="${reportItemList.last}?'disabled'">
                 <a th:onclick="'javascript:page(' + ${reportItemList.number + 2} + ')'" aria-label='Next' class="page-link">
                     <span aria-hidden='true'>Next</span>
                 </a>
             </li>
-
         </ul>
     </div>
-    
-    <!-- 신고 상세보기 팝업창 출력 -->
 
+    <!-- 신고 상세보기 팝업창 출력 -->
     <div id="detailPopup" class="modal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -298,12 +291,13 @@
                     <button type="button" class="btn-close closePopup" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-
+                    <!-- 신고 내용 입력 -->
                     <div class="mb-3">
                         <label for="reportContent" class="form-label">신고 내용</label>
                         <textarea class="form-control" id="reportContent" name="reportContent" placeholder="내용을 입력하세요"></textarea>
                     </div>
 
+                    <!-- 태그 선택 -->
                     <div class="mb-3">
                         <label for="tagSelect" class="form-label">태그선택</label>
                         <select class="form-select" name="tagSelect" id="tagSelect">
@@ -314,12 +308,13 @@
                     </div>
                 </div>
                 <div class="modal-footer">
+                    <!-- 신고 버튼 -->
                     <button type="button" class="btn btn-primary reportConfirm">신고하기</button>
                     <button type="button" class="btn btn-secondary closePopup">취소</button>
                 </div>
             </div>
         </div>
     </div>
-    <!-- 신고하기 팝업창(구현하려면 검색기능 있어야 함) -->
 </div>
+
 </html>

@@ -31,19 +31,22 @@
 </th:block>
 <div layout:fragment="content">
     <div class="container" style="min-width: 500px;">
+        <!-- 버튼 컨테이너 -->
         <div id="btnContainer"></div>
+
+        <!-- 상품 정보 -->
         <ul class="list-group">
             <li class="list-group-item">
                 <!-- 상품 이미지 불러오기 -->
                 <div th:if="${room.item} != null">
-
                     <img style="width: 100px; height:100px;"
-                         th:if="${room.item.itemRepImgDTO}!=null"
-                         th:src="'/images/'+${room.item.itemRepImgDTO.imgName}">
+                         th:if="${room.item.itemRepImgDTO} != null"
+                         th:src="'/images/' + ${room.item.itemRepImgDTO.imgName}">
                     <img style="width: 100px; height:100px;"
-                         th:if="${room.item.itemRepImgDTO}==null" src="/img/default.png">
-                    <a th:href="'/item/'+${room.item.id}" th:text="${room.item.itemName}"></a>
+                         th:if="${room.item.itemRepImgDTO} == null" src="/img/default.png">
+                    <a th:href="'/item/' + ${room.item.id}" th:text="${room.item.itemName}"></a>
                     <th:block th:switch="${#strings.toString(room.item.sellStatus)}">
+                        <!-- 상품 판매 상태에 따라 뱃지 표시 -->
                         <span class="badge text-bg-success" th:case="SELLING">판매중</span>
                         <span class="badge text-bg-danger" th:case="SUSPENDED">판매중단</span>
                         <span class="badge text-bg-secondary" th:case="SOLD_OUT">판매완료</span>
@@ -51,41 +54,36 @@
                 </div>
                 <div th:unless="${room.item} != null">
                     <span>존재하지 않는 상품입니다.</span>
-                    <img style="width: 100px; height:100px;"
-                         src="/img/item_not_found.png">
+                    <img style="width: 100px; height:100px;" src="/img/item_not_found.png">
                 </div>
             </li>
             <li class="list-group-item">
                 <!-- 판매자 정보 -->
                 <div th:if="${room.seller} != null">
-                </span>
                     <img style="width: 100px; height:100px;"
-                         th:if="${room.seller.profileImageDTO}==null" src="/img/profile_default.png">
-                    <!-- 테스트를 위해 임시 경로를 지정했지만 파일업로드 기능이 구현되면 변경될 수 있습니다.
-                    view에서 null인지 조건을 검사하는 것보다 회원가입할 때 사용자가 프로필 사진을 따로 설정하지 않았으면
-                     기본 사진의 경로와 이미지 이름으로 지정하는 것이 더 깔끔해 보임 -->
-
+                         th:if="${room.seller.profileImageDTO} == null" src="/img/profile_default.png">
+                    <!-- 프로필 이미지가 없을 경우 기본 이미지 표시 -->
                     <img style="width: 100px; height:100px;"
-                         th:if="${room.seller.profileImageDTO}!=null"
-                         th:src="${room.seller.profileImageDTO.uploadPath}+${room.seller.profileImageDTO.filename}">
+                         th:if="${room.seller.profileImageDTO} != null"
+                         th:src="${room.seller.profileImageDTO.uploadPath} + ${room.seller.profileImageDTO.filename}">
+                    <!-- 프로필 이미지가 있을 경우 해당 이미지 표시 -->
                     <span th:text="${room.seller.nickname}"></span>
+                    <!-- 판매자 닉네임 표시 -->
                 </div>
                 <div th:unless="${room.seller} != null">
                     <span>존재하지 않는 회원입니다.</span>
-                    <img style="width: 100px; height:100px;"
-                         src="/img/member_not_found.png">
+                    <img style="width: 100px; height:100px;" src="/img/member_not_found.png">
                 </div>
-
             </li>
         </ul>
 
-        <!-- 셋중하나가 존재하지 않으면 웹소켓, 채팅 비활성화 -->
-
+        <!-- 채팅 영역 -->
         <div class="col-6">
             <h1>[[${room.name}]]</h1>
         </div>
         <div>
             <div id="msgArea" class="col" style="height: 500px; overflow-y: scroll;"></div>
+            <!-- 채팅 메시지 영역 -->
             <div>
                 <div class="input-group mb-3">
                     <input type="text" id="msg" class="form-control" disabled>
@@ -103,6 +101,7 @@
     <script>
         $(document).ready(function(){
 
+            // 변수 선언 및 초기화
             var roomName = '[[${room.name}]]';
             var roomId = '[[${room.roomId}]]';
             const enabled = [[${room.enabled}]];
@@ -114,15 +113,17 @@
 
             var sellBtnEnabled = false;
 
+            // 채팅방 정보 가져오기
             getRoomInfo();
 
+            // 채팅방 정보를 서버에서 가져오는 함수
             function getRoomInfo(){
-                const paramData={
+                const paramData = {
                     roomId: roomId
                 };
                 const param = JSON.stringify(paramData);
                 $.ajax({
-                    url: "/chat/getroominfo", // 사용자 이름을 반환하는 엔드포인트
+                    url: "/chat/getroominfo", // 채팅방 정보를 반환하는 엔드포인트
                     method: "POST",
                     contentType: "application/json",
                     data: param,
@@ -136,6 +137,7 @@
                         }else{
                             console.log('item is null');
                         }
+                        // 판매 상태에 따라 버튼 상태를 업데이트
                         if(sellStatus === 'SOLD_OUT'){
                             $('#btnContainer').empty();
                             $('#btnContainer').append('<button class="btn btn-secondary">거래완료됨</button>');
@@ -151,26 +153,22 @@
                 });
             }
 
+            // 사용자 정보를 서버에서 가져오는 함수
             function getUserInfo(){
                 $.ajax({
                     url: "/chat/getUsername", // 사용자 이름을 반환하는 엔드포인트
                     method: "GET",
                     contentType: "application/json",
                     success: function(response) {
-                        //$("#username").text(response.username); // 받은 사용자 이름을 페이지에 표시
-
-                        console.log(response);
-
-
                         username = response.nickname;
                         userEmail = response.email;
                         console.log(roomName + ", " + roomId + ", " + response);
 
-                        //사용자 이름을 받아왔으면 유효한 사용자인지 확인
+                        // 사용자 정보가 유효한지 확인
                         userValidate();
-                        //사용자 이름을 받아왔으면 채팅 기록 출력
+                        // 채팅 기록을 불러오기
                         loadChatHistory();
-                        //채팅기록을 받아왔으면 WebSocket 연결
+                        // WebSocket 연결 설정
                         console.log(enabled);
                         if(enabled === true && sellStatus === 'SELLING'){
                             connectToWebSocket();
@@ -191,14 +189,14 @@
                 });
             }
 
-
+            // 사용자가 유효한지 확인하는 함수
             function userValidate(){
-                const paramData={
+                const paramData = {
                     roomId: roomId
                 };
                 const param = JSON.stringify(paramData);
                 $.ajax({
-                    url: "/chat/userValidate", // 사용자 이름을 반환하는 엔드포인트
+                    url: "/chat/userValidate", // 사용자 유효성을 검사하는 엔드포인트
                     method: "POST",
                     contentType: "application/json",
                     data: param,
@@ -217,10 +215,10 @@
                 });
             }
 
+            // 채팅 기록을 서버에서 불러오는 함수
             function loadChatHistory(){
-
                 $.ajax({
-                    url: "/chat/getChatHistory/"+roomId, // 사용자 이름을 반환하는 엔드포인트
+                    url: "/chat/getChatHistory/" + roomId, // 채팅 기록을 반환하는 엔드포인트
                     method: "GET",
                     success: function(response) {
                         console.log(response);
@@ -228,6 +226,7 @@
                             showChat(chat);
                         });
 
+                        // 채팅 영역을 최신 메시지로 스크롤
                         $('#msgArea').scrollTop($('#msgArea')[0].scrollHeight);
                     },
                     error: function(xhr, status, error) {
@@ -238,24 +237,24 @@
                 });
             }
 
+            // 거래 완료 버튼을 활성화하는 함수
             function sellBtnEnable(){
                 const sellerEmail = '[[${room.seller.email}]]';
-                console.log();
                 if(sellerEmail === userEmail){
                     str = '<button class="btn btn-primary sell-btn">거래완료</button>';
                     $('#btnContainer').append(str);
                 }
-            };
+            }
 
+            // 거래 완료 버튼 클릭 이벤트 핸들러
             $('#btnContainer').on('click', '.sell-btn', function() {
                 if(confirm("거래완료 처리 하시겠습니까?")){
-                    const paramData={
+                    const paramData = {
                         roomId: roomId
                     };
-                    console.log(paramData);
                     const param = JSON.stringify(paramData);
                     $.ajax({
-                        url: "/chat/sell", // 사용자 이름을 반환하는 엔드포인트
+                        url: "/chat/sell", // 거래 완료 처리 엔드포인트
                         method: "POST",
                         contentType: "application/json",
                         data: param,
@@ -270,7 +269,6 @@
                         },
                         error: function(xhr, status, error) {
                             console.log("validate fail");
-                            //alert('오류가 발생했습니다.');
                             alert(xhr.responseText);
                             //location.href = '/';
                         }
@@ -278,40 +276,34 @@
                 }
             });
 
+            // 채팅 메시지를 화면에 표시하는 함수
             function showChat(content){
-
                 const writer = content.writer;
                 let str = '';
                 const message = content.message;
                 const msgDateFormat = content.msgDateFormat;
 
                 if(writer === username){
-                str = "<div class='msgContainer col-6' style='margin-left:auto;'>";
-                str += "<div style='margin-left:auto; text-align: right; font-weight:800; font-size: 18px;'>" +
-                        writer +"</div>";
-                str += "<div class='alert alert-warning  message-mine'>";
-                str += "<div>" + message + "</div>";
-                str += "<div>"+ msgDateFormat +"</div>";
-                str += "</div></div>";
-                //$("#msgArea").append(str);
-                }
-                else{
-                str = "<div class='msgContainer col-6'>";
-                str += "<div style='margin-left:auto; text-align: left; font-weight:800; font-size: 18px;'>" +
-                        writer +"</div>";
-                str += "<div class='alert alert-secondary message-others'>";
-                str += "<div>" + message + "</div>";
-                str += "<div>"+ msgDateFormat +"</div>";
-                str += "</div></div>";
-                //$("#msgArea").append(str);
+                    str = "<div class='msgContainer col-6' style='margin-left:auto;'>";
+                    str += "<div style='margin-left:auto; text-align: right; font-weight:800; font-size: 18px;'>" + writer + "</div>";
+                    str += "<div class='alert alert-warning  message-mine'>";
+                    str += "<div>" + message + "</div>";
+                    str += "<div>"+ msgDateFormat +"</div>";
+                    str += "</div></div>";
+                } else {
+                    str = "<div class='msgContainer col-6'>";
+                    str += "<div style='margin-left:auto; text-align: left; font-weight:800; font-size: 18px;'>" + writer + "</div>";
+                    str += "<div class='alert alert-secondary message-others'>";
+                    str += "<div>" + message + "</div>";
+                    str += "<div>"+ msgDateFormat +"</div>";
+                    str += "</div></div>";
                 }
 
+                // 메시지를 채팅 영역에 추가하고 스크롤을 최신 메시지로 이동
                 $("#msgArea").append(str);
                 $('#msgArea').scrollTop($('#msgArea')[0].scrollHeight);
 
-                console.log(sellBtnEnabled)
-                console.log($('.msgContainer').length)
-
+                // 메시지가 일정 수 이상이면 거래 완료 버튼 활성화
                 if(!sellBtnEnabled){
                     if($('.msgContainer').length > 5){
                         sellBtnEnable();
@@ -320,9 +312,10 @@
                 }
             }
 
-
+            // 콘솔에 디버그 정보 출력
             console.log(roomName + ", " + roomId + ", " + username);
 
+            // 날짜 형식을 지정하는 함수
             function dateFormat(date) {
                 let month = date.getMonth() + 1;
                 let day = date.getDate();
@@ -339,44 +332,45 @@
                 return date.getFullYear() + '/' + month + '/' + day + ' ' + hour + ':' + minute + ':' + second;
             }
 
-
+            // WebSocket 연결 설정 함수
             function connectToWebSocket(){
                 var sockJs = new SockJS("/stomp/chat");
                 //1. SockJS를 내부에 들고있는 stomp를 내어줌
                 var stomp = Stomp.over(sockJs);
 
-
+                // 전송 버튼 클릭 이벤트 핸들러
                 $("#button-send").removeClass('disabled').on("click", function(e){
                     var msg = document.getElementById("msg");
 
                     console.log(username + ":" + msg.value);
-                    stomp.send('/pub/chat/message', {}, JSON.stringify({roomId: roomId,
-                                                                        message: msg.value,
-                                                                        writer: username,
-                                                                        msgDateFormat: dateFormat(new Date())
-                                                                        }));
+                    stomp.send('/pub/chat/message', {}, JSON.stringify({
+                        roomId: roomId,
+                        message: msg.value,
+                        writer: username,
+                        msgDateFormat: dateFormat(new Date())
+                    }));
                     msg.value = '';
                 });
 
                 //2. connection이 맺어지면 실행
                 stomp.connect({}, function (){
-                   console.log("STOMP Connection");
+                    console.log("STOMP Connection");
 
+                    //4. subscribe(path, callback)으로 메세지를 받을 수 있음
+                    stomp.subscribe("/sub/chat/room/" + roomId, function (chat) {
+                        var content = JSON.parse(chat.body);
+                        console.log(content);
+                        showChat(content);
+                    });
 
-                   //4. subscribe(path, callback)으로 메세지를 받을 수 있음
-                   stomp.subscribe("/sub/chat/room/" + roomId, function (chat) {
-                       var content = JSON.parse(chat.body);
-                       console.log(content);
-                       showChat(content);
-                   });
-
-                   //3. send(path, header, message)로 메세지를 보낼 수 있음
-                   //stomp.send('/pub/chat/enter', {}, JSON.stringify({roomId: roomId, writer: username}))
+                    //3. send(path, header, message)로 메세지를 보낼 수 있음
+                    //stomp.send('/pub/chat/enter', {}, JSON.stringify({roomId: roomId, writer: username}))
                 });
             }
 
         });
     </script>
+
 </div>
 
 </html>

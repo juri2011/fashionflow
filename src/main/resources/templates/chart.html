@@ -2,32 +2,43 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Students</title>
+    <title>Chart</title>
 
     <!-- Google Charts 라이브러리 -->
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript" th:inline="javascript">
+        // Google Charts API를 로드하고, 차트를 그리는 콜백 함수 설정
         google.charts.load('current', {'packages':['corechart']});
         google.charts.setOnLoadCallback(drawCharts);
 
-        // 서버에서 가져온 아이템 데이터
-        /*<![CDATA[*/
         var itemDTOs = /*[[${itemDTOs}]]*/ [];
-        /*]]>*/
 
+        // 차트를 그리는 함수
         function drawCharts() {
-            var categoryData = new google.visualization.DataTable();
-            categoryData.addColumn('string', 'Category');
-            categoryData.addColumn('number', '수량');
+            // 데이터 테이블 생성 함수
+            function createDataTable(columns) {
+                var dataTable = new google.visualization.DataTable();
+                columns.forEach(column => dataTable.addColumn(column.type, column.label));
+                return dataTable;
+            }
 
-            var statusData = new google.visualization.DataTable();
-            statusData.addColumn('string', 'ItemStatus');
-            statusData.addColumn('number', '수량');
+            // 데이터 추가 함수
+            function addRowsToDataTable(dataTable, data) {
+                Object.keys(data).forEach(key => dataTable.addRow([key, data[key]]));
+            }
 
-            var priceData = new google.visualization.DataTable();
-            priceData.addColumn('string', 'Price Range');
-            priceData.addColumn('number', '수량');
+            // 차트 생성 및 그리기 함수
+            function drawChart(chartType, elementId, dataTable, options) {
+                var chart = new google.visualization[chartType](document.getElementById(elementId));
+                chart.draw(dataTable, options);
+            }
 
+            // 카테고리, 상태, 가격 데이터 테이블 생성
+            var categoryData = createDataTable([{type: 'string', label: 'Category'}, {type: 'number', label: '수량'}]);
+            var statusData = createDataTable([{type: 'string', label: 'ItemStatus'}, {type: 'number', label: '수량'}]);
+            var priceData = createDataTable([{type: 'string', label: 'Price Range'}, {type: 'number', label: '수량'}]);
+
+            // 카테고리별 수량, 상태별 수량, 가격대별 수량 계산
             var categoryCounts = {};
             var statusCounts = {};
             var priceRanges = {'0-10000': 0, '10001-100000': 0, '100001-500000': 0, '>500001': 0};
@@ -51,115 +62,88 @@
                 else priceRanges['>500001']++;
             });
 
-            Object.keys(categoryCounts).forEach(function(key) {
-                categoryData.addRow([key, categoryCounts[key]]);
-            });
+            addRowsToDataTable(categoryData, categoryCounts);
+            addRowsToDataTable(statusData, statusCounts);
+            addRowsToDataTable(priceData, priceRanges);
 
-            Object.keys(statusCounts).forEach(function(key) {
-                statusData.addRow([key, statusCounts[key]]);
-            });
-
-            Object.keys(priceRanges).forEach(function(key) {
-                priceData.addRow([key, priceRanges[key]]);
-            });
-
-            // 카테고리 분포도에 대한 옵션
-            var categoryOptions = {
-                title: '카테고리 분포도',
+            // 차트 옵션 설정
+            var options = {
                 pieHole: 0.4
             };
 
-            // 상품 상태 분포도에 대한 옵션
-            var statusOptions = {
-                title: '상품 상태 분포도',
-                pieHole: 0.4
+            drawChart('PieChart', 'category_chart_div', categoryData, {...options, title: '카테고리 분포도'});
+            drawChart('PieChart', 'status_chart_div', statusData, {...options, title: '상품 상태 분포도'});
+            drawChart('PieChart', 'price_chart_div', priceData, {...options, title: '가격 분포도'});
+
+            // 카테고리별 평균 가격 그래프 생성 및 그리기
+            var categoryPriceData = createDataTable([{type: 'string', label: 'Category'}, {type: 'number', label: '평균 가격'}]);
+
+            var categorySum = {};
+            var categoryCounts = {};
+
+            itemDTOs.forEach(function(item) {
+                var categoryName = categoryNames[item.categoryId] || "기타";
+                categorySum[categoryName] = (categorySum[categoryName] || 0) + item.price;
+                categoryCounts[categoryName] = (categoryCounts[categoryName] || 0) + 1;
+            });
+
+            Object.keys(categorySum).forEach(function(key) {
+                var avgPrice = Math.floor(categorySum[key] / categoryCounts[key]);
+                categoryPriceData.addRow([key, avgPrice]);
+            });
+
+            var categoryPriceOptions = {
+                title: '카테고리별 평균 가격',
+                chartArea: {width: '50%'},
+                vAxis: {
+                    title: '평균 가격',
+                    minValue: 0,
+                    maxValue: 1000000
+                },
+                hAxis: {
+                    title: '카테고리'
+                }
             };
 
-            // 가격 분포도에 대한 옵션
-            var priceOptions = {
-                title: '가격 분포도',
-                pieHole: 0.4
-            };
-
-            var categoryChart = new google.visualization.PieChart(document.getElementById('category_chart_div'));
-            categoryChart.draw(categoryData, categoryOptions); // 상품 품목 분포도에 대한 옵션 사용
-
-            var statusChart = new google.visualization.PieChart(document.getElementById('status_chart_div'));
-            statusChart.draw(statusData, statusOptions); // 상품 상태 분포도에 대한 옵션 사용
-
-            var priceChart = new google.visualization.PieChart(document.getElementById('price_chart_div'));
-            priceChart.draw(priceData, priceOptions); // 가격 분포도에 대한 옵션 사용
-
-            // 카테고리별 평균 가격 column차트
-var categoryPriceData = new google.visualization.DataTable();
-categoryPriceData.addColumn('string', 'Category');
-categoryPriceData.addColumn('number', '평균 가격');
-
-var categorySum = {};
-var categoryCounts = {};
-
-itemDTOs.forEach(function(item) {
-    var categoryName = categoryNames[item.categoryId] || "기타";
-    categorySum[categoryName] = (categorySum[categoryName] || 0) + item.price;
-    categoryCounts[categoryName] = (categoryCounts[categoryName] || 0) + 1;
-});
-
-Object.keys(categorySum).forEach(function(key) {
-    var avgPrice = categorySum[key] / categoryCounts[key];
-    avgPrice = Math.floor(avgPrice); // 소수점 버리기
-    categoryPriceData.addRow([key, avgPrice]);
-});
-
-var categoryPriceOptions = {
-    title: '카테고리별 평균 가격',
-    chartArea: {width: '50%'},
-    vAxis: { // 이제 가격은 세로축(vAxis)에 표시됩니다.
-        title: '평균 가격',
-        minValue: 0,
-        maxValue: 1000000 // 최대값 설정
-    },
-    hAxis: { // 카테고리는 가로축(hAxis)에 표시됩니다.
-        title: '카테고리'
-    }
-};
-
-// BarChart 대신 ColumnChart를 사용합니다.
-var categoryPriceChart = new google.visualization.ColumnChart(document.getElementById('scatter_chart_div')); // scatter_chart_div 대신 이제 막대 그래프를 그립니다.
-categoryPriceChart.draw(categoryPriceData, categoryPriceOptions);
-
-
-
+            drawChart('ColumnChart', 'scatter_chart_div', categoryPriceData, categoryPriceOptions);
         }
     </script>
 </head>
 <body>
-<h1>통계</h1>
+    <h1>통계</h1>
 
-<table border="1" style="display: none;">
-    <thead>
-
-    <tr>
-        <th>price</th>
-        <th>categoryId</th>
-        <th>itemStatus</th>
-    </tr>
-    </thead>
-    <tbody>
-
-        <tr th:each="item : ${itemDTOs}" >
+    <!-- 숨겨진 테이블 -->
+    <table border="1" style="display: none;">
+        <thead>
+        <tr>
+            <th>price</th>
+            <th>categoryId</th>
+            <th>itemStatus</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- 각 품목에 대한 데이터 출력 -->
+        <tr th:each="item : ${itemDTOs}">
             <td th:text="${item.price}"></td>
             <td th:text="${item.getItemStatus().getCode()}"></td>
             <td th:text="${item.categoryId}"></td>
         </tr>
-    </tbody>
-</table>
-<div id="charts" style="display:flex; flex-direction: row; flex-wrap: wrap;">
-    <div id="category_chart_div" style="width: 400px; height: 300px;"></div>
-    <div id="status_chart_div" style="width: 400px; height: 300px;"></div>
-    <div id="price_chart_div" style="width: 400px; height: 300px;"></div>
-    <div style="width: 100%;"></div>
-    <div id="scatter_chart_div" style="width: 1600px; height: 600px;"></div>
-</div>
+        </tbody>
+    </table>
+
+    <!-- 차트 영역 -->
+    <div id="charts" style="display:flex; flex-direction: row; flex-wrap: wrap;">
+        <!-- 카테고리 차트 -->
+        <div id="category_chart_div" style="width: 400px; height: 300px;"></div>
+        <!-- 상태 차트 -->
+        <div id="status_chart_div" style="width: 400px; height: 300px;"></div>
+        <!-- 가격 차트 -->
+        <div id="price_chart_div" style="width: 400px; height: 300px;"></div>
+        <!-- 빈 공간 -->
+        <div style="width: 100%;"></div>
+        <!-- ColumnChart -->
+        <div id="scatter_chart_div" style="width: 1600px; height: 600px;"></div>
+    </div>
 
 </body>
 </html>

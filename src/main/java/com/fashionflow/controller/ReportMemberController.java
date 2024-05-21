@@ -33,6 +33,9 @@ public class ReportMemberController {
 
     @GetMapping("/report/memberdetail/{id}")
     public String reportDetail(Model model, @PathVariable("id") Long id){
+        if(memberService.findUnregisteredOAuthMember()){
+            return "redirect:/oauth/login";
+        }
         ReportMemberDTO reportMemberDTO = reportMemberService.getReportMemberDTOById(id);
         System.out.println(reportMemberDTO);
         model.addAttribute("reportMember",reportMemberDTO);
@@ -41,7 +44,7 @@ public class ReportMemberController {
 
     @PostMapping("/report/reportMember")
     public @ResponseBody ResponseEntity reportMember(@RequestBody @Valid ReportMemberDTO reportMemberDTO,
-                                                     BindingResult bindingResult, Principal principal){
+                                                     BindingResult bindingResult){
 
         System.out.println(reportMemberDTO);
 
@@ -56,7 +59,8 @@ public class ReportMemberController {
             return new ResponseEntity<String>(sb.toString(), HttpStatus.BAD_REQUEST);
         }
 
-        if(memberService.currentMemberEmail() == null) return new ResponseEntity<String>("로그인이 필요합니다.", HttpStatus.BAD_REQUEST);
+        if(memberService.currentMemberEmail() == null || memberService.currentMemberEmail().equals("anonymousUser"))
+            return new ResponseEntity<String>("로그인이 필요합니다.", HttpStatus.BAD_REQUEST);
         String email = memberService.currentMemberEmail();
         System.out.println(email);
 
@@ -79,11 +83,15 @@ public class ReportMemberController {
     @GetMapping({"/report/member", "/report/member/{page}"})
     public String reportNew(Model model, Principal principal,
                             @PathVariable("page") Optional<Integer> page){
+        if(memberService.findUnregisteredOAuthMember()){
+            return "redirect:/oauth/login";
+        }
 
         System.out.println("현재 페이지 ================="+page.orElse(0));
 
         /* 경로에 페이지 번호가 없으면 0페이지 조회 */
-        Pageable pageable = PageRequest.of(page.orElse(0), 2);
+        Pageable pageable = PageRequest.of(page.map(integer -> integer - 1).orElse(0), 5);
+        //Pageable pageable = PageRequest.of(page.orElse(0), 5);
         Page<ReportMemberDTO> reportMembers = reportMemberService.getReportMemberDTOPage(pageable);
 
         //로그인한 사용자에 대해 자신이 작성한 리뷰항목 구분
@@ -110,6 +118,7 @@ public class ReportMemberController {
     //사용자 신고 정보 가져오기
     @GetMapping("/reportMember/{id}")
     public @ResponseBody ResponseEntity get(@PathVariable("id") Long id){
+
         System.out.println(id);
         ReportMemberDTO reportMemberDTO = reportMemberService.getReportMemberDTOById(id);
         return new ResponseEntity<>(reportMemberDTO,HttpStatus.OK);
@@ -144,8 +153,9 @@ public class ReportMemberController {
 
             return new ResponseEntity<String>(sb.toString(), HttpStatus.BAD_REQUEST);
         }
-        if(principal == null) return new ResponseEntity<String>("로그인이 필요합니다.", HttpStatus.BAD_REQUEST);
-        String email = principal.getName();
+        if(memberService.currentMemberEmail() == null || memberService.currentMemberEmail().equals("anonymousUser"))
+            return new ResponseEntity<String>("로그인이 필요합니다.", HttpStatus.BAD_REQUEST);
+        String email = memberService.currentMemberEmail();
         System.out.println(email);
 
         reportMemberDTO.setReporterMemberEmail(email);

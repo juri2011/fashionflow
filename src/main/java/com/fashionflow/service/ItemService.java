@@ -1,6 +1,7 @@
 package com.fashionflow.service;
 
 import com.fashionflow.constant.ItemTagName;
+import com.fashionflow.constant.SellStatus;
 import com.fashionflow.dto.*;
 import com.fashionflow.entity.*;
 import com.fashionflow.repository.*;
@@ -376,14 +377,15 @@ public class ItemService {
 
     // 조회수 내림차순으로 상위 8개의 상품 조회
     public List<Item> getTop8products() {
-        return itemRepository.findTop8ByOrderByViewCountDesc(PageRequest.of(0, 8, Sort.by(Sort.Direction.DESC, "viewCount")));
+        return itemRepository.findTop8BySellStatusOrderByViewCountDesc(SellStatus.SELLING, PageRequest.of(0, 8, Sort.by(Sort.Direction.DESC, "viewCount")));
     }
 
     public List<ListingItemDTO> getTop8productswithImg() {
         List<Item> topItems = getTop8products();
 
         // Item 객체를 ListingItemDTO로 변환
-        List<ListingItemDTO> listingItemDTOs = topItems.stream().map(item -> {
+        List<ListingItemDTO> listingItemDTOs = topItems.stream()
+                .map(item -> {
             // 각 Item에 대한 대표 이미지 조회
             ItemImg repImg = itemImgRepository.findFirstByItemIdAndRepimgYn(item.getId(), "Y").orElse(null);
 

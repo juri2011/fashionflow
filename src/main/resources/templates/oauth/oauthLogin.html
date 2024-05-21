@@ -49,6 +49,9 @@
 }
     </script>
 </th:block>
+<head>
+    <title>간편로그인 가입</title>
+</head>
 <!-- 사용자 CSS 추가 -->
 <th:block layout:fragment="css">
     <style>
@@ -179,9 +182,11 @@
     </style>
 </th:block>
 
+
 <div layout:fragment="content">
     <div class="container">
 
+        <h1 style="font-size:20px; margin-bottom: 50px; font-weight: 800;">추가 정보를 작성하셔야 서비스를 이용하실수 있습니다</h1>
 
         <!-- 공백란 알림 메시지 출력 -->
         <p th:if="${errors}" class="error" th:each="error : ${errors}" th:text="${error.defaultMessage}"></p>
@@ -211,11 +216,12 @@
             </div>
             <div class="form-group mb-3">
                 <label for="gender">성별</label>
-                <select name="gender" id="gender" class="form-control">
-                    <option value="m" th:selected="${memberFormDTO.gender == 'm'}">남성</option>
-                    <option value="f" th:selected="${memberFormDTO.gender == 'f'}">여성</option>
-                    <option value="secret" th:selected="${memberFormDTO.gender == 'secret'}">기타</option>
-                </select>
+                <div id="genderButtons" class="btn-group" role="group" aria-label="Gender Selection">
+                    <button type="button" class="btn gender-btn" data-value="m">남성</button>
+                    <button type="button" class="btn gender-btn" data-value="f">여성</button>
+                    <button type="button" class="btn gender-btn" data-value="secret">미선택</button>
+                </div>
+                <input type="hidden" name="gender" id="gender">
             </div>
             <div class="form-row">
                 <div class="form-group col-md-3 mb-3">
@@ -235,18 +241,6 @@
                 </div>
 
             </div>
-            <!-- 프로필 이미지 업로드 필드 추가 -->
-            <div class="form-group mb-3">
-                <label for="profileImageFile">프로필 이미지</label>
-                <div class="custom-file">
-                    <input type="file" class="custom-file-input" id="profileImageFile" name="profileImageFile" onchange="previewProfileImage(event)">
-                </div>
-                <!-- 이미지 미리보기 영역 추가 -->
-                <div class="form-control">
-                    <label for="profileImageFile">미리보기</label>
-                    <img id="profileImagePreview" src="#" alt="프로필 이미지 미리보기" style="display: none; max-width: 200px; max-height: 200px; margin: 0 auto;">
-                </div>
-            </div>
             <div class="mb-3">
                 <button type="submit" class="btn btn-primary">회원가입</button>
                 <!-- csrf 토큰 임시 해제 -->
@@ -263,6 +257,7 @@
 
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script>
+
     function sample6_execDaumPostcode() {
         new daum.Postcode({
             oncomplete: function(data) {
@@ -288,4 +283,14 @@
             }
         }).open();
     }
+
+    $(document).ready(function() {
+        $('.gender-btn').click(function() {
+            $('.gender-btn').removeClass('active'); // 다른 버튼의 active 클래스 제거
+            $(this).addClass('active'); // 클릭된 버튼에 active 클래스 추가
+            $('#gender').val($(this).data('value')); // 숨겨진 input의 값 설정
+        });
+    });
+
+
 </script>

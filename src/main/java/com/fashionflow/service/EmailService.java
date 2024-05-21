@@ -19,12 +19,12 @@ import java.io.UnsupportedEncodingException;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class EmailService {
-    private final JavaMailSender javaMailSender;
+    private final JavaMailSender javaMailSender; // 이메일 발송기
 
-    private final TemplateEngine templateEngine;
+    private final TemplateEngine templateEngine; // 템플릿 엔진
 
     public Boolean sendEmailAuthentication(ReqSendEmailAuthenticationDTO reqEmailAuthenticationApiV1DTO, String authenticationCode) {
-        // 메시지 객체를 생성하고
+        // 메시지 객체 생성하고
         MimeMessage message = javaMailSender.createMimeMessage();
 
         try {

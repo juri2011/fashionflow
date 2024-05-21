@@ -32,6 +32,9 @@ public class ReportItemController {
 
     @GetMapping("/report/itemdetail/{id}")
     public String reportDetail(Model model, @PathVariable("id") Long id){
+        if(memberService.findUnregisteredOAuthMember()){
+            return "redirect:/oauth/login";
+        }
         ReportItemDTO reportItemDTO = reportItemService.getReportItemDTOById(id);
         System.out.println(reportItemDTO);
         model.addAttribute("reportItem",reportItemDTO);
@@ -41,11 +44,15 @@ public class ReportItemController {
     @GetMapping({"/report/item", "/report/item/{page}"})
     public String reportNew(Model model, Principal principal,
                             @PathVariable("page") Optional<Integer> page){
+        if(memberService.findUnregisteredOAuthMember()){
+            return "redirect:/oauth/login";
+        }
 
         System.out.println("현재 페이지 ================="+page.orElse(0));
 
         /* 경로에 페이지 번호가 없으면 0페이지 조회 */
-        Pageable pageable = PageRequest.of(page.orElse(0), 2);
+        Pageable pageable = PageRequest.of(page.map(integer -> integer - 1).orElse(0), 5);
+        //Pageable pageable = PageRequest.of(page.orElse(0), 5);
         Page<ReportItemDTO> reportItems = reportItemService.getReportItemDTOPage(pageable);
 
         //로그인한 사용자에 대해 자신이 작성한 리뷰항목 구분
@@ -105,6 +112,7 @@ public class ReportItemController {
 
     @GetMapping("/reportItem/{id}")
     public @ResponseBody ResponseEntity get(@PathVariable("id") Long id){
+
         System.out.println(id);
         ReportItemDTO reportItemDTO = reportItemService.getReportItemDTOById(id);
         return new ResponseEntity<>(reportItemDTO,HttpStatus.OK);
@@ -139,7 +147,8 @@ public class ReportItemController {
             return new ResponseEntity<String>(sb.toString(), HttpStatus.BAD_REQUEST);
         }
 
-        if(memberService.currentMemberEmail() == null) return new ResponseEntity<String>("로그인이 필요합니다.", HttpStatus.BAD_REQUEST);
+        if(memberService.currentMemberEmail() == null || memberService.currentMemberEmail().equals("anonymousUser"))
+            return new ResponseEntity<String>("로그인이 필요합니다.", HttpStatus.BAD_REQUEST);
         String email = memberService.currentMemberEmail();
         //System.out.println(email);
 

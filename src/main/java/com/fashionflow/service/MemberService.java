@@ -12,6 +12,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -165,8 +166,18 @@ public class MemberService implements UserDetailsService {
         return null;
     }
 
+    public boolean findUnregisteredOAuthMember() {
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
+        if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
+            return false;
+        } else if (findMemberByCurrentEmail() != null){
+            return false;
+        }
+
+        return true;
+    }
 
     // 회원 정보 업데이트 메서드
     public void updateMember(MemberFormDTO memberFormDTO, PasswordEncoder passwordEncoder) throws Exception {

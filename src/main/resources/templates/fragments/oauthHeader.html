@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<div class="oauthHeader" th:fragment="oauthHeader" style="background-color: #F1EEE9;">
+    <style>
+        /* 헤더 스타일 */
+        .header {
+            border-top: 3px solid #EEEEEE;
+            overflow: hidden; /* 컨텐츠가 밀리지 않도록 설정 */
+        }
+        /* 헤더 박스 스타일 */
+        .header-box{
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 1250px;
+            height: 160px;
+            margin: 0 auto;
+            padding: 0px;
+        }
+        /* 검색 폼 스타일 */
+        .search-form {
+            display: flex;
+            justify-content: center;
+            width: 40%;
+            height: 50px;
+            border-radius: 25px;
+            border: 2px solid #BFBDBA;
+            background-color: #fff;
+        }
+        /* 검색 입력 필드 스타일 */
+        .search-input {
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            width: calc(100% - 40px); /* 1/4 크기로 정렬 */
+            border-radius: 25px;
+            min-width: 0;
+        }
+        /* 검색 버튼 스타일 */
+        .search-button {
+            padding: 10px 30px;
+            cursor: pointer; /* 포인터 효과 설정 */
+            background-color: #8C8A88;
+            border: none;
+            color: white;
+            font-size: 14px;
+            border-radius: 25px;
+            white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+        }
+        /* 링크 그룹 스타일 */
+        .links {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+        /* 링크 스타일 */
+        .link {
+            margin: 0 10px;
+            text-decoration: none;
+            color: black;
+            font-size: 16px;
+            font-weight: bold;
+        }
+    </style>
+    <!-- 로고 링크 -->
+    <div class="header-box">
+        <a href="#" id="logoutLogo" class="logo">
+            <img src="/img/logo.png" alt="Shop" style="height: 60px; width: 250px;">
+        </a>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 로그아웃 링크
+            var logoutLink = document.getElementById('logoutLogo');
+
+            logoutLink.addEventListener('click', function(e) {
+
+                e.preventDefault();
+
+                // CSRF 토큰과 헤더
+                var csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+                var csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+                // XMLHttpRequest 객체를 생성
+                var xhr = new XMLHttpRequest();
+
+                // 로그아웃 엔드포인트로 POST 요청
+                xhr.open('POST', '/members/logout', true);
+
+                // 요청 헤더를 설정
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.setRequestHeader(csrfHeader, csrfToken);
+
+                // 요청 완료되면 실행
+                xhr.onreadystatechange = function() {
+                    // 요청이 완료되고 응답 코드가 200이면 실행
+                    if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                        window.location.href = '/';
+                    }
+                };
+
+                // 요청 전송
+                xhr.send();
+            });
+        });
+    </script>
+</div>
+</html>

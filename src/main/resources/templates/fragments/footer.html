@@ -1,14 +1,43 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
     <div class="footer" th:fragment="footer">
+        <style>
+            .footer {
+                background-color: black;
+                color: white;
+                font-size: 14px;
+                text-align: center;
+                padding: 20px 0;
+                margin-top: 30px;
+            }
+
+            .footer a {
+                color: #8C8A88;
+                text-decoration: none;
+                margin: 0 10px;
+            }
+
+            .footer a:hover {
+                color: white;
+                text-decoration: underline;
+            }
+        </style>
+
         <footer class="page-footer font-small cyan darken-3">
             <div class="footer-copyright text-center py-3">
                 2024 Shopping Mall Example WebSite
             </div>
+            <!-- 하단 저작권 정보 -->
 
+            <!-- 아이콘 제작자 정보 -->
             <a href="https://www.flaticon.com/kr/free-icons/" title="천 아이콘">천 아이콘 제작자: Uniconlabs - Flaticon</a>
             <a href="https://www.flaticon.com/kr/free-icons/" title="신발 아이콘">신발 아이콘 제작자: juicy_fish - Flaticon</a>
             <a href="https://www.flaticon.com/kr/free-icons/" title="넥타이 아이콘">넥타이 아이콘 제작자: Freepik - Flaticon</a>
+            <a href="https://www.flaticon.com/kr/free-icons/" title="확대경 아이콘">확대경 아이콘 제작자: DinosoftLabs - Flaticon</a>
+            <a href="https://www.flaticon.com/free-icons/next" title="next icons">Next icons created by Roundicons - Flaticon</a>
+            <a href="https://www.flaticon.com/free-icons/previous" title="previous icons">Next icons created by Roundicons - Flaticon</a>
+            <a href="https://www.flaticon.com/kr/free-icons/" title="검사 아이콘">검사 아이콘 제작자: Freepik - Flaticon</a>
         </footer>
     </div>
 </html>

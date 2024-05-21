@@ -43,23 +43,12 @@ public class RoomController {
 
     private final ItemService itemService;
 
-    //채팅방 목록 조회
-    @GetMapping("/rooms")
-    public String rooms(Model model){
-
-        log.info("# All Chat Rooms");
-        List<ChatRoomDTO> rooms = new ArrayList<>();
-        for(ChatRoom chatRoom : chatRoomRepository.findAllByOrderByIdDesc()){
-            rooms.add(ChatRoomDTO.entityToDto(chatRoom));
-        }
-        model.addAttribute("list", rooms);
-
-        return "chat/rooms";
-    }
-
     // 내가 속해있는 채팅방만
     @GetMapping("/flowtalk")
     public String myRoom(@AuthenticationPrincipal User user, Model model) {
+        if(memberService.findUnregisteredOAuthMember()){
+            return "redirect:/oauth/login";
+        }
         String userEmail = memberService.currentMemberEmail();
         if (userEmail.equals("anonymousUser")) {
             return "/error/loginError";
@@ -75,7 +64,11 @@ public class RoomController {
             if(chatRoom.getSellerEmail().equals(currentMemberEmail) ||
                chatRoom.getBuyerEmail().equals(currentMemberEmail)){
                 ChatRoomDTO chatRoomDTO = ChatRoomDTO.entityToDto(chatRoom);
-                chatRoomDTO.setItem(itemService.getItemDetail(chatRoom.getItemId()));
+                try{
+                    chatRoomDTO.setItem(itemService.getItemDetail(chatRoom.getItemId()));
+                }catch(EntityNotFoundException e){
+                    chatRoomDTO.setItem(null);
+                }
                 try{
                     chatRoomDTO.setSeller(memberService.getMemberFormDTOByEmail(chatRoom.getSellerEmail()));
                 }catch(EntityNotFoundException e){
@@ -94,26 +87,17 @@ public class RoomController {
             }
         }
 
+        System.out.println("==============sell=============");
+        sellRooms.forEach(room -> System.out.println("========================" + room));
+        System.out.println("==============buy=============");
+        buyRooms.forEach(room -> System.out.println("========================" + room));
+
         model.addAttribute("sellList", sellRooms);
         model.addAttribute("buyList", buyRooms);
 
         return "chat/rooms";
     }
 
-
-    //채팅방 개설
-    /*@PostMapping("/room")
-    public String create(@RequestParam("name") String name, RedirectAttributes rttr){
-
-        log.info("# Create Chat Room , name: " + name);
-        ChatRoomDTO chatRoomDTO = ChatRoomDTO.create(name);
-        ChatRoom chatRoom = ChatRoom.createChatRoom(chatRoomDTO);
-        System.out.println(chatRoom);
-        chatRoomRepository.save(chatRoom);
-        rttr.addFlashAttribute("roomName", chatRoomDTO);
-        return "redirect:/chat/rooms";
-    }
-    */
     //채팅방 개설
     @PostMapping("/room")
     public String createRoom(@RequestParam("itemId") Long itemId,
@@ -164,15 +148,8 @@ public class RoomController {
             return "redirect:/";
         }
     }
-    
-    //채팅방 조회
-    @GetMapping("/room")
-    public String getRoom(@RequestParam("roomId") String roomId, Model model){
 
-        log.info("# get Chat Room, roomID : " + roomId);
-
-        ChatRoom chatRoom = chatRoomRepository.findByUuid(roomId).orElseThrow(() ->
-                new EntityNotFoundException("방이 존재하지 않습니다. roomId = " + roomId));
+    private ChatRoomDTO getChatRoomDTO(ChatRoom chatRoom){
 
         /* entity -> DTO 변환 */
         ChatRoomDTO chatRoomDTO = ChatRoomDTO.entityToDto(chatRoom);
@@ -209,6 +186,26 @@ public class RoomController {
             chatRoomDTO.setEnabled(false);
         }
 
+        chatRoomDTO.setItem(item);
+        chatRoomDTO.setBuyer(buyer);
+        chatRoomDTO.setSeller(seller);
+
+        return chatRoomDTO;
+    }
+
+    //채팅방 조회
+    @GetMapping("/room")
+    public String getRoom(@RequestParam("roomId") String roomId, Model model){
+        if(memberService.findUnregisteredOAuthMember()){
+            return "redirect:/oauth/login";
+        }
+        log.info("# get Chat Room, roomID : " + roomId);
+
+        ChatRoom chatRoom = chatRoomRepository.findByUuid(roomId).orElseThrow(() ->
+                new EntityNotFoundException("방이 존재하지 않습니다. roomId = " + roomId));
+
+        ChatRoomDTO chatRoomDTO = getChatRoomDTO(chatRoom);
+
         /* 현재 접속한 사용자가 채팅방에 들어갈 수 있는지 확인 */
         String currentMember = memberService.currentMemberEmail();
         if(!currentMember.equals(chatRoom.getBuyerEmail()) &&
@@ -216,10 +213,6 @@ public class RoomController {
             log.info("허가되지 않은 사용자입니다.");
             return "redirect:/";
         }
-
-        chatRoomDTO.setItem(item);
-        chatRoomDTO.setBuyer(buyer);
-        chatRoomDTO.setSeller(seller);
 
         model.addAttribute("room", chatRoomDTO);
         model.addAttribute("currentMember", currentMember);
@@ -229,6 +222,7 @@ public class RoomController {
 
     @GetMapping("/getUsername")
     public @ResponseBody ResponseEntity getUsername(){
+
         try{
             Member member = memberService.findMemberByCurrentEmail();
             String username = member.getNickname();
@@ -302,5 +296,14 @@ public class RoomController {
             return new ResponseEntity<String>("오류가 발생했습니다." + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
+    }
+    @PostMapping("/getroominfo")
+    public @ResponseBody ResponseEntity getRoomInfo(@RequestBody Map<String, String> requestData){
+        String roomId = requestData.get("roomId");
+        ChatRoom chatRoom = chatRoomRepository.findByUuid(roomId).orElseThrow(() ->
+                new EntityNotFoundException("방이 존재하지 않습니다. roomId = " + roomId));
+
+        ChatRoomDTO chatRoomDTO = getChatRoomDTO(chatRoom);
+        return new ResponseEntity<ChatRoomDTO>(chatRoomDTO, HttpStatus.OK);
     }
 }

@@ -6,13 +6,7 @@
       최근 본 상품
     </div>
     <ul class="recent-view list-group list-group-flush">
-      <li class="recent-view-item list-group-item" th:each="item : ${session.recentViewedItems}">
-        <a th:href="@{'/item/' + ${item.itemId}}">
-          <img th:if="${item.imgName != null}" th:src="'/images/'+${item.imgName}"  alt="상품 이미지" />
-          <img th:unless="${item.imgName != null}" th:src="@{/img/default.PNG}"  alt="대체 이미지" />
-          <span th:text="${item.itemName}">상품명</span>
-        </a>
-      </li>
+
     </ul>
   </div>
   <style>
@@ -22,11 +16,26 @@
       right: 20px;
       width: 150px;
       min-height: 50px;
-      z-index: 1000;
+      z-index: 1000; /* 앞에 위치 */
     }
     .recent-viewed-items img {
-      width: 50px;
-      height: auto;
+      width: 45px;
+      height: 45px;
+      float: left;
+      margin-right: 10px;
+    }
+    .item-name span {
+      color: black;
+      display: -webkit-box;
+      -webkit-line-clamp: 2; /* 라인 수 제한 */
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: normal; /* 띄어쓰기와 자동 줄바꿈 활성화 */
+      max-width: 90px;
+    }
+    .item-name a {
+      text-decoration: none;
     }
   </style>
 
@@ -34,25 +43,35 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      var recentItems = Cookies.get('recentViewedItems');
+          // 쿠키에서 최근 본 상품 목록을 가져옴
+        var recentItems = Cookies.get('recentViewedItems');
 
-      if (recentItems) {
-        try {
-          var items = JSON.parse(decodeURIComponent(recentItems));
-          var list = document.querySelector('.recent-view');
-          items.forEach(function(item) {
-            var listItem = document.createElement('li');
-            listItem.className = 'recent-view-item list-group-item';
-            listItem.innerHTML = '<a href="/item/' + item.itemId + '">' +
-                                 '<img src="' + (item.imgName ? '/images/' + item.imgName : '/img/default.PNG') + '" alt="상품 이미지" />' +
-                                 '<span>' + item.itemName + '</span>' +
-                                 '</a>';
-            list.appendChild(listItem);
-          });
-        } catch (e) {
-          console.error('최근 본 상품 목록을 불러오는 데 실패했습니다.', e);
+        // 쿠키에 최근 본 상품이 있다면 실행
+        if (recentItems) {
+            try {
+                // JSON 형식으로 저장된 최근 본 상품 목록을 파싱
+                var items = JSON.parse(decodeURIComponent(recentItems));
+                // 최근 본 상품 목록을 표시할 리스트 요소를 가져옴
+                var list = document.querySelector('.recent-view');
+                // 각 상품을 리스트에 추가
+                items.forEach(function(item) {
+                    // 리스트 아이템 생성
+                    var listItem = document.createElement('li');
+                    // 클래스 지정
+                    listItem.className = 'recent-view-item list-group-item';
+                    // 리스트 아이템 내용 생성
+                    listItem.innerHTML = '<a class="item-name" href="/item/' + item.itemId + '" style="text-decoration: none;">' +
+                                         '<img src="' + (item.imgName ? '/images/' + item.imgName : '/img/default.PNG') + '" alt="상품 이미지" />' +
+                                         '<span>' + decodeURIComponent(item.itemName.replace(/\+/g, ' ')) + '</span>' +
+                                         '</a>';
+                    // 리스트에 아이템 추가
+                    list.appendChild(listItem);
+                });
+            } catch (e) {
+                // 오류 발생 시 콘솔에 오류 메시지 출력
+                console.error('최근 본 상품 목록을 불러오는 데 실패했습니다.', e);
+            }
         }
-      }
     });
   </script>
 </div>

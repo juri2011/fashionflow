@@ -27,12 +27,16 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public class AuthService {
 
+    // 멤버 인증 코드 리포지토리
     private final MemberAuthenticationCodeRepository memberAuthenticationCodeRepository;
+    // 멤버 리포지토리
     private final MemberRepository memberRepository;
+    // 비밀번호 인코더
     private final PasswordEncoder passwordEncoder;
+    // 이메일 서비스
     private final EmailService emailService;
 
-
+    // 이메일 인증 코드를 전송하는 메서드
     @Transactional
     public ResponseEntity<?> sendEmailAuthentication(ReqSendEmailAuthenticationDTO reqSendEmailAuthenticationDTO) {
         String email = reqSendEmailAuthenticationDTO.getEmail();
@@ -95,6 +99,7 @@ public class AuthService {
         return RandomStringUtils.random(8, true, true);
     }
 
+    // 이메일 인증 코드를 확인하는 메서드
     @Transactional
     public HttpEntity<?> authenticateCode(ReqAuthenticateCodeDTO reqAuthenticateCodeDTO) {
 
@@ -138,7 +143,7 @@ public class AuthService {
 
     }
 
-
+    // 비밀번호를 재설정하는 메서드
     @Transactional
     public ResponseEntity<?> resetPassword(ResetPasswordDTO resetPasswordDTO) {
         Member member = memberRepository.findByEmail(resetPasswordDTO.getEmail());
@@ -146,6 +151,7 @@ public class AuthService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "계정을 찾을 수 없습니다.", "code", -1));
         }
 
+        // 새로운 비밀번호를 인코딩하여 저장
         String encodedPassword = passwordEncoder.encode(resetPasswordDTO.getNewPassword());
         member.setPwd(encodedPassword);
         memberRepository.save(member);

@@ -28,16 +28,16 @@
         }
 
         .content{
+
             display:block;
         }
 
         #container {
-            min-width: 800px;
+            width: 1250px;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            width: 80%;
-            margin: 20px auto;
+            margin: 0 auto;
         }
 
         #item-container{ padding: 5px; }
@@ -298,7 +298,6 @@
                             <select class="form-select" name="tagSelect" id="tagSelect">
                                 <option value="default">--선택--</option>
                                 <option value="VIOLATION">규정위반</option>
-                                <option value="test">test</option>
                             </select>
                             <div class="tagBox"></div>
                         </div>
@@ -355,7 +354,18 @@
     <script>
         $(document).ready(function(){
             $('.reportBtn').on('click', function(){
-                $('#detailPopup').show();
+                const currentMemberEmail = $('#currentMemberEmail').val();
+                const shopMemberEmail = $('#shopMemberEmail').val();
+                if(currentMemberEmail === 'anonymousUser' || !currentMemberEmail){
+                    alert('로그인 후 이용해주세요.');
+                    location.href = "/members/login";
+                    return;
+                }else if(currentMemberEmail === shopMemberEmail){
+                    alert('등록한 상품은 신고할 수 없습니다.');
+                    return;
+                }else{
+                    $('#detailPopup').show();
+                }
             });
             $('.closePopup').on('click', function(){
                 $('#detailPopup').hide();
@@ -384,12 +394,31 @@
 
             //찜하기
             $('.heartBtn').on('click', function(){
-                heartItem();
+                const currentMemberEmail = $('#currentMemberEmail').val();
+                const shopMemberEmail = $('#shopMemberEmail').val();
+                if(currentMemberEmail === shopMemberEmail){
+                    alert('등록한 상품은 찜할 수 없습니다.');
+                    return;
+                }else{
+                    heartItem();
+                }
             });
 
             //사용자 신고
             $('.reportMemberBtn').on('click', function(){
-                $('#detailPopupMember').show();
+                const currentMemberEmail = $('#currentMemberEmail').val();
+                const shopMemberEmail = $('#shopMemberEmail').val();
+                if(currentMemberEmail === 'anonymousUser' || !currentMemberEmail){
+                    alert('로그인 후 이용해주세요.');
+                    location.href = "/members/login";
+                    return;
+                }else if(currentMemberEmail === shopMemberEmail){
+                    alert('자신은 신고할 수 없습니다.');
+                    return;
+                }else{
+                    $('#detailPopupMember').show();
+                }
+
             });
             $('.reportConfirmMember').on('click', function(){
                 reportMember();
@@ -423,12 +452,11 @@
                 const shopMemberEmail = $('#shopMemberEmail').val();
 
                 if(currentMemberEmail === 'anonymousUser' || !currentMemberEmail){
-                    alert('로그인이 필요합니다.');
+                    alert('로그인 후 이용해주세요.');
                     location.href = "/members/login";
-                }
-
-                if(currentMemberEmail === shopMemberEmail){
-                    alert('구매자 정보가 판매자 정보와 일치합니다.');
+                    return;
+                }else if(currentMemberEmail === shopMemberEmail){
+                    location.href = "/chat/flowtalk";
                 }else{
                     $("#chat-form").submit();
                 }
@@ -456,13 +484,12 @@
                 cache: false,
                 success: function (result, status) {
                     alert("찜 상품에 추가되었습니다.");
-                    //location.href = '/';
                 },
                 error: function (jqXHR, status, error) {
 
                     if (jqXHR.status == '401') {
                         alert('로그인 후 이용해주세요');
-                        //location.href = '/members/login';
+                        location.href = "/members/login";
                     } else {
                         alert(jqXHR.responseText);
                     }
@@ -509,7 +536,7 @@
 
                     if (jqXHR.status == '401') {
                         alert('로그인 후 이용해주세요');
-                        //location.href = '/members/login';
+                        location.href = '/members/login';
                     } else {
                         alert(jqXHR.responseText);
                     }
@@ -556,7 +583,7 @@
 
                             if (jqXHR.status == '401') {
                                 alert('로그인 후 이용해주세요');
-                                //location.href = '/members/login';
+                                location.href = '/members/login';
                             } else {
                                 alert(jqXHR.responseText);
                             }

@@ -110,51 +110,87 @@
             var userEmail = 'null';
             const token = $("meta[name='_csrf']").attr("content");
             const header = $("meta[name='_csrf_header']").attr("content");
-
-            const sellStatus = '[[${#strings.toString(room.item.sellStatus)}]]';
+            var sellStatus = 'null';
 
             var sellBtnEnabled = false;
 
-            if(sellStatus === 'SOLD_OUT'){
-                $('#btnContainer').empty();
-                $('#btnContainer').append('<button class="btn btn-secondary">거래완료됨</button>');
-                sellBtnEnabled = true;
+            getRoomInfo();
+
+            function getRoomInfo(){
+                const paramData={
+                    roomId: roomId
+                };
+                const param = JSON.stringify(paramData);
+                $.ajax({
+                    url: "/chat/getroominfo", // 사용자 이름을 반환하는 엔드포인트
+                    method: "POST",
+                    contentType: "application/json",
+                    data: param,
+                    beforeSend: function (xhr) {
+                        /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                        xhr.setRequestHeader(header, token);
+                    },
+                    success: function(response) {
+                        if(response.item != null){
+                            sellStatus = response.item.sellStatus;
+                        }else{
+                            console.log('item is null');
+                        }
+                        if(sellStatus === 'SOLD_OUT'){
+                            $('#btnContainer').empty();
+                            $('#btnContainer').append('<button class="btn btn-secondary">거래완료됨</button>');
+                            sellBtnEnabled = true;
+                        }
+                        getUserInfo();
+                    },
+                    error: function(xhr, status, error) {
+                        console.log("validate fail");
+                        alert(xhr.responseText);
+                        //location.href = '/';
+                    }
+                });
             }
 
+            function getUserInfo(){
+                $.ajax({
+                    url: "/chat/getUsername", // 사용자 이름을 반환하는 엔드포인트
+                    method: "GET",
+                    contentType: "application/json",
+                    success: function(response) {
+                        //$("#username").text(response.username); // 받은 사용자 이름을 페이지에 표시
 
-            $.ajax({
-                url: "/chat/getUsername", // 사용자 이름을 반환하는 엔드포인트
-                method: "GET",
-                contentType: "application/json",
-                success: function(response) {
-                    //$("#username").text(response.username); // 받은 사용자 이름을 페이지에 표시
-
-                    console.log(response);
+                        console.log(response);
 
 
-                    username = response.nickname;
-                    userEmail = response.email;
-                    console.log(roomName + ", " + roomId + ", " + response);
+                        username = response.nickname;
+                        userEmail = response.email;
+                        console.log(roomName + ", " + roomId + ", " + response);
 
-                    //사용자 이름을 받아왔으면 유효한 사용자인지 확인
-                    userValidate();
-                    //사용자 이름을 받아왔으면 채팅 기록 출력
-                    loadChatHistory();
-                    //채팅기록을 받아왔으면 WebSocket 연결
-                    console.log(enabled);
-                    if(enabled === true){
-                        connectToWebSocket();
-                        $("#msg").removeAttr("disabled");
-                    }else{
-                        $("#msg").val("사용할 수 없는 채팅방입니다.");
+                        //사용자 이름을 받아왔으면 유효한 사용자인지 확인
+                        userValidate();
+                        //사용자 이름을 받아왔으면 채팅 기록 출력
+                        loadChatHistory();
+                        //채팅기록을 받아왔으면 WebSocket 연결
+                        console.log(enabled);
+                        if(enabled === true && sellStatus === 'SELLING'){
+                            connectToWebSocket();
+                            $("#msg").removeAttr("disabled");
+                        }else if(sellStatus === 'SUSPENDED'){
+                            $("#msg").attr("placeholder","판매가 중지된 상품입니다.");
+                        }else if(sellStatus === 'SOLD_OUT'){
+                            $("#msg").attr("placeholder","판매가 완료된 상품입니다.");
+                        }else{
+                            $("#msg").attr("placeholder","사용할 수 없는 채팅방입니다.");
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error fetching username:", error);
+                        alert(xhr.responseText);
+                        location.href = '/';
                     }
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error fetching username:", error);
-                    alert(xhr.responseText);
-                    location.href = '/';
-                }
-            });
+                });
+            }
+
 
             function userValidate(){
                 const paramData={

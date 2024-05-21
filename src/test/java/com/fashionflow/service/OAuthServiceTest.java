@@ -27,7 +27,8 @@ class OAuthServiceTest {
 
         // 모든 문자가 지정된 문자 집합에 포함되어 있는지 확인
         for (char c : randomString.toCharArray()) {
-            assertTrue(characters.indexOf(c) != -1, "Generated string contains invalid character: " + c);
+            assertTrue(characters.indexOf(c) != -1,
+                    "Generated string contains invalid character: " + c);
         }
     }
 

@@ -19,6 +19,9 @@ public class ImageController {
     @Value("${itemImgLocation}")
     private String itemImgLocation;
 
+    @Value("${profileImgLocation}")
+    private String profileImgLocation;
+
     @Value("${uploadPath}")
     private String uploadPath;
 
@@ -26,6 +29,23 @@ public class ImageController {
     public ResponseEntity<Resource> serveFile(@PathVariable("filename") String filename) {
       
         Path file = Paths.get(itemImgLocation).resolve(filename);
+        try {
+            Resource resource = new UrlResource(file.toUri());
+            if (resource.exists() || resource.isReadable()) {
+                return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + resource.getFilename() + "\"").body(resource);
+            } else {
+                throw new RuntimeException("Could not read the file!");
+            }
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("Error: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/profile/{filename:.+}")
+    public ResponseEntity<Resource> serveProfile(@PathVariable("filename") String filename) {
+
+        Path file = Paths.get(profileImgLocation).resolve(filename);
         try {
             Resource resource = new UrlResource(file.toUri());
             if (resource.exists() || resource.isReadable()) {

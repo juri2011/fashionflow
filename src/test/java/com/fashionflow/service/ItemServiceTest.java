@@ -4,6 +4,7 @@ import com.fashionflow.dto.*;
 import com.fashionflow.entity.Item;
 import com.fashionflow.entity.ItemImg;
 import com.fashionflow.entity.ItemTag;
+import com.fashionflow.entity.Member;
 import com.fashionflow.repository.ItemImgRepository;
 import com.fashionflow.repository.ItemRepository;
 import com.fashionflow.repository.ItemTagRepository;
@@ -19,7 +20,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.URLDecoder;
@@ -34,14 +37,12 @@ import static org.mockito.Mockito.when;
 @Transactional
 class ItemServiceTest {
 
-    @Autowired
-    ItemRepository itemRepository;
 
-    @Autowired
-    ItemImgRepository itemImgRepository;
+    @Mock
+    private ItemRepository itemRepository;
 
-    @Autowired
-    ItemTagRepository itemTagRepository;
+    @Mock
+    private MemberRepository memberRepository;
 
     @Autowired
     ItemService itemService;
@@ -75,9 +76,9 @@ class ItemServiceTest {
 
     }
 */
-    private ItemFormDTO getItemFormDTO(Long itemId,
-                                           List<ItemImgDTO> itemImgDTOList,
-                                           List<ItemTagDTO> itemTagDTOList){
+  /*  private ItemFormDTO getItemFormDTO(Long itemId,
+                                       List<ItemImgDTO> itemImgDTOList,
+                                       List<ItemTagDTO> itemTagDTOList){
         //Repository에서 파라미터(상품 번호)로 Item 엔티티 가져오기
         Item item = itemRepository.findById(itemId).orElseThrow(() ->
                 new EntityNotFoundException("해당 상품이 존재하지 않습니다. id = " + itemId));
@@ -108,7 +109,7 @@ class ItemServiceTest {
     }
 
     private List<ItemTagDTO> getItemTagDTOList(Long itemId){
-        /* 상품 태그 리스트 가져오기 */
+        *//* 상품 태그 리스트 가져오기 *//*
         List<ItemTag> itemTagList = itemTagRepository.findByItemId(itemId);
         List<ItemTagDTO> itemTagDTOList = new ArrayList<>();
         for(ItemTag itemTag : itemTagList){
@@ -132,7 +133,17 @@ class ItemServiceTest {
         List<ItemTag> itemTagList = itemTagRepository.findByItemId(1L);
         itemTagList.forEach(itemTag -> System.out.println("=================" + itemTag));
     }
+*/
 
+    @Test
+    public void testSaveItem() throws Exception {
+        // Given
+        // 테스트용 파일 생성
+        MockMultipartFile file1 = new MockMultipartFile("itemImgFile", "test1.jpg", "image/jpeg", "test image content".getBytes());
+        MockMultipartFile file2 = new MockMultipartFile("itemImgFile", "test2.jpg", "image/jpeg", "test image content".getBytes());
+        List<MultipartFile> fileList = new ArrayList<>();
+        fileList.add(file1);
+        fileList.add(file2);
 
     @Test
     public void getRecentViewedItems() throws IOException {
@@ -150,3 +161,5 @@ class ItemServiceTest {
         assertEquals(new ArrayList<>(), actualItems);
     }
 }
+
+

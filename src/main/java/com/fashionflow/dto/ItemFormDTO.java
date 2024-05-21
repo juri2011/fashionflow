@@ -36,7 +36,6 @@ public class ItemFormDTO {
     @Builder.Default // Builder로 인스턴스 생성 시 초기값 지정
     private Integer viewCount = 0; //조회수
 
-    //private Category category; //카테고리
     private CategoryDTO categoryDTO;
 
     private ItemStatus itemStatus; //상품 상태

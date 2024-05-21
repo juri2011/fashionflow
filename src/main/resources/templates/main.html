@@ -250,10 +250,9 @@
             <!-- 각 제품 -->
             <div th:each="product : ${Top8products}" class="product-item">
                 <a th:href="@{/item/{id}(id=${product.id})}">
-                    <div class="image-container">
-                        <!-- 제품 이미지 -->
-                        <img th:src="'/images/'+${product.imgName}" alt="Product Image" class="product-image clickable">
-                    </div>
+                    <!-- 상품 이미지가 있을 경우 해당 이미지 표시, 없을 경우 대체 이미지 표시 -->
+                    <img th:src="${product.imgName != null ? '/images/' + product.imgName : '/img/default.PNG'}"
+                         alt="Product Image" class="product-image clickable">
                 </a>
                 <!-- 제품 이름 -->
                 <span class="product-name">

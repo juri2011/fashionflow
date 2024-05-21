@@ -2,7 +2,9 @@ package com.fashionflow.service;
 
 import com.fashionflow.dto.MemberFormDTO;
 import com.fashionflow.entity.Member;
+import com.fashionflow.entity.ProfileImage;
 import com.fashionflow.repository.MemberRepository;
+import com.fashionflow.repository.ProfileImageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,9 +21,11 @@ public class OAuthService {
 
     private final MemberRepository memberRepository;
     private final MemberService memberService;
+    private final ProfileImgService profileImgService;
+    private final ProfileImageRepository profileImageRepository;
 
     //회원 등록 메소드
-    public void registerOAuth(MemberFormDTO memberFormDTO, PasswordEncoder passwordEncoder) {
+    public void registerOAuth(MemberFormDTO memberFormDTO, PasswordEncoder passwordEncoder) throws Exception {
 
 
 
@@ -47,7 +51,19 @@ public class OAuthService {
         //중복 확인
         memberService.checkDuplicate(member);
 
+        // 회원 저장
         memberRepository.save(member);
+
+        // 프로필 이미지 저장 및 회원에 연결
+        if (memberFormDTO.getProfileImageFile() != null) {
+            ProfileImage profileImage = new ProfileImage();
+            profileImgService.saveProfileImage(profileImage, memberFormDTO.getProfileImageFile());
+            profileImage.setMember(member);
+            member.setProfileImage(profileImage); // 연관 관계 설정
+
+            // 프로필 이미지 저장
+            profileImageRepository.save(profileImage);
+        }
 
     }
 

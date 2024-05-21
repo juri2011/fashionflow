@@ -1,9 +1,7 @@
 package com.fashionflow.service;
 
-import com.fashionflow.dto.ItemFormDTO;
-import com.fashionflow.dto.ItemImgDTO;
-import com.fashionflow.dto.MemberDetailDTO;
-import com.fashionflow.dto.ProfileImageDTO;
+import com.fashionflow.constant.Gender;
+import com.fashionflow.dto.*;
 import com.fashionflow.entity.*;
 import com.fashionflow.repository.ItemSellRepository;
 import com.fashionflow.repository.MemberRepository;
@@ -22,10 +20,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,8 +52,12 @@ class MemberServiceTest {
     @Autowired
     ItemSellRepository itemSellRepository;
 
-    @InjectMocks
+    @Autowired
     private MemberService memberService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
 
     @Mock
     private SecurityContext securityContext;
@@ -162,5 +167,35 @@ class MemberServiceTest {
         assertEquals("user@example.com", email);
     }
 
+
+    @Test
+    void registerMemberTest() {
+        // 테스트에 사용할 MemberFormDTO 생성
+        MemberFormDTO memberFormDTO = new MemberFormDTO();
+        memberFormDTO.setName("Test Name");
+        memberFormDTO.setEmail("test@example.com");
+        memberFormDTO.setPwd("password");
+        memberFormDTO.setNickname("TestNickname");
+        memberFormDTO.setPhone("01012345678");
+        memberFormDTO.setBirth(LocalDate.now());
+        memberFormDTO.setGender(Gender.m);
+        memberFormDTO.setUserAddr("Test Address");
+        memberFormDTO.setUserDaddr("Detailed Address");
+        memberFormDTO.setUserStnum("123-45");
+
+        // 회원 등록 메소드 실행
+        memberService.registerMember(memberFormDTO, passwordEncoder);
+
+        // 회원 정보가 데이터베이스에 저장되었는지 확인
+        Member result = memberRepository.findByEmail(memberFormDTO.getEmail());
+
+        // 검증
+        assertNotNull(result);
+        assertEquals(memberFormDTO.getEmail(), result.getEmail());
+        assertTrue(passwordEncoder.matches("password", result.getPwd()));
+        assertEquals(memberFormDTO.getNickname(), result.getNickname());
+        assertEquals(memberFormDTO.getPhone(), result.getPhone());
+        // 다른 필드에 대한 검증도 추가할 수 있습니다.
+    }
 
 }

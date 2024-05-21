@@ -39,13 +39,14 @@ public class ReportItemService {
 
     private final ItemService itemService;
 
+    // 리포트 아이템 추가
     public Long addReportItem(ReportItemDTO reportItemDTO){
         System.out.println("========================service 진입" + reportItemDTO);
-        //신고한 회원 정보
+        // 신고한 회원 정보
         Member reporterMemeber = memberRepository.findByEmail(reportItemDTO.getReporterMemberEmail());
-        //신고대상 상품 정보
+        // 신고대상 상품 정보
         Item reportedItem = itemRepository.findItemById(reportItemDTO.getReportedItemId());
-        //신고 항목
+        // 신고 항목
         ReportItem reportItem =reportItemDTO.createReportItem();
         reportItem.setReportedItem(reportedItem);
         reportItem.setReporterMember(reporterMemeber);
@@ -54,10 +55,10 @@ public class ReportItemService {
         System.out.println(savedReportItem);
 
         for(String reportTagItemString : reportItemDTO.getReportTagItemList()){
-            //유효한 태그만 추가
+            // 유효한 태그만 추가
             if(EnumUtils.isValidEnum(ReportTagItem.class,reportTagItemString)){
                 ReportItemTag reportItemTag = ReportItemTag.builder()
-                        .reportTagItem(ReportTagItem.valueOf(reportTagItemString)) //String to Enum
+                        .reportTagItem(ReportTagItem.valueOf(reportTagItemString)) // String to Enum
                         .build();
                 reportItemTag.setReportItem(reportItem);
                 System.out.println("==============================" + reportItemTagRepository.save(reportItemTag));
@@ -67,36 +68,33 @@ public class ReportItemService {
         return savedReportItem.getId();
     }
 
+    // 리포트 아이템 페이지 조회
     public Page<ReportItemDTO> getReportItemDTOPage(Pageable pageable){
-
-
         System.out.println("=====================service==================");
         Page<ReportItem> reportItems = reportItemRepository.findAllByOrderByIdDesc(pageable);
-        //Page<ReportItem> reportItems = reportItemRepository.getReportItemPage(pageable);
-
 
         System.out.println(reportItems.getTotalPages());
 
         /* 상품 이미지, 태그 정보는 들어있지 않음 */
         Page<ReportItemDTO> reportItemDTOPage = reportItems.map(m -> {
 
-            //신고 항목 entity를 DTO로 변환
+            // 신고 항목 entity를 DTO로 변환
             ReportItemDTO reportItemDTO = ReportItemDTO.entityToDTO(m);
 
             /* 신고 태그 목록 필드에 들어갈 리스트 생성 */
-            //DB에서 현재 신고목록의 태그 목록 받아오기
+            // DB에서 현재 신고목록의 태그 목록 받아오기
             List<ReportItemTag> reportItemTagList = reportItemTagRepository.findAllByReportItem_Id(m.getId());
 
-            //신고 항목 DTO에 저장할 리스트 생성
+            // 신고 항목 DTO에 저장할 리스트 생성
             List<ReportItemTagDTO> reportItemTagDTOList = new ArrayList<>();
 
-            //신고 태그 목록 Entity -> DTO로 변경
+            // 신고 태그 목록 Entity -> DTO로 변경
             for(ReportItemTag reportItemTag : reportItemTagList){
                 ReportItemTagDTO reportItemTagDTO = ReportItemTagDTO.entityToDTO(reportItemTag);
                 reportItemTagDTOList.add(reportItemTagDTO);
             }
 
-            //신고 항목의 태그목록 필드 저장
+            // 신고 항목의 태그목록 필드 저장
             reportItemDTO.setReportItemTagDTOList(reportItemTagDTOList);
 
             return reportItemDTO;
@@ -104,14 +102,15 @@ public class ReportItemService {
 
         System.out.println(reportItemDTOPage.getTotalPages());
 
-
         return reportItemDTOPage;
     }
 
+    // 리포트 아이템 삭제
     public void deleteReportItem(Long id) {
         reportItemRepository.deleteById(id);
     }
 
+    // 아이디로 리포트 아이템 조회
     public ReportItemDTO getReportItemDTOById(Long id) {
         ReportItem reportItem = reportItemRepository.findById(id).orElseThrow(() ->
                 new EntityNotFoundException("해당 리뷰가 존재하지 않습니다. id = " + id));
@@ -137,34 +136,35 @@ public class ReportItemService {
         return reportItemDTO;
     }
 
+    // 리포트 아이템 업데이트
     public Long updateReportItem(ReportItemDTO reportItemDTO) {
         ReportItem targetReportItem = reportItemRepository.findById(reportItemDTO.getId()).orElseThrow(() ->
                 new EntityNotFoundException("해당 리뷰가 존재하지 않습니다. id = " + reportItemDTO.getId()));
 
-        //DB에서 태그 불러오기
+        // DB에서 태그 불러오기
         List<ReportItemTag> reportItemTagList = reportItemTagRepository.findAllByReportItem_Id(reportItemDTO.getId());
-        //태그 이름만 List로 변환
+        // 태그 이름만 List로 변환
         List<ReportTagItem> reportTagItems = reportItemTagList.stream()
                 .map(ReportItemTag::getReportTagItem)
                 .toList();
 
-        //Entity를 순회해서 DTO에 없는 태그는 삭제
+        // Entity를 순회해서 DTO에 없는 태그는 삭제
         for(ReportItemTag reportItemTag : reportItemTagList){
             ReportTagItem reportTagItem = reportItemTag.getReportTagItem();
             if(!reportItemDTO.getReportTagItemList().contains(reportTagItem.name())){
                 reportItemTagRepository.deleteById(reportItemTag.getId());
             }
         }
-        //DTO가 entity에 없는 태그를 갖고 있다면 추가
+        // DTO가 entity에 없는 태그를 갖고 있다면 추가
         for(String reportTagItemString : reportItemDTO.getReportTagItemList()){
 
-            //유효한 태그만 추가
+            // 유효한 태그만 추가
             if(EnumUtils.isValidEnum(ReportTagItem.class,reportTagItemString)){
 
                 if(reportTagItems.contains(ReportTagItem.valueOf(reportTagItemString))) continue;
 
                 ReportItemTag reportItemTag = ReportItemTag.builder()
-                        .reportTagItem(ReportTagItem.valueOf(reportTagItemString)) //String to Enum
+                        .reportTagItem(ReportTagItem.valueOf(reportTagItemString)) // String to Enum
                         .build();
                 reportItemTag.setReportItem(targetReportItem);
                 reportItemTagRepository.save(reportItemTag);
@@ -178,6 +178,7 @@ public class ReportItemService {
         return targetReportItem.getId();
     }
 
+    // 리포트 아이템 처리
     public void processReportItem(ReportItemDTO reportItemDTO, String command){
         Long itemId = reportItemDTO.getReportedItemId();
         Item item = itemRepository.findById(itemId).orElseThrow(() ->
@@ -185,20 +186,21 @@ public class ReportItemService {
 
         if(EnumUtils.isValidEnum(ReportManageCommand.class,command)){
             if(ReportManageCommand.valueOf(command).equals(ReportManageCommand.SUSPEND)){
-                //판매중지로 상태 변경
+                // 판매중지로 상태 변경
                 item.setSellStatus(SellStatus.SUSPENDED);
             }else if(ReportManageCommand.valueOf(command).equals(ReportManageCommand.DELETE)){
-                //상품 삭제
+                // 상품 삭제
                 itemRepository.delete(item);
             }
         }else{
             throw new IllegalStateException("유효하지 않은 명령입니다.");
         }
 
-        //신고 처리완료
+        // 신고 처리완료
         Long reportId = reportItemDTO.getId();
         ReportItem reportItem = reportItemRepository.findById(reportId).orElseThrow(() ->
                 new EntityNotFoundException("해당 리뷰가 존재하지 않습니다. id = " + reportId));
         reportItem.setReportStatus(ReportStatus.COMPLETE);
     }
 }
+

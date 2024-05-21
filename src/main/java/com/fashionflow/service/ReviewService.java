@@ -28,6 +28,7 @@ public class ReviewService {
     private final ItemRepository itemRepository;
     private final ReviewTagRepository reviewTagRepository;
 
+    // 상품 리뷰 및 이미지 목록 가져오기
     public List<ReviewDTO> getItemReviewListWithImg(String userEmail) {
         List<ReviewDTO> reviewDTOs = new ArrayList<>();
 
@@ -47,6 +48,7 @@ public class ReviewService {
         //시도 3: Review 엔티티에 seller_email 필드를 넣어서 조회
         List<Review> reviews = reviewRepository.findBySellerEmailOrderByRegDateDesc(userEmail);
 
+        // 리뷰 목록 출력
         reviews.forEach(review -> System.out.println("==========================" + review));
 
         for (Review review : reviews) {

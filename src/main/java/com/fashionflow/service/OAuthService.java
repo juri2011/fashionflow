@@ -8,9 +8,6 @@ import com.fashionflow.repository.ProfileImageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.Validator;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
 
 import java.time.LocalDateTime;
 import java.util.Random;
@@ -24,14 +21,13 @@ public class OAuthService {
     private final ProfileImgService profileImgService;
     private final ProfileImageRepository profileImageRepository;
 
-    //회원 등록 메소드
+    // 회원 등록 메소드
     public void registerOAuth(MemberFormDTO memberFormDTO, PasswordEncoder passwordEncoder) throws Exception {
 
-
-
-        //Bcrypt 인코드
+        // Bcrypt 인코드
         String encodedPassword = passwordEncoder.encode(memberFormDTO.getPwd());
 
+        // Member 객체 생성
         Member member = Member.builder()
                 .name(memberFormDTO.getName())
                 .email(memberFormDTO.getEmail())
@@ -48,7 +44,7 @@ public class OAuthService {
                 .providerId(memberFormDTO.getProviderId())
                 .build();
 
-        //중복 확인
+        // 중복 확인
         memberService.checkDuplicate(member);
 
         // 회원 저장
@@ -67,7 +63,7 @@ public class OAuthService {
 
     }
 
-    //난수 문자열 생성
+    // 난수 문자열 생성
     public static String generateRandomString(int length) {
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+";
         Random rand = new Random();
@@ -79,8 +75,4 @@ public class OAuthService {
         }
         return stringBuilder.toString();
     }
-
-
-
-
 }

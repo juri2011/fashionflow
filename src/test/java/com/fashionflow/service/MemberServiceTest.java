@@ -169,7 +169,7 @@ class MemberServiceTest {
 
 
     @Test
-    void registerMemberTest() {
+    void registerMemberTest() throws Exception {
         // 테스트에 사용할 MemberFormDTO 생성
         MemberFormDTO memberFormDTO = new MemberFormDTO();
         memberFormDTO.setName("Test Name");

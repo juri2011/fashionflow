@@ -9,9 +9,8 @@
         }
 
         .no-room{
-            width: 800px;
-            height: 200px;
-            position:absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 1250px;
+            padding: 40px;
             font-size: 28px;
             color: #555;
             text-align: center;
@@ -138,7 +137,7 @@
         </div>
 
         <th:block th:if="${#lists.size(sellList) == 0} and ${#lists.size(buyList) == 0}">
-            <div class="no-room">아직 채팅방을 개설하지 않으셨네요.<br>상품 페이지의 '플로우톡' 버튼을 눌러 새로운 채팅을 시작해보세요!</div>
+            <div class="no-room">아직 채팅방을 개설하지 않으셨네요.<br>상품 페이지의 '플로우톡' 버튼을 눌러서<br> 새로운 채팅을 시작해보세요!</div>
         </th:block>
     </div>
 </div>

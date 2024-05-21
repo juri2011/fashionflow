@@ -37,13 +37,14 @@
                         <div th:if="${room.buyer} != null">
 
                             <img style="width: 80px; height:80px;"
-                                 th:if="${room.buyer.profileImageDTO}==null" src="/img/profile_default.png">
+                                 th:if="${room.buyer.profileImageDTO == null || #strings.isEmpty(room.buyer.profileImageDTO.imgName)}"
+                                 src="/img/profile_default.png">
                             <!-- 테스트를 위해 임시 경로를 지정했지만 파일업로드 기능이 구현되면 변경될 수 있습니다.
                             view에서 null인지 조건을 검사하는 것보다 회원가입할 때 사용자가 프로필 사진을 따로 설정하지 않았으면
                              기본 사진의 경로와 이미지 이름으로 지정하는 것이 더 깔끔해 보임 -->
 
                             <img style="width: 80px; height:80px;"
-                                 th:if="${room.buyer.profileImageDTO}!=null"
+                                 th:if="${room.buyer.profileImageDTO != null && not #strings.isEmpty(room.buyer.profileImageDTO.imgName)}"
                                  th:src="${room.buyer.profileImageDTO.uploadPath}+${room.seller.profileImageDTO.filename}">
                             <span th:text="${room.buyer.nickname}">
                             </span>
@@ -90,13 +91,14 @@
                         <div th:if="${room.seller} != null">
 
                             <img style="width: 80px; height:80px;"
-                                 th:if="${room.seller.profileImageDTO}==null" src="/img/profile_default.png">
+                                 th:if="${room.seller.profileImageDTO == null || #strings.isEmpty(room.seller.profileImageDTO.imgName)}"
+                                 src="/img/profile_default.png">
                             <!-- 테스트를 위해 임시 경로를 지정했지만 파일업로드 기능이 구현되면 변경될 수 있습니다.
                             view에서 null인지 조건을 검사하는 것보다 회원가입할 때 사용자가 프로필 사진을 따로 설정하지 않았으면
                              기본 사진의 경로와 이미지 이름으로 지정하는 것이 더 깔끔해 보임 -->
 
                             <img style="width: 80px; height:80px;"
-                                 th:if="${room.seller.profileImageDTO}!=null"
+                                 th:if="${room.seller.profileImageDTO != null && not #strings.isEmpty(room.seller.profileImageDTO.imgName)}"
                                  th:src="${room.seller.profileImageDTO.uploadPath}+${room.seller.profileImageDTO.filename}">
                             <span th:text="${room.seller.nickname}">
                             </span>

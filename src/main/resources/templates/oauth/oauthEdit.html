@@ -5,6 +5,54 @@
 <head>
     <title>간편 로그인 수정</title>
 </head>
+
+<!-- 사용자 스크립트 추가 -->
+<th:block layout:fragment="script">
+    <!-- jQuery CDN -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script th:inline="javascript">
+        $(document).ready(function(){
+            var errorMessage = [[${errorMessage}]];
+            if(errorMessage != null){
+                alert(errorMessage);
+            }
+            bindDomEvent();
+        });
+
+        function bindDomEvent(){
+            $(".custom-file-input").on("change", function() {
+                var fileName = $(this).val().split("\\").pop();
+                var fileExt = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
+                if(!['jpg', 'jpeg', 'gif', 'png', 'bmp'].includes(fileExt)){
+                    alert("이미지 파일만 등록이 가능합니다.");
+                    $(this).val('');
+                    return;
+                }
+                $(this).siblings(".custom-file-label").html(fileName);
+            });
+        }
+
+        function previewProfileImage(event) {
+    var input = event.target;
+    var reader = new FileReader();
+
+    reader.onload = function() {
+        var dataURL = reader.result;
+        var output = document.getElementById('profileImagePreview');
+        output.src = dataURL;
+        output.style.display = 'block';
+    };
+
+    if (input.files && input.files[0]) {
+        reader.readAsDataURL(input.files[0]);
+    } else {
+        var output = document.getElementById('profileImagePreview');
+        output.src = '#';
+        output.style.display = 'none';
+    }
+}
+    </script>
+</th:block>
 <!-- 사용자 CSS 추가 -->
 <th:block layout:fragment="css">
     <style>
@@ -16,14 +64,14 @@
             padding: 40px;
         }
 
-        .form-group {
+        .form-group, .custom-file-input {
             display: flex;
             flex-direction: column;
             margin-bottom: 20px;
             width: 550px;
         }
 
-        .form-control {
+        .form-control, .custom-file-input {
             padding: 15px;
             font-size: 14px;
             border-radius: 20px;
@@ -156,7 +204,7 @@
         </div>
 
 
-        <form role="form" method="post" action="/oauth/oauthEdit">
+        <form role="form" method="post" enctype="multipart/form-data" action="/oauth/oauthEdit">
             <div class="form-group mb-3">
                 <label for="name">이름</label>
                 <input type="text" name="name" id="name" class="form-control" placeholder="이름을 입력해주세요" readonly th:value="${currentMember.name}">
@@ -184,7 +232,7 @@
                     <button type="button" class="btn gender-btn" data-value="f">여성</button>
                     <button type="button" class="btn gender-btn" data-value="secret">미선택</button>
                 </div>
-                <input type="hidden" name="gender" id="gender">
+                <input type="hidden" name="gender" id="gender" th:value="${currentMember.gender}">
             </div>
             <div class="form-row">
                 <div class="form-group col-md-3 mb-3">
@@ -202,6 +250,22 @@
                     <label for="sample6_detailAddress">상세주소</label>
                     <input type="text" name="userDaddr" id="sample6_detailAddress" class="form-control" placeholder="상세주소를 입력해주세요" th:value="${currentMember.userDaddr}">
                 </div>
+
+                <div class="form-group mb-3">
+                    <label for="profileImageFile">프로필 이미지</label>
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="profileImageFile" name="profileImageFile" onchange="previewProfileImage(event)">
+                        <span>저장된 이미지 : </span>
+                        <label class="custom-file-label" th:text="${not #strings.isEmpty(profileImage.oriImgName)} ? ${profileImage.oriImgName} : '저장된 이미지 없음'"></label>
+                    <!--    <button type="button" class="btn btn-danger" id="deleteProfileImageBtn" th:if="${profileImage != null}">이미지 삭제</button>-->
+                    </div>
+                    <div class="form-control">
+                        <label for="profileImageFile">미리보기</label>
+                        <img id="profileImagePreview" src="#" alt="프로필 이미지 미리보기" style="display: none; max-width: 200px; max-height: 200px; margin: 0 auto;">
+
+                    </div>
+                </div>
+
             </div>
             <div class="mb-3 button" style="display: flex; justify-content: space-between;">
 
@@ -261,7 +325,7 @@
                     },
                     success: function(response){
                         // 탈퇴 성공 시 메인 페이지로 이동
-                        location.href = "/";
+                        // location.href = "/";
                         // 로그아웃 요청 보내기
                         $.post("/members/logout", {_csrf: csrfToken}, function(data) {
                             // 로그아웃 성공 시 현재 페이지 새로고침
@@ -278,11 +342,58 @@
         });
     });
 
-    $(document).ready(function() {
-        $('.gender-btn').click(function() {
-            $('.gender-btn').removeClass('active'); // 다른 버튼의 active 클래스 제거
-            $(this).addClass('active'); // 클릭된 버튼에 active 클래스 추가
-            $('#gender').val($(this).data('value')); // 숨겨진 input의 값 설정
+    // gender 버튼 함수
+    document.addEventListener("DOMContentLoaded", function() {
+        var genderButtons = document.querySelectorAll('.gender-btn');
+        var hiddenGenderInput = document.getElementById('gender');
+        var selectedGender = hiddenGenderInput.value;
+
+        // 기본값을 'secret'으로 설정
+        if (!selectedGender) {
+            selectedGender = 'secret';
+            hiddenGenderInput.value = 'secret';
+        }
+
+        // 페이지 로드 시 gender 값에 따라 버튼 활성화 (유효성 실패시 gender 리턴값)
+        genderButtons.forEach(function(button) {
+            if (button.getAttribute('data-value') === selectedGender) {
+                button.classList.add('active');
+            }
+        });
+
+        // 버튼 클릭 시 hidden input 값 변경 및 버튼 활성화 상태 변경
+        genderButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                hiddenGenderInput.value = button.getAttribute('data-value');
+                genderButtons.forEach(function(btn) {
+                    btn.classList.remove('active');
+                });
+                button.classList.add('active');
+            });
         });
     });
+
+     function previewProfileImage(event) {
+        var reader = new FileReader();
+        reader.onload = function() {
+            var output = document.getElementById('profileImagePreview');
+            output.src = reader.result;
+            output.style.display = 'block';
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    }
+
+    window.onload = function() {
+        // 성공 메시지 확인
+        var successMessage = /*[[${successMessage}]]*/ null;
+        if (successMessage != null) {
+            alert(successMessage);
+        }
+        // 에러 메시지 확인
+        var errorMessage = /*[[${errorMessage}]]*/ null;
+        if (errorMessage != null) {
+            alert(errorMessage);
+        }
+    }
+
 </script>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/layout1}">
+      layout:decorate="~{layouts/layoutOAuth}">
 <!-- 사용자 스크립트 추가 -->
 <th:block layout:fragment="script">
     <!-- jQuery CDN -->
@@ -49,9 +49,6 @@
 }
     </script>
 </th:block>
-<head>
-    <title>간편로그인 가입</title>
-</head>
 <!-- 사용자 CSS 추가 -->
 <th:block layout:fragment="css">
     <style>
@@ -178,15 +175,21 @@
             border-color: #6A6866; /* 호버 시 경계선 색상 변경 */
         }
 
+        .phone-inputs {
+            display: flex;
+            gap: 10px; /* 입력 칸 사이의 간격 */
+        }
+
+        .form-control.phone-part {
+            flex: 1; /* 세 입력 칸이 균일하게 분포 */
+        }
 
     </style>
 </th:block>
 
-
 <div layout:fragment="content">
     <div class="container">
 
-        <h1 style="font-size:20px; margin-bottom: 50px; font-weight: 800;">추가 정보를 작성하셔야 서비스를 이용하실수 있습니다</h1>
 
         <!-- 공백란 알림 메시지 출력 -->
         <p th:if="${errors}" class="error" th:each="error : ${errors}" th:text="${error.defaultMessage}"></p>
@@ -208,7 +211,14 @@
             </div>
             <div class="form-group mb-3">
                 <label for="phone">전화번호</label>
-                <input type="text" name="phone" id="phone" class="form-control" placeholder="전화번호를 입력해주세요" th:value="${memberFormDTO.phone}">
+                <div class="phone-inputs">
+                    <input type="text" name="phone1" id="phone1" class="form-control phone-part" maxlength="3" placeholder="010" oninput="numberOnly(this); nextInput(this, 'phone2')">
+                    <input type="text" name="phone2" id="phone2" class="form-control phone-part" maxlength="4" placeholder="1234" oninput="numberOnly(this); nextInput(this, 'phone3')">
+                    <input type="text" name="phone3" id="phone3" class="form-control phone-part" maxlength="4" placeholder="5678" oninput="numberOnly(this);">
+                    <!-- 숨겨진 필드 추가 -->
+                    <input type="hidden" name="phone" id="phone" th:value="${memberFormDTO.phone}">
+                </div>
+
             </div>
             <div class="form-group mb-3">
                 <label for="birth">생년월일</label>
@@ -221,7 +231,7 @@
                     <button type="button" class="btn gender-btn" data-value="f">여성</button>
                     <button type="button" class="btn gender-btn" data-value="secret">미선택</button>
                 </div>
-                <input type="hidden" name="gender" id="gender">
+                <input type="hidden" name="gender" id="gender" th:value="${memberFormDTO.gender}">
             </div>
             <div class="form-row">
                 <div class="form-group col-md-3 mb-3">
@@ -241,6 +251,18 @@
                 </div>
 
             </div>
+            <!-- 프로필 이미지 업로드 필드 추가 -->
+            <div class="form-group mb-3">
+                <label for="profileImageFile">프로필 이미지</label>
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="profileImageFile" name="profileImageFile" onchange="previewProfileImage(event)">
+                </div>
+                <!-- 이미지 미리보기 영역 추가 -->
+                <div class="form-control">
+                    <label for="profileImageFile">미리보기</label>
+                    <img id="profileImagePreview" src="#" alt="프로필 이미지 미리보기" style="display: none; max-width: 200px; max-height: 200px; margin: 0 auto;">
+                </div>
+            </div>
             <div class="mb-3">
                 <button type="submit" class="btn btn-primary">회원가입</button>
                 <!-- csrf 토큰 임시 해제 -->
@@ -257,7 +279,6 @@
 
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script>
-
     function sample6_execDaumPostcode() {
         new daum.Postcode({
             oncomplete: function(data) {
@@ -284,13 +305,69 @@
         }).open();
     }
 
-    $(document).ready(function() {
-        $('.gender-btn').click(function() {
-            $('.gender-btn').removeClass('active'); // 다른 버튼의 active 클래스 제거
-            $(this).addClass('active'); // 클릭된 버튼에 active 클래스 추가
-            $('#gender').val($(this).data('value')); // 숨겨진 input의 값 설정
+    // gender 버튼 함수
+    document.addEventListener("DOMContentLoaded", function() {
+        var genderButtons = document.querySelectorAll('.gender-btn');
+        var hiddenGenderInput = document.getElementById('gender');
+        var selectedGender = hiddenGenderInput.value;
+
+        // 기본값을 'secret'으로 설정
+        if (!selectedGender) {
+            selectedGender = 'secret';
+            hiddenGenderInput.value = 'secret';
+        }
+
+        // 페이지 로드 시 gender 값에 따라 버튼 활성화 (유효성 실패시 gender 리턴값)
+        genderButtons.forEach(function(button) {
+            if (button.getAttribute('data-value') === selectedGender) {
+                button.classList.add('active');
+            }
+        });
+
+        // 버튼 클릭 시 hidden input 값 변경 및 버튼 활성화 상태 변경
+        genderButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                hiddenGenderInput.value = button.getAttribute('data-value');
+                genderButtons.forEach(function(btn) {
+                    btn.classList.remove('active');
+                });
+                button.classList.add('active');
+            });
         });
     });
+
+    // 전화번호 입력 타입 제한
+    function numberOnly(input) {
+        input.value = input.value.replace(/[^0-9]/g, '');
+    }
+
+    // 자동 번호칸 이동
+    function nextInput(currentInput, nextInputId) {
+        if(currentInput.value.length === currentInput.maxLength) {
+            const nextInput = document.getElementById(nextInputId);
+            if(nextInput) {
+                nextInput.focus();
+            }
+        }
+    }
+
+    function updateHiddenPhoneField() {
+        // 세 전화번호 필드의 값을 가져옵니다.
+        var phone1 = document.getElementById('phone1').value;
+        var phone2 = document.getElementById('phone2').value;
+        var phone3 = document.getElementById('phone3').value;
+
+        // 세 부분을 하나로 합칩니다.
+        var fullPhone = phone1 + phone2 + phone3;
+
+        // 숨겨진 필드에 합친 전화번호를 설정합니다.
+        document.getElementById('phone').value = fullPhone;
+    }
+
+    // 각 전화번호 입력 필드에 대해 'input' 이벤트 리스너를 추가합니다.
+    document.getElementById('phone1').addEventListener('input', updateHiddenPhoneField);
+    document.getElementById('phone2').addEventListener('input', updateHiddenPhoneField);
+    document.getElementById('phone3').addEventListener('input', updateHiddenPhoneField);
 
 
 </script>

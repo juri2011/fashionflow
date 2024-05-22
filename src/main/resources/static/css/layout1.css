@@ -11,7 +11,7 @@ body {
 
 
 .content{
-    min-height: 100vh;
+    min-height: 100vh; // 화면 100%
     display: flex;
     margin-bottom: 100px;
     margin-top: 50px;

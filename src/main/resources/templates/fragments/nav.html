@@ -85,30 +85,34 @@
             gap: 20px;
             padding: 10px;
             color: black;
+            font-size: 15px;
+        }
+
+        #whole-category, #report-category {
             font-size: 20px;
+            font-weight: bold;
+            border: 2px solid #BFBDBA;
+            border-top: transparent;
+            border-right: transparent;
+            border-left: transparent;
         }
 
 
         .category-nav ul li {
-        border: 2px solid #BFBDBA;
-        border-top: transparent;
-        border-right: transparent;
-        border-left: transparent;
-        padding-bottom: 10px;
+            border: 0.5px solid #BFBDBA;
+            border-top: transparent;
+            border-right: transparent;
+            border-left: transparent;
+            padding-bottom: 10px;
         }
 
-
-        .category-nav a {
-            color: inherit;
-            text-decoration: none;
-        }
 
         header:has(input:checked) ~ nav {
             display:block;
             transform: translateY(0%);
         }
 
-          #categorySearch li button {
+          #categorySearch li button, #reportMenu li button {
             border: none;
             background: transparent;
             padding: 0;
@@ -117,13 +121,14 @@
             font-weight: bold;
         }
 
-        #categorySearch li button img {
-            width: 50px; /* 이미지 크기 조정 */
-            height: 40px;
+        #categorySearch li button img, #reportMenu li button img {
+            width: 40px; /* 이미지 크기 조정 */
+            height: 30px;
+            margin-right: 5px;
             transition: transform 0.3s ease; /* 호버 효과를 위한 변환 효과 */
         }
 
-        #categorySearch li button:hover img {
+        #categorySearch li button:hover img, #reportMenu li button:hover img {
             transform: scale(1.2); /* 호버 시 이미지를 확대합니다. */
         }
 
@@ -142,9 +147,15 @@
             </header>
             <nav class="category-nav">
                 <ul id="categorySearch">
+                    <li id="whole-category">전체 카테고리</li>
                     <li><button data-category="men"><img th:src="@{/img/M.png}" alt="남성의류">남성의류</button></li>
                     <li><button data-category="women"><img th:src="@{/img/W.png}" alt="여성의류">여성의류</button></li>
                     <li><button data-category="shoes"><img th:src="@{/img/shoes.png}" alt="신발">신발</button></li>
+                </ul>
+                <ul id="reportMenu">
+                    <li id="report-category">신고 게시판</li>
+                    <li><button data-report="item"><img th:src="@{/img/item-report.png}" alt="상품 신고">상품 신고</button></li>
+                    <li><button data-report="member"><img th:src="@{/img/user-report.png}" alt="사용자 신고">사용자 신고</button></li>
                 </ul>
             </nav>
         </div>
@@ -160,6 +171,17 @@
                  });
             });
         });
+
+        document.addEventListener('DOMContentLoaded', function() {
+        // 버튼에 클릭 이벤트 리스너 추가
+        document.querySelectorAll('#reportMenu button').forEach(button => {
+            button.addEventListener('click', function() {
+                var reportType = this.getAttribute('data-report'); // 버튼의 data-report 속성 값 가져오기
+                var url = reportType === 'item' ? '/report/item' : '/report/member'; // reportType에 따라 URL 결정
+                window.location.href = url; // 결정된 URL로 리디렉션
+        });
+    });
+});
 
 
 

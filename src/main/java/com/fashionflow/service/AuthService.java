@@ -13,6 +13,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,22 +28,16 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public class AuthService {
 
-    // 멤버 인증 코드 리포지토리
     private final MemberAuthenticationCodeRepository memberAuthenticationCodeRepository;
-    // 멤버 리포지토리
     private final MemberRepository memberRepository;
-    // 비밀번호 인코더
     private final PasswordEncoder passwordEncoder;
-    // 이메일 서비스
     private final EmailService emailService;
 
-    // 이메일 인증 코드를 전송하는 메서드
     @Transactional
     public ResponseEntity<?> sendEmailAuthentication(ReqSendEmailAuthenticationDTO reqSendEmailAuthenticationDTO) {
         String email = reqSendEmailAuthenticationDTO.getEmail();
         String name = reqSendEmailAuthenticationDTO.getName();
 
-        // 사용자 이름과 이메일 검증
         Member member = memberRepository.findByEmail(email);
         if (member == null || !member.getName().equals(name)) {
             return new ResponseEntity<>(
@@ -53,10 +48,8 @@ public class AuthService {
                     HttpStatus.BAD_REQUEST);
         }
 
-        // 랜덤 인증 코드 생성
         String authenticationCode = createAuthenticationCode();
 
-        // emailService로 메일 발송
         if (!emailService.sendEmailAuthentication(reqSendEmailAuthenticationDTO, authenticationCode)) {
             return new ResponseEntity<>(
                     ResDTO.builder()
@@ -66,7 +59,6 @@ public class AuthService {
                     HttpStatus.BAD_REQUEST);
         }
 
-        // 이전 인증 코드 무효화
         Optional<MemberAuthenticationCode> beforeMemberAuthenticationCodeEntityOptional =
                 memberAuthenticationCodeRepository.findByEmailAndEndDateAfterAndDeleteDateIsNull(email, LocalDateTime.now());
 
@@ -75,12 +67,11 @@ public class AuthService {
             memberAuthenticationCodeRepository.save(code);
         });
 
-        // 새로운 인증 코드 저장
         MemberAuthenticationCode memberAuthenticationCodeEntity = MemberAuthenticationCode.builder()
                 .email(email)
                 .code(authenticationCode)
                 .isVerified(false)
-                .endDate(LocalDateTime.now().plus(5, ChronoUnit.MINUTES))
+                .endDate(LocalDateTime.now().plus(3, ChronoUnit.MINUTES))  // 3분으로 설정
                 .createDate(LocalDateTime.now())
                 .build();
         memberAuthenticationCodeRepository.save(memberAuthenticationCodeEntity);
@@ -93,22 +84,16 @@ public class AuthService {
                 HttpStatus.OK);
     }
 
-    // 랜덤 인증번호 생성 함수
     public String createAuthenticationCode() {
-        // 8자리, 문자, 숫자 포함 문자열 생성
         return RandomStringUtils.random(8, true, true);
     }
 
-    // 이메일 인증 코드를 확인하는 메서드
     @Transactional
     public HttpEntity<?> authenticateCode(ReqAuthenticateCodeDTO reqAuthenticateCodeDTO) {
-
-        // 유효한 인증 코드 데이터를 찾아서
         Optional<MemberAuthenticationCode> memberAuthenticationCodeEntityOptional = memberAuthenticationCodeRepository
                 .findByEmailAndEndDateAfterAndDeleteDateIsNull(reqAuthenticateCodeDTO.getEmail(),
                         LocalDateTime.now());
 
-        // 없으면 인증 코드 없음 반환
         if (memberAuthenticationCodeEntityOptional.isEmpty()) {
             return new ResponseEntity<>(
                     ResDTO.builder()
@@ -118,13 +103,12 @@ public class AuthService {
                     HttpStatus.BAD_REQUEST);
         }
 
-        // 있으면 찾아서
         MemberAuthenticationCode memberAuthenticationCodeEntity = memberAuthenticationCodeEntityOptional.get();
 
-        // 해당 entity의 인증 코드와 입력한 인증 코드가 일치하는 지 검증
         if (memberAuthenticationCodeEntity.getCode().equals(reqAuthenticateCodeDTO.getCode())) {
-            // 인증 성공 처리
             memberAuthenticationCodeEntity.setVerified(true);
+            memberAuthenticationCodeEntity.setUpdateDate(LocalDateTime.now());
+            memberAuthenticationCodeRepository.save(memberAuthenticationCodeEntity);
 
             return new ResponseEntity<>(
                     ResDTO.builder()
@@ -140,10 +124,8 @@ public class AuthService {
                             .build(),
                     HttpStatus.BAD_REQUEST);
         }
-
     }
 
-    // 비밀번호를 재설정하는 메서드
     @Transactional
     public ResponseEntity<?> resetPassword(ResetPasswordDTO resetPasswordDTO) {
         Member member = memberRepository.findByEmail(resetPasswordDTO.getEmail());
@@ -151,11 +133,18 @@ public class AuthService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "계정을 찾을 수 없습니다.", "code", -1));
         }
 
-        // 새로운 비밀번호를 인코딩하여 저장
         String encodedPassword = passwordEncoder.encode(resetPasswordDTO.getNewPassword());
         member.setPwd(encodedPassword);
         memberRepository.save(member);
 
         return ResponseEntity.ok(Map.of("message", "비밀번호가 성공적으로 변경되었습니다.", "code", 0));
+    }
+
+    // 스케줄링 작업: 매 1분마다 만료된 인증번호를 삭제합니다.
+    @Scheduled(cron = "0 */1 * * * *")
+    @Transactional
+    public void deleteExpiredCodes() {
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        memberAuthenticationCodeRepository.deleteExpiredCodes(currentDateTime);
     }
 }

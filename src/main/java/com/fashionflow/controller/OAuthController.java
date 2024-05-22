@@ -2,7 +2,9 @@ package com.fashionflow.controller;
 
 import com.fashionflow.dto.MemberFormDTO;
 import com.fashionflow.entity.Member;
+import com.fashionflow.entity.ProfileImage;
 import com.fashionflow.repository.MemberRepository;
+import com.fashionflow.repository.ProfileImageRepository;
 import com.fashionflow.service.MemberService;
 import com.fashionflow.service.OAuthService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -41,6 +43,7 @@ public class OAuthController {
     private final OAuthService oAuthService;
     private final PasswordEncoder passwordEncoder;
     private final Validator validator;
+    private final ProfileImageRepository profileImageRepository;
 
 
 
@@ -151,7 +154,6 @@ public class OAuthController {
         return modelAndView;
     }
 
-    //회원 수정
     @PostMapping("/oauthEdit")
     public String memberEdit(MemberFormDTO memberFormDTO, BindingResult bindingResult, Model model) {
 
@@ -168,7 +170,11 @@ public class OAuthController {
         if (bindingResult.hasErrors()) {
             // 현재 멤버 정보를 가져와서 다시 모델에 추가
             Member currentMember = memberService.findMemberByCurrentEmail();
+            // 프로필 이미지 정보를 가져옴
+            ProfileImage profileImage = profileImageRepository.findByMemberId(currentMember.getId());
+
             model.addAttribute("currentMember", currentMember);
+            model.addAttribute("profileImage", profileImage);  // 프로필 이미지 추가
             // 유효성 검사에 실패한 필드에 대한 오류 메시지를 추출하여 모델에 추가
             model.addAttribute("errors", bindingResult.getAllErrors());
             // 유효성 검사 실패에 따른 오류 메시지를 뷰로 전달
@@ -182,12 +188,16 @@ public class OAuthController {
         } catch (Exception e) {
             // 현재 멤버 정보를 가져와서 다시 모델에 추가
             Member currentMember = memberService.findMemberByCurrentEmail();
+            // 프로필 이미지 정보를 가져옴
+            ProfileImage profileImage = profileImageRepository.findByMemberId(currentMember.getId());
+
             model.addAttribute("currentMember", currentMember);
+            model.addAttribute("profileImage", profileImage);  // 프로필 이미지 추가
 
             model.addAttribute("duplicateErrorMessage", e.getMessage());
             return "oauth/oauthEdit"; // 에러가 발생한 페이지로 리디렉션 또는 해당 페이지로 포워딩
         }
-
     }
+
 
 }

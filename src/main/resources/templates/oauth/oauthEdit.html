@@ -5,6 +5,54 @@
 <head>
     <title>간편 로그인 수정</title>
 </head>
+
+<!-- 사용자 스크립트 추가 -->
+<th:block layout:fragment="script">
+    <!-- jQuery CDN -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script th:inline="javascript">
+        $(document).ready(function(){
+            var errorMessage = [[${errorMessage}]];
+            if(errorMessage != null){
+                alert(errorMessage);
+            }
+            bindDomEvent();
+        });
+
+        function bindDomEvent(){
+            $(".custom-file-input").on("change", function() {
+                var fileName = $(this).val().split("\\").pop();
+                var fileExt = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
+                if(!['jpg', 'jpeg', 'gif', 'png', 'bmp'].includes(fileExt)){
+                    alert("이미지 파일만 등록이 가능합니다.");
+                    $(this).val('');
+                    return;
+                }
+                $(this).siblings(".custom-file-label").html(fileName);
+            });
+        }
+
+        function previewProfileImage(event) {
+    var input = event.target;
+    var reader = new FileReader();
+
+    reader.onload = function() {
+        var dataURL = reader.result;
+        var output = document.getElementById('profileImagePreview');
+        output.src = dataURL;
+        output.style.display = 'block';
+    };
+
+    if (input.files && input.files[0]) {
+        reader.readAsDataURL(input.files[0]);
+    } else {
+        var output = document.getElementById('profileImagePreview');
+        output.src = '#';
+        output.style.display = 'none';
+    }
+}
+    </script>
+</th:block>
 <!-- 사용자 CSS 추가 -->
 <th:block layout:fragment="css">
     <style>
@@ -16,14 +64,14 @@
             padding: 40px;
         }
 
-        .form-group {
+        .form-group, .custom-file-input {
             display: flex;
             flex-direction: column;
             margin-bottom: 20px;
             width: 550px;
         }
 
-        .form-control {
+        .form-control, .custom-file-input {
             padding: 15px;
             font-size: 14px;
             border-radius: 20px;
@@ -156,7 +204,7 @@
         </div>
 
 
-        <form role="form" method="post" action="/oauth/oauthEdit">
+        <form role="form" method="post" enctype="multipart/form-data" action="/oauth/oauthEdit">
             <div class="form-group mb-3">
                 <label for="name">이름</label>
                 <input type="text" name="name" id="name" class="form-control" placeholder="이름을 입력해주세요" readonly th:value="${currentMember.name}">
@@ -202,6 +250,22 @@
                     <label for="sample6_detailAddress">상세주소</label>
                     <input type="text" name="userDaddr" id="sample6_detailAddress" class="form-control" placeholder="상세주소를 입력해주세요" th:value="${currentMember.userDaddr}">
                 </div>
+
+                <div class="form-group mb-3">
+                    <label for="profileImageFile">프로필 이미지</label>
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="profileImageFile" name="profileImageFile" onchange="previewProfileImage(event)">
+                        <span>저장된 이미지 : </span>
+                        <label class="custom-file-label" th:text="${not #strings.isEmpty(profileImage.oriImgName)} ? ${profileImage.oriImgName} : '저장된 이미지 없음'"></label>
+                    <!--    <button type="button" class="btn btn-danger" id="deleteProfileImageBtn" th:if="${profileImage != null}">이미지 삭제</button>-->
+                    </div>
+                    <div class="form-control">
+                        <label for="profileImageFile">미리보기</label>
+                        <img id="profileImagePreview" src="#" alt="프로필 이미지 미리보기" style="display: none; max-width: 200px; max-height: 200px; margin: 0 auto;">
+
+                    </div>
+                </div>
+
             </div>
             <div class="mb-3 button" style="display: flex; justify-content: space-between;">
 
@@ -308,6 +372,16 @@
             });
         });
     });
+
+     function previewProfileImage(event) {
+        var reader = new FileReader();
+        reader.onload = function() {
+            var output = document.getElementById('profileImagePreview');
+            output.src = reader.result;
+            output.style.display = 'block';
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    }
 
     window.onload = function() {
         // 성공 메시지 확인

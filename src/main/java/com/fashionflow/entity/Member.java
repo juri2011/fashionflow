@@ -17,11 +17,11 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Member implements UserDetails {
+@ToString(exclude = "profileImage")
+public class Member {
 
     @Id
     @Column(name="member_id")

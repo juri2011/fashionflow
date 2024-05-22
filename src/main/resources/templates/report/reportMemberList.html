@@ -9,29 +9,32 @@
     <!-- 사용자 스크립트 추가 -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script th:inline="javascript">
-
         $(document).ready(function(){
 
-            //팝업창 닫기
+            // 팝업창 닫기 이벤트
             $('.closePopup').on('click', function(){
                 $('#detailPopup').hide();
 
-                //팝업창 내용 초기화
+                // 팝업창 내용 초기화
                 $('.memberName').text("");
                 $('#reportContent').text("");
                 $('.tagBox').empty();
                 $(".reportConfirm").removeData();
             });
 
+            // 신고 버튼 클릭 시 팝업창 열기
             $('.reportBtn').on('click', function(){
                 $('#detailPopup').show();
             });
 
+            // 신고 확인 버튼 클릭 시
             $('.reportConfirm').on('click', function(){
+                // 신고 멤버 정보 업데이트
                 updateReportMember($(this).data('id'), $(this).data('memberEmail'));
                 //$('#detailPopup').hide();
             });
 
+            // 태그 선택 이벤트
             $('#tagSelect').on('input', function(){
                 let selectedOption = $('#tagSelect option:selected').val();
                 let selectedText = $('#tagSelect option:selected').text();
@@ -41,30 +44,28 @@
                     else $('.tagBox').append(tagBlock);
                 }
                 $('#tagSelect option:eq(0)').prop('selected', true);
-
             });
 
+            // 태그 박스 클릭 이벤트
             $('.tagBox').on('click', '.tagBlock', function() {
-                // 클릭된 동적으로 생성된 버튼에 대한 처리를 여기에 작성합니다.
+                // 클릭된 동적으로 생성된 버튼에 대한 처리
                 console.log($(event.target).text());
                 $(event.target).remove();
-
             });
 
-
+            // 검색 버튼 클릭 이벤트
             $("#searchBtn").on("click",function(e) {
                 e.preventDefault();
                 page(0);
             });
 
+            // 신고 삭제 버튼 클릭 이벤트
             $('.deleteReport').on('click', function(){
-                //console.log($(this).data('id'));
-
                 deleteReportMember($(this).data('id'));
             });
 
+            // 신고 수정 버튼 클릭 이벤트
             $('.updateReport').on('click', function(){
-
                 const id = $(this).data('id');
                 console.log(id);
 
@@ -81,16 +82,16 @@
                     $(".reportConfirm").data('memberEmail', report.reportedMemberEmail);
                 });
 
-
                 $("#detailPopup").show();
-
             });
 
         });
 
+        // CSRF 토큰과 헤더 정보
         const token = $("meta[name='_csrf']").attr("content");
         const header = $("meta[name='_csrf_header']").attr("content");
 
+        // 신고 멤버 업데이트 함수
         function updateReportMember(id, memberEmail){
             const url = "/reportMember/update";
 
@@ -124,7 +125,6 @@
                     location.href = '/report/member';
                 },
                 error: function (jqXHR, status, error) {
-
                     if (jqXHR.status == '401') {
                         alert('로그인 후 이용해주세요');
                         //location.href = '/members/login';
@@ -135,8 +135,7 @@
             });
         }
 
-
-        //신고 항목 정보 가져오기
+        // 신고 멤버 정보 가져오기 함수
         function getReportMember(id, callback, error){
             $.get("/reportMember/"+id, function(result){
                 if(callback) callback(result);
@@ -150,7 +149,7 @@
             });
         }
 
-
+        // 신고 멤버 삭제 함수
         function deleteReportMember(id){
             const url = "/delete/reportMember/"+id;
 
@@ -167,36 +166,25 @@
                     location.href = '/report/member';
                 },
                 error: function (jqXHR, status, error) {
-
                     if (jqXHR.status == '401') {
                         alert('로그인 후 이용해주세요');
                         //location.href = '/members/login';
                     } else {
                         alert(jqXHR.responseText);
                     }
-
                 }
             });
-
         }
 
-
+        // 페이지 이동 함수
         function page(page){
-            //var searchDateType = $("#searchDateType").val();
-            //var searchSellStatus = $("#searchSellStatus").val();
-            //var searchBy = $("#searchBy").val();
-            //var searchQuery = $("#searchQuery").val();
-
             location.href="/report/member/" + page;
-
             //location.href="/admin/Members/" + page + "?searchDateType=" + searchDateType
             //+ "&searchSellStatus=" + searchSellStatus
             //+ "&searchBy=" + searchBy
             //+ "&searchQuery=" + searchQuery;
         }
-
     </script>
-
 
     <!-- 사용자 CSS 추가 -->
     <style>
@@ -212,12 +200,15 @@
             z-index:9999;
         }
 
+        /* 태그 블록 스타일 */
         .tagBlock{
             display: inline-block;
             background-color:white;
             margin-right: 5px;
             padding: 5px;
         }
+
+        /* 페이지 네이션 스타일 */
         .page-Member{
             cursor:pointer;
         }
@@ -226,65 +217,62 @@
         }
     </style>
 </head>
+
 <div layout:fragment="content">
     <h1>신고 리스트</h1>
     <table class="table">
         <thead>
-            <tr>
-                <th>번호</th>
-                <th>내용</th>
-                <th>작성자</th>
-                <th>등록일</th>
-                <th>거래상태</th>
-            </tr>
+        <tr>
+            <th>번호</th>
+            <th>내용</th>
+            <th>작성자</th>
+            <th>등록일</th>
+            <th>거래상태</th>
+        </tr>
         </thead>
         <tbody>
-            <tr th:each="reportMember : ${reportMemberList.getContent()}">
-                <td th:text="${reportMember.id}"></td>
-                <!-- 관리자나 작성자인 경우만 표시 -->
-                <td><a th:href="'/report/memberdetail/'+${reportMember.id}">
-                    <span th:text="${reportMember.content}"></span>
-                </a></td>
-                <td th:text="${reportMember.reporterMemberEmail}"></td>
-                <td th:text="${#temporals.format(reportMember.regdate, 'yyyy-MM-dd HH:mm:ss')}"></td>
-                <td th:switch="${#strings.toString(reportMember.reportStatus)}">
-                    <span th:case="WAITING" style="color:red">처리대기중</span>
-                    <span th:case="COMPLETE" style="color:green">처리완료</span>
-                </td>
-                <!--<td th:text="${reportMember.reportStatus}"></td>-->
-                <!-- 사용자의 아이디가 표시되는 경우에만 수정 가능 -->
-                <td th:if="${reportMember.isMyReport}">
-                    <button th:attr="data-id=${reportMember.id}" class="updateReport" type="button">수정</button>
-                    <button th:attr="data-id=${reportMember.id}" class="deleteReport" type="button">삭제</button></td>
+        <tr th:each="reportMember : ${reportMemberList.getContent()}">
+            <td th:text="${reportMember.id}"></td>
+            <!-- 관리자나 작성자인 경우만 표시 -->
+            <td><a th:href="'/report/memberdetail/'+${reportMember.id}">
+                <span th:text="${reportMember.content}"></span>
+            </a></td>
+            <td th:text="${reportMember.reporterMemberEmail}"></td>
+            <td th:text="${#temporals.format(reportMember.regdate, 'yyyy-MM-dd HH:mm:ss')}"></td>
+            <td th:switch="${#strings.toString(reportMember.reportStatus)}">
+                <span th:case="WAITING" style="color:red">처리대기중</span>
+                <span th:case="COMPLETE" style="color:green">처리완료</span>
+            </td>
+            <!--<td th:text="${reportMember.reportStatus}"></td>-->
+            <!-- 사용자의 아이디가 표시되는 경우에만 수정 가능 -->
+            <td th:if="${reportMember.isMyReport}">
+                <button th:attr="data-id=${reportMember.id}" class="updateReport" type="button">수정</button>
+                <button th:attr="data-id=${reportMember.id}" class="deleteReport" type="button">삭제</button></td>
 
-            </tr>
+        </tr>
         </tbody>
     </table>
 
     <!-- 페이지네이션 추가 -->
-
-    <div th:with="start=${(reportMemberList.number/maxPage)*maxPage + 1}, end=(${(reportMemberList.totalPages == 0) ? 1 : (start + (maxPage - 1) < reportMemberList.totalPages ? start + (maxPage - 1) : reportMemberList.totalPages)})" >
+    <div th:with="start=${(reportMemberList.number/maxPage)*maxPage + 1}, end=(${(reportMemberList.totalPages == 0) ? 1 : (start + (maxPage - 1) < reportMemberList.totalPages ? start + (maxPage - 1) : reportMemberList.totalPages)}" >
         <ul class="pagination justify-content-center">
-
             <li class="page-Member" th:classappend="${reportMemberList.first}?'disabled'">
                 <a th:onclick="'javascript:page(' + ${reportMemberList.number} + ')'" aria-label='Previous' class="page-link">
                     <span aria-hidden='true'>Previous</span>
                 </a>
             </li>
-
             <li class="page-Member" th:each="page: ${#numbers.sequence(start, end)}" th:classappend="${reportMemberList.number eq page-1}?'active':''">
                 <a th:onclick="'javascript:page(' + ${page} + ')'" th:inline="text" class="page-link">[[${page}]]</a>
-                <!--<a th:onclick="'javascript:page(' + ${page - 1} + ')'" th:inline="text" class="page-link">[[${page}]]</a>-->
             </li>
-
             <li class="page-Member" th:classappend="${reportMemberList.last}?'disabled'">
                 <a th:onclick="'javascript:page(' + ${reportMemberList.number + 2} + ')'" aria-label='Next' class="page-link">
                     <span aria-hidden='true'>Next</span>
                 </a>
             </li>
-
         </ul>
     </div>
+
+    <!-- 사용자 신고 팝업 -->
     <div id="detailPopup" class="modal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -320,6 +308,6 @@
             </div>
         </div>
     </div>
-    <!-- 신고하기 팝업창(구현하려면 검색기능 있어야 함) -->
 </div>
+
 </html>

@@ -3,7 +3,9 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layout1}">
 <th:block layout:fragment="css">
+    <!-- CSS 스타일 정의 -->
     <style>
+        /* 팝업 창 스타일 */
         #detailPopup, #detailPopupMember{
             display: none;
             width: 600px;
@@ -14,6 +16,7 @@
             position: fixed;
         }
 
+        /* 태그 블록 스타일 */
         .tagBlock, .tagBlockMember{
             display: inline-block;
             background-color:white;
@@ -21,17 +24,19 @@
             padding: 5px;
         }
 
+        /* 카드 이미지 스타일 */
         .item-card > a > img{
             display:block;
             padding: 5px;
             position:relative; top: 50%; left: 50%; transform: translate(-50%, -50%);
         }
 
+        /* 콘텐츠 블록 스타일 */
         .content{
-
             display:block;
         }
 
+        /* 컨테이너 스타일 */
         #container {
             width: 1250px;
             flex-direction: column;
@@ -40,41 +45,51 @@
             margin: 0 auto;
         }
 
+        /* 상품 컨테이너 스타일 */
         #item-container{ padding: 5px; }
 
+        /* 캐러셀 스타일 */
         .carousel{ width:300px; height:300px; }
         .carousel-inner{ width: 200px; height: 200px; position:relative; top: 50%; left: 50%; transform: translate(-50%, -50%);}
         .carousel-item > img {display: block; margin: auto; padding: 10px; max-width: 100%; height: 200px; object-fit:scale-down; object-position: 50% 50%;}
 
+        /* 상품 정보 컨테이너 스타일 */
         #iteminfo-container{
             margin: 25px 0;
             line-height: 28px;
         }
 
+        /* 찜하기, 플로우톡 버튼 스타일 */
         .heartBtn, .chatBtn{
             margin-top: 20px;
         }
 
+        /* 상품 정보 라벨 스타일 */
         .info-label{
             display:inline-block;
             font-weight: 800;
             margin-right: 10px;
         }
 
+        /* 프로필 이미지 스타일 */
         .profile-pic{width:100px; height:100px;}
         .profile-pic > img {width:100px; height:100px;}
 
+        /* 판매자 소개 스타일 */
         .seller-introduction{
             margin-top: 10px;
         }
     </style>
-    </th:block>
+</th:block>
 
+
+<!-- 상품 상세 페이지 내용 -->
 <div layout:fragment="content">
     <div id="container">
-        <!--<input type="hidden" id="itemId" th:value="${itemFormDTO.id}">-->
+        <!-- 현재 사용자 이메일 및 아이템 ID(hidden) -->
         <input type="hidden" id="currentMemberEmail" th:value="${currentMember}">
 
+        <!-- 상품 카테고리를 나타내는 Breadcrumb 네비게이션 -->
         <nav class="breadcrumb-nav" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item">전체</li>
@@ -83,29 +98,33 @@
             </ol>
         </nav>
 
+        <!-- 상품 이미지 및 정보 컨테이너 -->
         <div id="item-container" class="border-top border-bottom d-flex flex-row mb-2 gap-3">
+            <!-- 상품 이미지 Carousel -->
             <div id="carouselExampleIndicators" class="carousel slide carousel-dark" data-bs-theme="dark">
+                <!-- Carousel Indicator 버튼 -->
                 <div class="carousel-indicators">
                     <th:block th:each="itemImg : ${itemFormDTO.itemImgDTOList}">
                         <button type="button" data-bs-target="#carouselExampleIndicators" th:data-bs-slide-to="${itemImgStat.index}"
                                 th:classappend="${itemImgStat.first} ? 'active'"
                                 th:attrappend="aria-current=${itemImgStat.first} ? 'true', aria-label='Slide ' + ${itemImgStat.index + 1}"></button>
                     </th:block>
-
                 </div>
+                <!-- Carousel 이미지 -->
                 <div class="carousel-inner border rounded">
                     <th:block th:each="itemImg : ${itemFormDTO.itemImgDTOList}">
                         <div class="carousel-item" th:classappend="${itemImgStat.first} ? 'active'">
                             <img th:src="'/images/'+${itemImg.imgName}" class="d-block object-fit-contain" alt="...">
                         </div>
                     </th:block>
+                    <!-- 상품 이미지가 없을 경우 -->
                     <th:block th:if="${#lists.size(itemFormDTO.ItemImgDTOList) == 0}">
                         <div class="carousel-item active">
                             <img src="/img/default.png" class="d-block object-fit-contain" alt="...">
                         </div>
                     </th:block>
                 </div>
-
+                <!-- Carousel 이전/다음 버튼 -->
                 <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                     <span class="visually-hidden">Previous</span>
@@ -116,87 +135,98 @@
                 </button>
             </div>
 
+            <!-- 상품 정보 -->
             <div id="iteminfo-container">
+                <!-- 상품 이름 및 태그 -->
                 <div>
                     <h2 th:text="${itemFormDTO.itemName}"></h2>
                     <div style="margin-bottom: 20px;">
-                    <span th:each="itemTag, status: ${itemFormDTO.itemTagDTOList}">
-                        <span th:switch="${#strings.toString(itemTag.itemTagName)}">
-                            <span class="badge text-bg-secondary" th:case="DIRECT_TRADE">직거래</span>
-                            <span class="badge text-bg-secondary" th:case="DELIVERY_TRADE">택배거래</span>
-                            <span class="badge text-bg-secondary" th:case="SAME_DAY_DELIVERY">당일배송</span>
-                            <span class="badge text-bg-secondary" th:case="INTERNATIONAL_DELIVERY">해외배송</span>
+                        <span th:each="itemTag, status: ${itemFormDTO.itemTagDTOList}">
+                            <!-- 각 태그에 따른 뱃지 표시 -->
+                            <span th:switch="${#strings.toString(itemTag.itemTagName)}">
+                                <span class="badge text-bg-secondary" th:case="DIRECT_TRADE">직거래</span>
+                                <span class="badge text-bg-secondary" th:case="DELIVERY_TRADE">택배거래</span>
+                                <span class="badge text-bg-secondary" th:case="SAME_DAY_DELIVERY">당일배송</span>
+                                <span class="badge text-bg-secondary" th:case="INTERNATIONAL_DELIVERY">해외배송</span>
+                            </span>
                         </span>
-                    </span>
                     </div>
                 </div>
+                <!-- 상품 가격 및 신고하기 버튼 -->
                 <div style="line-height: 32px;">
                     <span style="font-size:32px; font-weight: 800;" th:text="${#numbers.formatInteger(itemFormDTO.price, 1, 'COMMA') + '원'}"></span>
                     <button style="float:right;" type="button" class="reportBtn btn btn-warning">신고하기</button>
                 </div>
+                <!-- 상품 배송비, 조회수, 찜한 횟수, 등록일 -->
                 <div>
                     <span class="info-label">배송비</span><span th:text="${#numbers.formatInteger(itemFormDTO.delivery, 1, 'COMMA') + '원'}"></span>
                 </div>
-                <div>
-                    <span class="info-label">조회수</span>
-                    <span th:text="${itemFormDTO.viewCount}"></span>
-                    <div class="vr"></div>
-                    <span class="info-label">찜한 횟수</span>
-                    <span th:text="${heartCount}"></span>
-                    <div class="vr"></div>
-                    <span class="info-label">등록일</span>
-                    <span th:text="${#temporals.format(itemFormDTO.regdate, 'yyyy-MM-dd HH:mm:ss')}"></span>
-                </div>
+                <!-- 판매자 정보 -->
                 <div>
                     <span class="info-label">거래지역</span>
                     <span th:text="${itemFormDTO.address}"></span>
                 </div>
+                <!-- 상품 상태 및 판매상태 -->
                 <div>
                     <span class="info-label">상품상태</span>
                     <span th:switch="${#strings.toString(itemFormDTO.itemStatus)}">
-                    <span th:case="NEW">새상품</span>
-                    <span th:case="NO_SIGNS_OF_USE">사용감 없음</span>
-                    <span th:case="SOME_SIGNS_OF_USE">사용감 적음</span>
-                    <span th:case="SIGNIFICANT_SIGNS_OF_USE">사용감 많음</span>
-                    <span th:case="FAULTY">파손/고장</span>
-                </span>
-                    <!--<span th:text="${item.itemStatus}"></span>-->
+                        <span th:case="NEW">새상품</span>
+                        <span th:case="NO_SIGNS_OF_USE">사용감 없음</span>
+                        <span th:case="SOME_SIGNS_OF_USE">사용감 적음</span>
+                        <span th:case="SIGNIFICANT_SIGNS_OF_USE">사용감 많음</span>
+                        <span th:case="FAULTY">파손/고장</span>
+                    </span>
+                    <div th:switch="${#strings.toString(itemFormDTO.sellStatus)}">
+                        <span class="info-label">판매상태</span>
+                        <span th:case="SELLING">판매중</span>
+                        <span th:case="SUSPENDED">판매중단</span>
+                        <span th:case="SOLD_OUT">판매완료</span>
+                    </div>
                 </div>
-                <div th:switch="${#strings.toString(itemFormDTO.sellStatus)}">
-                    <span class="info-label">판매상태</span>
-                    <span th:case="SELLING">판매중</span>
-                    <span th:case="SUSPENDED">판매중단</span>
-                    <span th:case="SOLD_OUT">판매완료</span>
-                </div>
+                <!-- 찜하기 및 플로우톡 버튼 -->
                 <button type="button" class="heartBtn btn btn-primary">찜하기</button>
                 <button type="button" class="chatBtn btn btn-primary">플로우톡</button>
             </div>
         </div>
 
-        <div>
-            <!-- 탭 메뉴 -->
-            <ul class="nav nav-tabs" id="myTab" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="iteminfo-tab" data-bs-toggle="tab"
-                            data-bs-target="#item-info" type="button" role="tab" aria-controls="item-info"
-                            aria-selected="true">회원정보</button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="sellerinfo-tab" data-bs-toggle="tab"
-                            data-bs-target="#seller-info" type="button" role="tab"
-                            aria-controls="seller-info" aria-selected="false">판매자 정보</button>
-                </li>
-            </ul>
+        <!-- 탭 메뉴 -->
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="iteminfo-tab" data-bs-toggle="tab"
+                        data-bs-target="#item-info" type="button" role="tab" aria-controls="item-info"
+                        aria-selected="true">회원정보</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="sellerinfo-tab" data-bs-toggle="tab"
+                        data-bs-target="#seller-info" type="button" role="tab"
+                        aria-controls="seller-info" aria-selected="false">판매자 정보</button>
+            </li>
+        </ul>
 
-            <!-- 내용 -->
-            <div class="tab-content" id="info-tab">
+        <!-- 탭 본문 -->
+        <div class="tab-content" id="info-tab">
+            <!-- 상품정보 탭 -->
+            <div class="tab-pane p-2 fade show active" id="item-info" role="tabpanel"
+                 aria-labelledby="iteminfo-tab">
+                <div>
+                    <h4>상품 정보</h4>
+                    <!-- 상품 설명 -->
+                    <span th:text="${itemFormDTO.content}"></span>
+                </div>
+            </div>
 
-                <!-- 상품정보 탭 -->
-                <div class="tab-pane p-2 fade show active" id="item-info" role="tabpanel"
-                     aria-labelledby="iteminfo-tab">
-                    <div>
-                        <h4>상품 정보</h4>
-                        <span th:text="${itemFormDTO.content}"></span>
+            <!-- 판매자 정보 탭 -->
+            <div class="tab-pane fade p-2" id="seller-info" role="tabpanel"
+                 aria-labelledby="sellerinfo-tab">
+                <div class="border-top mt-2 p-2 border-bottom d-flex flex-row mb-2 gap-3">
+                    <!-- 판매자 프로필 -->
+                    <div id="profile-container" class="profile-pic g-col-6">
+                        <!-- 판매자 프로필 이미지 -->
+                        <img th:if="${shopMember.profileImageDTO == null || #strings.isEmpty(shopMember.profileImageDTO.imgName)}"
+                             src="/img/profile_default.png" alt="기본 프로필 이미지">
+                        <img th:if="${shopMember.profileImageDTO != null && not #strings.isEmpty(shopMember.profileImageDTO.imgName)}"
+                             th:src="'/profile/' + ${shopMember.profileImageDTO.imgName}"
+                             alt="Profile Image" class="profile-image">
                     </div>
                 </div>
 
@@ -213,42 +243,37 @@
                                  th:src="'/profile/' + ${shopMember.profileImageDTO.imgName}"
                                  alt="Profile Image" class="profile-image">
                         </div>
-
-                        <div id="sellerinfo-container">
-                            <div style="height:50px; line-height: 50px;">
-                                <span class="info-label" th:text="${shopMember.nickname}"></span>
-                                <button style="float:right;" type="button" class="reportMemberBtn btn btn-warning">사용자 신고하기</button>
-                            </div>
-                            <div>
-                                <span class="info-label">가입일</span>
-                                <span th:text="${#temporals.format(shopMember.regdate, 'yyyy-MM-dd')}"></span>
-                                <div class="vr"></div>
-                                <span class="info-label">판매수</span>
-                                <span th:text="${shopMember.sellCount}"></span>
-                                <div class="vr"></div>
-                                <span class="info-label">매너점수</span>
-                                <span th:text="${#numbers.formatInteger(shopMember.mannerScore * 10, 1) + '점'}"></span>
-                            </div>
-                            <div class="seller-introduction">
-                                <span th:text="${shopMember.intro}"></span>
-                            </div>
+                        <div>
+                            <span class="info-label">가입일</span>
+                            <span th:text="${#temporals.format(shopMember.regdate, 'yyyy-MM-dd')}"></span>
+                            <div class="vr"></div>
+                            <span class="info-label">판매수</span>
+                            <span th:text="${shopMember.sellCount}"></span>
+                            <div class="vr"></div>
+                            <span class="info-label">매너점수</span>
+                            <span th:text="${#numbers.formatInteger(shopMember.mannerScore * 10, 1) + '점'}"></span>
+                        </div>
+                        <!-- 판매자 소개 -->
+                        <div class="seller-introduction">
+                            <span th:text="${shopMember.intro}"></span>
                         </div>
                     </div>
-                    <div id="otheritems-container" class="p-2 mb-2">
-                        <h4>판매중인 다른 상품</h4>
-                        <div class="p-2 d-flex flex-row mb-2 gap-3 flex-wrap">
-                            <div class="card item-card" style="width: 15rem;" th:each="otherItem, status: ${shopMember.itemFormDTOList}">
-                                <a th:if="${otherItem.itemRepImgDTO} != null"  th:href="'/item/'+${otherItem.id}">
-                                    <img style="max-height: 100px;" th:src="'/images/'+${otherItem.itemRepImgDTO.imgName}" alt="사진">
-                                </a>
-                                <a th:if="${otherItem.itemRepImgDTO} == null"  th:href="'/item/'+${otherItem.id}">
-                                    <img style="max-height: 100px;" src="/img/default.png" alt="사진">
-                                </a>
-                                <div class="card-body">
-                                    <h5 class="card-title" th:text="${otherItem.itemName}">Item title</h5>
-                                    <p class="card-text" th:text="${#numbers.formatInteger(otherItem.price, 1, 'COMMA') + '원'}">가격</p>
-                                    <p class="card-text" th:text="${#temporals.format(otherItem.regdate, 'yyyy-MM-dd')}">등록일</p>
-                                </div>
+                </div>
+                <!-- 판매자의 다른 상품 목록 -->
+                <div id="otheritems-container" class="p-2 mb-2">
+                    <h4>판매중인 다른 상품</h4>
+                    <div class="p-2 d-flex flex-row mb-2 gap-3 flex-wrap">
+                        <div class="card item-card" style="width: 15rem;" th:each="otherItem, status: ${shopMember.itemFormDTOList}">
+                            <a th:if="${otherItem.itemRepImgDTO} != null"  th:href="'/item/'+${otherItem.id}">
+                                <img style="max-height: 100px;" th:src="'/images/'+${otherItem.itemRepImgDTO.imgName}" alt="사진">
+                            </a>
+                            <a th:if="${otherItem.itemRepImgDTO} == null"  th:href="'/item/'+${otherItem.id}">
+                                <img style="max-height: 100px;" src="/img/default.png" alt="사진">
+                            </a>
+                            <div class="card-body">
+                                <h5 class="card-title" th:text="${otherItem.itemName}">Item title</h5>
+                                <p class="card-text" th:text="${#numbers.formatInteger(otherItem.price, 1, 'COMMA') + '원'}">가격</p>
+                                <p class="card-text" th:text="${#temporals.format(otherItem.regdate, 'yyyy-MM-dd')}">등록일</p>
                             </div>
                         </div>
                     </div>
@@ -256,17 +281,13 @@
             </div>
         </div>
 
-
-
-
         <!-- 채팅방 생성 및 입장을 위한 form -->
         <form id="chat-form" th:action="@{/chat/room}" method="post">
-            <!--<input type="hidden" name="name" class="form-control">-->
             <input type="hidden" id="itemId" name="itemId" th:value="${itemFormDTO.id}" class="form-control">
             <input type="hidden" id="shopMemberEmail" name="shopMemberEmail" th:value="${shopMember.email}" class="form-control">
-            <!--<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">-->
         </form>
 
+        <!-- 상품 신고 모달 -->
         <div id="detailPopup" class="modal" tabindex="-1">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -275,20 +296,21 @@
                         <button type="button" class="btn-close closePopup" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
+                        <!-- 상품 이미지 및 이름 -->
                         <div class="mb-3">
-                        <span th:each="itemImg, status: ${itemFormDTO.itemImgDTOList}">
-                            <img class="img-thumbnail" th:alt="${itemImg.imgName}" style="width:100px; height:100px;"
-                                 th:if="${itemImg.repimgYn} == 'Y'"
-                                 th:src="'/images/'+${itemImg.imgName}">
-                        </span>
+                            <span th:each="itemImg, status: ${itemFormDTO.itemImgDTOList}">
+                                <img class="img-thumbnail" th:alt="${itemImg.imgName}" style="width:100px; height:100px;"
+                                     th:if="${itemImg.repimgYn} == 'Y'"
+                                     th:src="'/images/'+${itemImg.imgName}">
+                            </span>
                             <span th:text="${itemFormDTO.itemName}"></span>
                         </div>
-
+                        <!-- 상품 신고 내용 입력 폼 -->
                         <div class="mb-3">
                             <label for="reportContent" class="form-label">신고 내용</label>
                             <textarea class="form-control" id="reportContent" name="reportContent" placeholder="내용을 입력하세요"></textarea>
                         </div>
-
+                        <!-- 태그 선택 폼 -->
                         <div class="mb-3">
                             <label for="tagSelect" class="form-label">태그선택</label>
                             <select class="form-select" name="tagSelect" id="tagSelect">
@@ -298,6 +320,7 @@
                             <div class="tagBox"></div>
                         </div>
                     </div>
+                    <!-- 신고하기 및 취소 버튼 -->
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary reportConfirm">신고하기</button>
                         <button type="button" class="btn btn-secondary closePopup">취소</button>
@@ -306,6 +329,7 @@
             </div>
         </div>
 
+        <!-- 사용자 신고 모달 -->
         <div id="detailPopupMember" class="modal" tabindex="-1">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -314,16 +338,17 @@
                         <button type="button" class="btn-close closePopupMember" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
+                        <!-- 사용자 닉네임 및 이메일 -->
                         <div class="mb-3">
                             <span th:text="${shopMember.nickname}"></span>
                             <span th:text="'('+${shopMember.email}+')'"></span>
                         </div>
-
+                        <!-- 사용자 신고 내용 입력 폼 -->
                         <div class="mb-3">
                             <label for="reportContent" class="form-label">신고 내용</label>
                             <textarea class="form-control" id="reportContentMember" name="reportContentMember" placeholder="내용을 입력하세요"></textarea>
                         </div>
-
+                        <!-- 태그 선택 폼 -->
                         <div class="mb-3">
                             <label for="tagSelectMember" class="form-label">태그선택</label>
                             <select name="tagSelectMember" id="tagSelectMember">
@@ -333,8 +358,8 @@
                             </select>
                             <div class="tagBoxMember"></div>
                         </div>
-
                     </div>
+                    <!-- 신고하기 및 취소 버튼 -->
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary reportConfirmMember">신고하기</button>
                         <button type="button" class="btn btn-secondary closePopupMember">취소</button>
@@ -346,12 +371,17 @@
     </div>
 </div>
 
+
 <th:block layout:fragment="script">
+    <!-- 스크립트 시작 -->
     <script>
         $(document).ready(function(){
+            // 상품 신고 버튼 클릭 시
             $('.reportBtn').on('click', function(){
+                // 현재 사용자 이메일 및 상점 회원 이메일 확인
                 const currentMemberEmail = $('#currentMemberEmail').val();
                 const shopMemberEmail = $('#shopMemberEmail').val();
+                // 사용자 인증 여부 확인
                 if(currentMemberEmail === 'anonymousUser' || !currentMemberEmail){
                     alert('로그인 후 이용해주세요.');
                     location.href = "/members/login";
@@ -363,13 +393,19 @@
                     $('#detailPopup').show();
                 }
             });
+
+            // 팝업 닫기 버튼 클릭 시
             $('.closePopup').on('click', function(){
                 $('#detailPopup').hide();
             });
+
+            // 신고 확인 버튼 클릭 시
             $('.reportConfirm').on('click', function(){
                 reportItem();
                 $('#detailPopup').hide();
             });
+
+            // 태그 선택 시
             $('#tagSelect').on('input', function(){
                 let selectedOption = $('#tagSelect option:selected').val();
                 let selectedText = $('#tagSelect option:selected').text();
@@ -382,13 +418,13 @@
                 $('#tagSelect option:eq(0)').prop('selected', true);
             });
 
+            // 태그 삭제 시
             $('.tagBox').on('click', '.tagBlock', function() {
-                // 클릭된 동적으로 생성된 버튼에 대한 처리를 여기에 작성합니다.
                 console.log($(event.target).text());
                 $(event.target).remove();
             });
 
-            //찜하기
+            // 찜하기 버튼 클릭 시
             $('.heartBtn').on('click', function(){
                 const currentMemberEmail = $('#currentMemberEmail').val();
                 const shopMemberEmail = $('#shopMemberEmail').val();
@@ -400,7 +436,7 @@
                 }
             });
 
-            //사용자 신고
+            // 사용자 신고 버튼 클릭 시
             $('.reportMemberBtn').on('click', function(){
                 const currentMemberEmail = $('#currentMemberEmail').val();
                 const shopMemberEmail = $('#shopMemberEmail').val();
@@ -416,13 +452,19 @@
                 }
 
             });
+
+            // 사용자 신고 확인 버튼 클릭 시
             $('.reportConfirmMember').on('click', function(){
                 reportMember();
                 $('#detailPopupMember').hide();
             });
+
+            // 사용자 신고 팝업 닫기 버튼 클릭 시
             $('.closePopupMember').on('click', function(){
                 $('#detailPopupMember').hide();
             });
+
+            // 사용자 태그 선택 시
             $('#tagSelectMember').on('input', function(){
                 let selectedOption = $('#tagSelectMember option:selected').val();
                 let selectedText = $('#tagSelectMember option:selected').text();
@@ -434,12 +476,14 @@
                 }
                 $('#tagSelect option:eq(0)').prop('selected', true);
             });
+
+            // 사용자 태그 삭제 시
             $('.tagBoxMember').on('click', '.tagBlockMember', function() {
-                // 클릭된 동적으로 생성된 버튼에 대한 처리를 여기에 작성합니다.
                 console.log($(event.target).text());
                 $(event.target).remove();
             });
 
+            // 채팅 버튼 클릭 시
             $(".chatBtn").on("click", function (e){
                 e.preventDefault();
 
@@ -459,14 +503,16 @@
             });
         });
 
-        //찜하기
+        //상품 찜하기
         function heartItem(){
+            // CSRF 토큰 및 헤더 설정
             const token = $("meta[name='_csrf']").attr("content");
             const header = $("meta[name='_csrf_header']").attr("content");
             const url = "/heart/addHeart";
             const paramData = {id: $('#itemId').val()};
             console.log(paramData);
             const param = JSON.stringify(paramData);
+            // AJAX 호출
             $.ajax({
                 url: url,
                 type: "POST",
@@ -482,20 +528,19 @@
                     alert("찜 상품에 추가되었습니다.");
                 },
                 error: function (jqXHR, status, error) {
-
                     if (jqXHR.status == '401') {
                         alert('로그인 후 이용해주세요');
                         location.href = "/members/login";
                     } else {
                         alert(jqXHR.responseText);
                     }
-
                 }
             });
         }
 
         //사용자 신고
         function reportMember(){
+            // CSRF 토큰 및 헤더 설정
             const token = $("meta[name='_csrf']").attr("content");
             const header = $("meta[name='_csrf_header']").attr("content");
             const url = "/report/reportMember";
@@ -513,6 +558,7 @@
 
             const param = JSON.stringify(paramData);
 
+            // AJAX 호출
             $.ajax({
                 url: url,
                 type: "POST",
@@ -529,7 +575,6 @@
                     location.href = '/report/member';
                 },
                 error: function (jqXHR, status, error) {
-
                     if (jqXHR.status == '401') {
                         alert('로그인 후 이용해주세요');
                         location.href = '/members/login';
@@ -538,11 +583,11 @@
                     }
                 }
             });
-
         }
 
         //상품 신고
         function reportItem(){
+            // CSRF 토큰 및 헤더 설정
             const token = $("meta[name='_csrf']").attr("content");
             const header = $("meta[name='_csrf_header']").attr("content");
             const url = "/report/reportItem";
@@ -556,37 +601,38 @@
                 reportTagItemList: tagArray
             };
 
-                console.log(paramData);
+            console.log(paramData);
 
-                const param = JSON.stringify(paramData);
+            const param = JSON.stringify(paramData);
 
-                $.ajax({
-                        url: url,
-                        type: "POST",
-                        contentType: "application/json",
-                        data: param,
-                        beforeSend: function (xhr) {
-                            /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
-                            xhr.setRequestHeader(header, token);
-                        },
-                        dataType: "json",
-                        cache: false,
-                        success: function (result, status) {
-                            alert("신고처리 되었습니다.");
-                            location.href = '/report/item';
-                        },
-                        error: function (jqXHR, status, error) {
-
-                            if (jqXHR.status == '401') {
-                                alert('로그인 후 이용해주세요');
-                                location.href = '/members/login';
-                            } else {
-                                alert(jqXHR.responseText);
-                            }
-
-                        }
-                    });
+            // AJAX 호출
+            $.ajax({
+                url: url,
+                type: "POST",
+                contentType: "application/json",
+                data: param,
+                beforeSend: function (xhr) {
+                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                    xhr.setRequestHeader(header, token);
+                },
+                dataType: "json",
+                cache: false,
+                success: function (result, status) {
+                    alert("신고처리 되었습니다.");
+                    location.href = '/report/item';
+                },
+                error: function (jqXHR, status, error) {
+                    if (jqXHR.status == '401') {
+                        alert('로그인 후 이용해주세요');
+                        location.href = '/members/login';
+                    } else {
+                        alert(jqXHR.responseText);
+                    }
                 }
+            });
+        }
     </script>
+    <!-- 스크립트 종료 -->
 </th:block>
+
 </html>

@@ -9,7 +9,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Table(name="profile_image")
 @Getter
 @Setter
-@ToString
+//@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -38,4 +38,14 @@ public class ProfileImage {
         this.imgUrl = imgUrl;
     }
 
+    @Override
+    public String toString() {
+        return "ProfileImage{" +
+                "id=" + id +
+                ", member=" + member.getEmail() +
+                ", imgName='" + imgName + '\'' +
+                ", oriImgName='" + oriImgName + '\'' +
+                ", imgUrl='" + imgUrl + '\'' +
+                '}';
+    }
 }

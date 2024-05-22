@@ -44,7 +44,7 @@
                                  src="/img/profile_default.png">
                             <img style="width: 80px; height:80px;"
                                  th:if="${room.buyer.profileImageDTO != null && not #strings.isEmpty(room.buyer.profileImageDTO.imgName)}"
-                                 th:src="${room.buyer.profileImageDTO.uploadPath}+${room.seller.profileImageDTO.filename}">
+                                 th:src="${room.buyer.profileImageDTO.imgUrl}">
                             <span th:text="${room.buyer.nickname}"></span>
                             <div class="vr"></div>
                             <!-- 상품 이미지 및 링크 -->
@@ -95,7 +95,7 @@
                                  src="/img/profile_default.png">
                             <img style="width: 80px; height:80px;"
                                  th:if="${room.seller.profileImageDTO != null && not #strings.isEmpty(room.seller.profileImageDTO.imgName)}"
-                                 th:src="${room.seller.profileImageDTO.uploadPath}+${room.seller.profileImageDTO.filename}">
+                                 th:src="${room.seller.profileImageDTO.imgUrl}">
                             <span th:text="${room.seller.nickname}"></span>
                             <div class="vr"></div>
                             <!-- 상품 이미지 및 링크 -->

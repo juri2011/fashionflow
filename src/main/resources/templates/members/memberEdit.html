@@ -334,7 +334,7 @@
                     },
                     success: function(response){
                         // 탈퇴 성공 시 메인 페이지로 이동
-                        location.href = "/";
+                        // location.href = "/";
                         // 로그아웃 요청 보내기
                         $.post("/members/logout", {_csrf: csrfToken}, function(data) {
                             // 로그아웃 성공 시 현재 페이지 새로고침
@@ -390,6 +390,19 @@
             output.style.display = 'block';
         };
         reader.readAsDataURL(event.target.files[0]);
+    }
+
+    window.onload = function() {
+        // 성공 메시지 확인
+        var successMessage = /*[[${successMessage}]]*/ null;
+        if (successMessage != null) {
+            alert(successMessage);
+        }
+        // 에러 메시지 확인
+        var errorMessage = /*[[${errorMessage}]]*/ null;
+        if (errorMessage != null) {
+            alert(errorMessage);
+        }
     }
 
 </script>

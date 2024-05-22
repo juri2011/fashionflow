@@ -22,15 +22,15 @@ public class QProfileImage extends EntityPathBase<ProfileImage> {
 
     public static final QProfileImage profileImage = new QProfileImage("profileImage");
 
-    public final StringPath filename = createString("filename");
+    public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final NumberPath<Integer> id = createNumber("id", Integer.class);
+    public final StringPath imgName = createString("imgName");
+
+    public final StringPath imgUrl = createString("imgUrl");
 
     public final QMember member;
 
-    public final StringPath uploadPath = createString("uploadPath");
-
-    public final StringPath uuid = createString("uuid");
+    public final StringPath oriImgName = createString("oriImgName");
 
     public QProfileImage(String variable) {
         this(ProfileImage.class, forVariable(variable), INITS);
@@ -50,7 +50,7 @@ public class QProfileImage extends EntityPathBase<ProfileImage> {
 
     public QProfileImage(Class<? extends ProfileImage> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.member = inits.isInitialized("member") ? new QMember(forProperty("member")) : null;
+        this.member = inits.isInitialized("member") ? new QMember(forProperty("member"), inits.get("member")) : null;
     }
 
 }

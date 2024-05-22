@@ -233,6 +233,7 @@ public class MemberService implements UserDetailsService {
             throw new IllegalArgumentException("해당 이메일로 등록된 회원을 찾을 수 없습니다.");
         }
         memberRepository.delete(member);
+
     }
 
     // 아이디 찾기 메소드

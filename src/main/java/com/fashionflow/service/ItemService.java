@@ -48,23 +48,33 @@ public class ItemService {
 
     @Transactional
     public void saveItem(ItemFormDTO itemFormDTO, List<MultipartFile> itemImgFileList, List<String> tagSelect, String userEmail) throws Exception {
+        
+        //회원 정보 조회
         Member member = memberRepository.findByEmail(userEmail);
         if (member == null) {
             throw new RuntimeException("회원 정보를 찾을 수 없습니다.");
         }
 
+        //itemFormDTO로부터 Item entity 생성
         Item item = itemFormDTO.createItem();
+        //Item entity에 회원 정보 설정
         item.setMember(member);
         itemRepository.save(item); // 상품 저장
 
         // 이미지 파일 처리
         if (itemImgFileList != null && !itemImgFileList.isEmpty()) {
             for (int i = 0; i < itemImgFileList.size(); i++) {
+                //업로드 이미지 목록으로부터 하나씩 처리
                 MultipartFile file = itemImgFileList.get(i);
+                //이미지가 있는 경우에만 실행
                 if (!file.isEmpty()) {
+                    //ItemImg entity 생성
                     ItemImg itemImg = new ItemImg();
+                    //ItemImg에 상품 정보 설정
                     itemImg.setItem(item);
+                    //대표 이미지 여부 설정
                     itemImg.setRepimgYn(i == 0 ? "Y" : "N"); // 첫 번째 이미지를 대표 이미지로 설정
+                    //상품 이미지 저장
                     itemImgService.saveItemImg(itemImg, file);
                 }
             }
@@ -72,11 +82,16 @@ public class ItemService {
 
         // 태그 저장
         if(tagSelect != null && !tagSelect.isEmpty()){
+            //선택한 태그 목록에서 하나씩 순회하며 저장
             for(String tag : tagSelect){
                 try {
+                    //ItemTag entity생성
                     ItemTag itemTag = new ItemTag();
+                    //ItemTag entity에 상품 정보 저장
                     itemTag.setItem(item);
+                    //태그 이름 설정
                     itemTag.setItemTagName(ItemTagName.valueOf(tag));
+                    //상품 태그 저장
                     itemTagRepository.save(itemTag);
                 } catch (IllegalArgumentException e) {
                     // 로그 출력 및 적절한 예외 처리
@@ -108,6 +123,7 @@ public class ItemService {
 
             // 해당 상품의 대표 이미지 조회
             ItemImg repImg = itemImgRepository.findFirstByItemIdAndRepimgYn(item.getId(), "Y").orElse(null);
+            //대표 이미지기가 있으면 상품이미지DTO에 이미지 정보 설정
             if (repImg != null) {
                 List<ItemImgDTO> imgDTOList = new ArrayList<>();
                 imgDTOList.add(ItemImgDTO.entityToDto(repImg));
@@ -228,16 +244,21 @@ public class ItemService {
                 itemFormDTO.getPrice(), itemFormDTO.getDelivery(), itemFormDTO.getAddress());
 
         int index = 0;
-
+        
+        //DB에 저장된 상품 이미지 목록 조회
         List<ItemImg> itemImgList = itemImgRepository.findByItemId(itemId);
+        //상품 이미지의 id를 List형으로 생성
         List<Long> itemImgIdList = itemImgList.stream().map(ItemImg::getId).toList();
 
         //기존에 이미지가 있을 때만 실행
         if(itemImgIdStringList != null){
-
+            
+            //view로부터 전달받은 상품 이미지 id 목록을 Long형의 List로 변환
             List<Long> requestImgIdList = itemImgIdStringList.stream().map(Long::parseLong).toList();
             for(Long itemImgId : itemImgIdList){
+                //view로부터 전달받은 상품 이미지 목록 정보에 DB에 저장된 상품이미지 정보가 없다면  
                 if(!requestImgIdList.contains(itemImgId)){
+                    //해당 상품 이미지 데이터 삭제
                     itemImgRepository.deleteById(itemImgId);
                 }
             }
@@ -248,9 +269,12 @@ public class ItemService {
             for(; index<itemImgIdStringList.size(); index++){
                 Long itemImgId = Long.parseLong(itemImgIdStringList.get(index));
                 MultipartFile itemFile = itemImgFileList.get(index);
+                //사진이 있을 경우
                 if(!itemFile.isEmpty()){
+                    //view로부터 전달받은 상품 이미지 id가 유효한지 확인
                     ItemImg itemImg = itemImgRepository.findById(itemImgId)
                             .orElseThrow(() -> new EntityNotFoundException("이미지 정보를 찾을 수 없습니다. id = " + itemImgId));
+                    //상품 이미지 수정
                     itemImgService.saveItemImg(itemImg, itemFile);
                     System.out.println(itemImg);
                 }
@@ -262,10 +286,13 @@ public class ItemService {
         //추가
         for(;index<itemImgFileList.size();index++){
             MultipartFile itemFile = itemImgFileList.get(index);
+            //전달받은 사진 파일이 있는 경우
             if(!itemFile.isEmpty()){
-                System.out.println("추가해야 할 이미지가 더 있음");
+                //System.out.println("추가해야 할 이미지가 더 있음");
+                //새로운 ItemImg entity 생성
                 ItemImg itemImg = new ItemImg();
                 itemImg.setItem(item);
+                //현재 상품에 대표이미지가 없다면 대표이미지 생성
                 if(repItemImg.isEmpty()){
                     itemImg.setRepimgYn("Y");
                 }else{

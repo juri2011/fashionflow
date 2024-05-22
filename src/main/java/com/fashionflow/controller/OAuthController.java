@@ -146,7 +146,7 @@ public class OAuthController {
             modelAndView.addObject("memberFormDTO", memberFormDTO);
             // 중복 회원 예외 처리
             modelAndView.addObject("error", e.getMessage());
-            modelAndView.setViewName("members/memberRegister");
+            modelAndView.setViewName("oauth/oauthLogin");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

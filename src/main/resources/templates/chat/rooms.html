@@ -28,124 +28,126 @@
     </style>
 </th:block>
 <div layout:fragment="content">
+    <!-- 채팅방 목록 컨테이너 -->
     <div class="container">
+        <!-- 판매 및 구매 채팅방 목록 -->
         <div id="room-container" th:if="${#lists.size(sellList) > 0} or ${#lists.size(buyList) > 0}">
+            <!-- 판매 채팅방 목록 -->
             <div class="room-list sell-room">
                 <h2>판매</h2>
                 <ul th:each="room : ${sellList}" class="list-group">
                     <li class="list-group-item">
                         <div th:if="${room.buyer} != null">
-
+                            <!-- 구매자 정보 및 프로필 이미지 -->
                             <img style="width: 80px; height:80px;"
-                                 th:if="${room.buyer.profileImageDTO}==null" src="/img/profile_default.png">
-                            <!-- 테스트를 위해 임시 경로를 지정했지만 파일업로드 기능이 구현되면 변경될 수 있습니다.
-                            view에서 null인지 조건을 검사하는 것보다 회원가입할 때 사용자가 프로필 사진을 따로 설정하지 않았으면
-                             기본 사진의 경로와 이미지 이름으로 지정하는 것이 더 깔끔해 보임 -->
-
+                                 th:if="${room.buyer.profileImageDTO == null || #strings.isEmpty(room.buyer.profileImageDTO.imgName)}"
+                                 src="/img/profile_default.png">
                             <img style="width: 80px; height:80px;"
-                                 th:if="${room.buyer.profileImageDTO}!=null"
-                                 th:src="${room.buyer.profileImageDTO.uploadPath}+${room.seller.profileImageDTO.filename}">
-                            <span th:text="${room.buyer.nickname}">
-                            </span>
+                                 th:if="${room.buyer.profileImageDTO != null && not #strings.isEmpty(room.buyer.profileImageDTO.imgName)}"
+                                 th:src="${room.buyer.profileImageDTO.imgUrl}">
+                            <span th:text="${room.buyer.nickname}"></span>
                             <div class="vr"></div>
-
+                            <!-- 상품 이미지 및 링크 -->
                             <th:block th:if="${room.item} != null">
                                 <img style="width: 100px; height:100px;"
-                                     th:if="${room.item.itemRepImgDTO}!=null"
-                                     th:src="'/images/'+${room.item.itemRepImgDTO.imgName}">
+                                     th:if="${room.item.itemRepImgDTO} != null"
+                                     th:src="'/images/' + ${room.item.itemRepImgDTO.imgName}">
                                 <img style="width: 100px; height:100px;"
-                                     th:if="${room.item.itemRepImgDTO}==null" src="/img/default.png">
-                                <a th:href="@{/chat/room(roomId=${room.roomId})}">[[${room.name}]]</a>
+                                     th:if="${room.item.itemRepImgDTO} == null" src="/img/default.png">
+                                <a th:href="@{/chat/room(roomId=${room.roomId})}" th:text="${room.name}"></a>
                             </th:block>
                             <th:block th:if="${room.item} == null">
                                 <img style="width: 100px; height:100px;" src="/img/default.png">
-                                <a th:href="@{/chat/room(roomId=${room.roomId})}">[[${room.name}]]</a>
+                                <a th:href="@{/chat/room(roomId=${room.roomId})}" th:text="${room.name}"></a>
                             </th:block>
-
                         </div>
                         <div th:if="${room.buyer} == null">
+                            <!-- 구매자가 없는 경우 -->
                             <img style="width: 100px; height:100px;" src="/img/default.png">
                             <span>존재하지 않는 사용자</span>
                             <div class="vr"></div>
+                            <!-- 상품 이미지 및 링크 -->
                             <th:block th:if="${room.item} != null">
                                 <img style="width: 100px; height:100px;"
-                                     th:if="${room.item.itemRepImgDTO}!=null"
-                                     th:src="'/images/'+${room.item.itemRepImgDTO.imgName}">
+                                     th:if="${room.item.itemRepImgDTO} != null"
+                                     th:src="'/images/' + ${room.item.itemRepImgDTO.imgName}">
                                 <img style="width: 100px; height:100px;"
-                                     th:if="${room.item.itemRepImgDTO}==null" src="/img/default.png">
-                                <a th:href="@{/chat/room(roomId=${room.roomId})}">[[${room.name}]]</a>
+                                     th:if="${room.item.itemRepImgDTO} == null" src="/img/default.png">
+                                <a th:href="@{/chat/room(roomId=${room.roomId})}" th:text="${room.name}"></a>
                             </th:block>
                             <th:block th:if="${room.item} == null">
                                 <img style="width: 100px; height:100px;" src="/img/default.png">
-                                <a th:href="@{/chat/room(roomId=${room.roomId})}">[[${room.name}]]</a>
+                                <a th:href="@{/chat/room(roomId=${room.roomId})}" th:text="${room.name}"></a>
                             </th:block>
                         </div>
                     </li>
                 </ul>
             </div>
+            <!-- 구매 채팅방 목록 -->
             <div class="room-list buy-room">
                 <h2>구매</h2>
                 <ul th:each="room : ${buyList}" class="list-group">
                     <li class="list-group-item">
                         <div th:if="${room.seller} != null">
-
+                            <!-- 판매자 정보 및 프로필 이미지 -->
                             <img style="width: 80px; height:80px;"
-                                 th:if="${room.seller.profileImageDTO}==null" src="/img/profile_default.png">
-                            <!-- 테스트를 위해 임시 경로를 지정했지만 파일업로드 기능이 구현되면 변경될 수 있습니다.
-                            view에서 null인지 조건을 검사하는 것보다 회원가입할 때 사용자가 프로필 사진을 따로 설정하지 않았으면
-                             기본 사진의 경로와 이미지 이름으로 지정하는 것이 더 깔끔해 보임 -->
-
+                                 th:if="${room.seller.profileImageDTO == null || #strings.isEmpty(room.seller.profileImageDTO.imgName)}"
+                                 src="/img/profile_default.png">
                             <img style="width: 80px; height:80px;"
-                                 th:if="${room.seller.profileImageDTO}!=null"
-                                 th:src="${room.seller.profileImageDTO.uploadPath}+${room.seller.profileImageDTO.filename}">
-                            <span th:text="${room.seller.nickname}">
-                            </span>
+                                 th:if="${room.seller.profileImageDTO != null && not #strings.isEmpty(room.seller.profileImageDTO.imgName)}"
+                                 th:src="${room.seller.profileImageDTO.imgUrl}">
+                            <span th:text="${room.seller.nickname}"></span>
                             <div class="vr"></div>
+                            <!-- 상품 이미지 및 링크 -->
                             <th:block th:if="${room.item} != null">
                                 <img style="width: 100px; height:100px;"
-                                     th:if="${room.item.itemRepImgDTO}!=null"
-                                     th:src="'/images/'+${room.item.itemRepImgDTO.imgName}">
+                                     th:if="${room.item.itemRepImgDTO} != null"
+                                     th:src="'/images/' + ${room.item.itemRepImgDTO.imgName}">
                                 <img style="width: 100px; height:100px;"
-                                     th:if="${room.item.itemRepImgDTO}==null" src="/img/default.png">
-                                <a th:href="@{/chat/room(roomId=${room.roomId})}">[[${room.name}]]</a>
+                                     th:if="${room.item.itemRepImgDTO} == null" src="/img/default.png">
+                                <a th:href="@{/chat/room(roomId=${room.roomId})}" th:text="${room.name}"></a>
                             </th:block>
                             <th:block th:if="${room.item} == null">
                                 <img style="width: 100px; height:100px;" src="/img/default.png">
-                                <a th:href="@{/chat/room(roomId=${room.roomId})}">[[${room.name}]]</a>
+                                <a th:href="@{/chat/room(roomId=${room.roomId})}" th:text="${room.name}"></a>
                             </th:block>
                         </div>
                         <div th:if="${room.seller} == null">
+                            <!-- 판매자가 없는 경우 -->
                             <img style="width: 100px; height:100px;" src="/img/default.png">
                             <span>존재하지 않는 사용자</span>
                             <div class="vr"></div>
+                            <!-- 상품 이미지 및 링크 -->
                             <th:block th:if="${room.item} != null">
                                 <img style="width: 100px; height:100px;"
-                                     th:if="${room.item.itemRepImgDTO}!=null"
-                                     th:src="'/images/'+${room.item.itemRepImgDTO.imgName}">
+                                     th:if="${room.item.itemRepImgDTO} != null"
+                                     th:src="'/images/' + ${room.item.itemRepImgDTO.imgName}">
                                 <img style="width: 100px; height:100px;"
-                                     th:if="${room.item.itemRepImgDTO}==null" src="/img/default.png">
-                                <a th:href="@{/chat/room(roomId=${room.roomId})}">[[${room.name}]]</a>
+                                     th:if="${room.item.itemRepImgDTO} == null" src="/img/default.png">
+                                <a th:href="@{/chat/room(roomId=${room.roomId})}" th:text="${room.name}"></a>
                             </th:block>
                             <th:block th:if="${room.item} == null">
                                 <img style="width: 100px; height:100px;" src="/img/default.png">
-                                <a th:href="@{/chat/room(roomId=${room.roomId})}">[[${room.name}]]</a>
+                                <a th:href="@{/chat/room(roomId=${room.roomId})}" th:text="${room.name}"></a>
                             </th:block>
                         </div>
                     </li>
                 </ul>
             </div>
         </div>
-
+        <!-- 채팅방이 없는 경우 -->
         <th:block th:if="${#lists.size(sellList) == 0} and ${#lists.size(buyList) == 0}">
             <div class="no-room">아직 채팅방을 개설하지 않으셨네요.<br>상품 페이지의 '플로우톡' 버튼을 눌러서<br> 새로운 채팅을 시작해보세요!</div>
         </th:block>
     </div>
 </div>
+
 <script th:inline="javascript">
     $(document).ready(function(){
-
+        //채팅방 이름
         var roomName = [[${roomName}]];
 
+        //채팅방 이름이 없을시 채팅방 생성
         if(roomName != null)
             alert(roomName + "방이 개설되었습니다.");
 

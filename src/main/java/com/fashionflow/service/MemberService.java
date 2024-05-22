@@ -1,4 +1,3 @@
-
 package com.fashionflow.service;
 
 import com.fashionflow.dto.*;
@@ -14,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -36,23 +36,19 @@ import java.util.Map;
 public class MemberService implements UserDetailsService {
 
     private final MemberRepository memberRepository;
-
     private final ProfileImageRepository profileImageRepository;
-
     private final ItemSellRepository itemSellRepository;
-
     private final ProfileImgService profileImgService;
-
     private final EntityManager em;
-
     private final FileService fileService;
 
+    // application.properties에서 프로필 이미지 저장 위치를 가져오는 변수
     @Value("${profileImgLocation}")
     private String profileImgLocation;
 
-
+    // 회원 등록 메소드
     public void registerMember(MemberFormDTO memberFormDTO, PasswordEncoder passwordEncoder) throws Exception {
-        // Bcrypt 인코드
+        // 비밀번호를 Bcrypt로 인코딩
         String encodedPassword = passwordEncoder.encode(memberFormDTO.getPwd());
 
         // Member 객체 생성
@@ -88,8 +84,6 @@ public class MemberService implements UserDetailsService {
         }
     }
 
-
-
     //중복 체크 메소드
     public void checkDuplicate(Member member) {
         Member checkMember = memberRepository.findByEmailOrPhoneOrNickname(member.getEmail(), member.getPhone(), member.getNickname());
@@ -106,7 +100,6 @@ public class MemberService implements UserDetailsService {
         }
     }
 
-
     //사용자 인증처리
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -119,7 +112,7 @@ public class MemberService implements UserDetailsService {
         return User.builder()
                 .username(member.getEmail())
                 .password(member.getPwd())
-                .roles(member.getRole().toString())
+                .authorities(new SimpleGrantedAuthority("ROLE_" + member.getRole().toString()))
                 .build();
     }
 
@@ -166,6 +159,7 @@ public class MemberService implements UserDetailsService {
         return null;
     }
 
+    // 현재 로그인된 사용자가 OAuth로 가입되지 않았는지 확인하는 메소드
     public boolean findUnregisteredOAuthMember() {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -194,6 +188,7 @@ public class MemberService implements UserDetailsService {
             throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
         }
 
+
         // 프로필 이미지 업데이트
         MultipartFile profileImageFile = memberFormDTO.getProfileImageFile();
         if (profileImageFile != null && !profileImageFile.isEmpty()) {
@@ -212,7 +207,6 @@ public class MemberService implements UserDetailsService {
             }
         }
 
-
         // 회원 정보 업데이트
         currentMember.setPwd(encodedPassword);
         currentMember.setNickname(memberFormDTO.getNickname());
@@ -224,8 +218,6 @@ public class MemberService implements UserDetailsService {
         memberRepository.save(currentMember);
     }
 
-
-
     // 회원 삭제 메소드
     public void deleteMember(String email) {
         Member member = memberRepository.findByEmail(email);
@@ -233,6 +225,7 @@ public class MemberService implements UserDetailsService {
             throw new IllegalArgumentException("해당 이메일로 등록된 회원을 찾을 수 없습니다.");
         }
         memberRepository.delete(member);
+
     }
 
     // 아이디 찾기 메소드
@@ -322,5 +315,4 @@ public class MemberService implements UserDetailsService {
 
         return memberFormDTO;
     }
-
 }

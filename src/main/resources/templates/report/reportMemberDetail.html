@@ -3,39 +3,53 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layout1}">
 <th:block layout:fragment="script">
+    <!-- JavaScript 코드 -->
     <script>
         $(document).ready(function(){
 
+            // 확인 버튼 클릭 이벤트
             $('.confirm').on('click', function(){
+                // 선택된 처리 항목 가져오기
                 const selectedProcess = $('#processSelect option:selected').val();
 
+                // 처리 항목이 유효한지 확인
                 if(selectedProcess === 'SUSPEND' ||
                     selectedProcess === 'DELETE' ||
                     selectedProcess === 'ETC' ){
+                    // 멤버 처리 함수 호출
                     processMember(selectedProcess);
                 }else{
                     alert('처리 항목을 선택해주세요.');
                 }
             });
 
+            // 취소 버튼 클릭 이벤트
             $('.cancel').on('click', function(){
+                // 브라우저 이전 페이지로 이동
                 window.history.back();
             });
         });
+        // CSRF 토큰 및 헤더 정보 가져오기
         const token = $("meta[name='_csrf']").attr("content");
         const header = $("meta[name='_csrf_header']").attr("content");
 
+        // 멤버 처리 함수
         function processMember(command){
+            // 신고된 멤버 ID 가져오기
             const id = $('#reportId').val();
+            // 요청 URL 설정
             const url = "/report/processMember";
+            // 전송할 데이터 설정
             const paramData={
                 id: id,
                 command: command
             }
             console.log(paramData);
 
+            // JSON 형식으로 변환
             const param = JSON.stringify(paramData);
 
+            // AJAX 요청
             $.ajax({
                 url: url,
                 type: "POST",
@@ -48,18 +62,18 @@
                 dataType: "json",
                 cache: false,
                 success: function (result, status) {
+                    // 성공적인 처리 메시지 출력 및 페이지 이동
                     alert("신고처리 되었습니다.");
                     location.href = '/report/member';
                 },
                 error: function (jqXHR, status, error) {
-
+                    // 오류 처리
                     if (jqXHR.status == '401') {
                         alert('로그인 후 이용해주세요');
                         //location.href = '/members/login';
                     } else {
                         alert(jqXHR.responseText);
                     }
-
                 }
             });
         }
@@ -67,8 +81,11 @@
 </th:block>
 
 <th:block layout:fragment="css">
+    <!-- CSS 스타일 지정 -->
     <style>
         .content{ display:block; }
+
+        /* 컨테이너 스타일 */
         .report-container {
             margin-bottom: 20px;
             border: 1px solid #ccc;
@@ -76,19 +93,13 @@
             border-radius: 5px;
         }
 
+        /* 신고 항목 스타일 */
         .info {
             display: flex;
             margin-bottom: 10px;
         }
 
-        .item-info {
-            display: flex;
-            margin-bottom: 20px;
-            border: 1px solid #ccc; /* 테두리 추가 */
-            padding: 10px; /* 내부 여백 추가 */
-            border-radius: 5px;
-        }
-
+        /* 라벨 스타일 */
         .label {
             font-weight: bold;
             width: 100px;
@@ -98,35 +109,21 @@
             margin-right: 20px;
         }
 
-        .sub-label {
-            font-weight: bold;
-        }
-
-        .item-img {
-            max-width: 100px;
-            border-radius: 5px;
-        }
-
-        .item-image {
-            margin-right: 20px;
-        }
-
-        .buttons {
-            margin-top: 10px;
-        }
-
+        /* 버튼 스타일 */
         .btn {
             padding: 10px 20px;
             border-radius: 5px;
             cursor: pointer;
         }
 
+        /* 부트스트랩 스타일 재지정 */
         .btn-primary {
             background-color: #007bff;
             color: #fff;
             border: none;
         }
 
+        /* 부트스트랩 스타일 재지정 */
         .btn-secondary {
             background-color: #6c757d;
             color: #fff;
@@ -138,31 +135,39 @@
     </style>
 </th:block>
 
+
 <div layout:fragment="content">
+    <!-- 신고 내용 표시 -->
     <div class="report-container">
         <input type="hidden" name="reportId" id="reportId" th:value="${reportMember.id}">
         <div class="info">
+            <!-- 신고번호 표시 -->
             <div class="label">신고번호 :</div>
             <div class="value" th:text="${reportMember.id}"></div>
         </div>
         <div class="info">
+            <!-- 신고자 이메일 표시 -->
             <div class="label">신고자 :</div>
             <div class="value" th:text="${reportMember.reporterMemberEmail}"></div>
         </div>
         <div class="info">
+            <!-- 신고 대상 닉네임 및 이메일 표시 -->
             <div class="label">신고대상 :</div>
             <div class="value" th:text="${reportMember.reportedMember.nickname}
                             +'('+${reportMember.reportedMember.email}+')'"></div>
         </div>
         <div class="info">
+            <!-- 신고 내용 표시 -->
             <div class="label">신고내용 :</div>
             <div class="value" th:text="${reportMember.content}"></div>
         </div>
         <div class="info">
+            <!-- 신고 상태 표시 -->
             <div class="label">신고상태 :</div>
             <div class="value" th:text="${reportMember.reportStatus.getDescription()}"></div>
         </div>
         <div class="info">
+            <!-- 신고 태그 표시 -->
             <div class="label">신고태그 :</div>
             <div class="value">
                 <p th:each="reportTag, status: ${reportMember.reportMemberTagDTOList}">
@@ -170,6 +175,7 @@
                 </p>
             </div>
         </div>
+        <!-- 신고 처리 목록 선택 -->
         <label for="processSelect" class="form-group-text">신고 처리 목록</label>
         <select class="form-select" name="processSelect" id="processSelect">
             <option value="default">---선택---</option>
@@ -177,9 +183,11 @@
             <option value="ETC">직접처리</option>
         </select>
 
+        <!-- 처리 및 취소 버튼 -->
         <button class="btn btn-primary confirm" type="button">처리</button>
         <button class="btn btn-secondary cancel" type="button">취소</button>
     </div>
 
 </div>
+
 </html>

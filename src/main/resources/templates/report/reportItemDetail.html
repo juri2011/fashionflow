@@ -4,39 +4,55 @@
       layout:decorate="~{layouts/layout1}">
 
 <th:block layout:fragment="script">
+    <!-- 스크립트 선언 -->
     <script th:inline="javascript">
         $(document).ready(function(){
 
+            // 확인 버튼 클릭 이벤트 핸들러
             $('.confirm').on('click', function(){
+                // 선택된 처리 옵션 가져오기
                 const selectedProcess = $('#processSelect option:selected').val();
 
+                // 선택된 처리 옵션에 따라 분기 처리
                 if(selectedProcess === 'SUSPEND' ||
                     selectedProcess === 'DELETE' ||
                     selectedProcess === 'ETC' ){
+                    // 아이템 처리 함수 호출
                     processItem(selectedProcess);
                 }else{
+                    // 처리 항목을 선택하지 않았을 때 알림
                     alert('처리 항목을 선택해주세요.');
                 }
             });
 
+            // 취소 버튼 클릭 이벤트 핸들러
             $('.cancel').on('click', function(){
+                // 이전 페이지로 이동
                 window.history.back();
             });
         });
+
+        // CSRF 토큰 및 헤더 설정
         const token = $("meta[name='_csrf']").attr("content");
         const header = $("meta[name='_csrf_header']").attr("content");
 
+        // 아이템 처리 함수
         function processItem(command){
+            // 아이템 ID 가져오기
             const id = $('#reportId').val();
             const url = "/report/process";
+
+            // 요청 파라미터 설정
             const paramData={
                 id: id,
                 command: command
             }
             console.log(paramData);
 
+            // JSON 형태로 파라미터 변환
             const param = JSON.stringify(paramData);
 
+            // AJAX 요청
             $.ajax({
                 url: url,
                 type: "POST",
@@ -49,11 +65,12 @@
                 dataType: "json",
                 cache: false,
                 success: function (result, status) {
+                    // 성공 시 알림 및 페이지 이동
                     alert("신고처리 되었습니다.");
                     location.href = '/report/item';
                 },
                 error: function (jqXHR, status, error) {
-
+                    // 오류 발생 시 처리
                     if (jqXHR.status == '401') {
                         alert('로그인 후 이용해주세요');
                         //location.href = '/members/login';
@@ -67,10 +84,14 @@
     </script>
 </th:block>
 
+
 <th:block layout:fragment="css">
+    <!-- 스타일 시트 -->
     <style>
+        /* 기본 스타일 */
         .content{ display:block; }
 
+        /* 신고 컨테이너 스타일 */
         .report-container {
             margin-bottom: 20px;
             border: 1px solid #ccc;
@@ -78,11 +99,13 @@
             border-radius: 5px;
         }
 
+        /* 정보 스타일 */
         .info {
             display: flex;
             margin-bottom: 10px;
         }
 
+        /* 아이템 정보 스타일 */
         .item-info {
             display: flex;
             margin-bottom: 20px;
@@ -91,83 +114,111 @@
             border-radius: 5px;
         }
 
+        /* 라벨 스타일 */
         .label {
             font-weight: bold;
             width: 100px;
         }
 
+        /* 값 스타일 */
         .value {
             margin-right: 20px;
         }
 
+        /* 서브 라벨 스타일 */
         .sub-label {
             font-weight: bold;
         }
 
+        /* 아이템 이미지 스타일 */
         .item-img {
             max-width: 100px;
             border-radius: 5px;
         }
 
+        /* 아이템 이미지 컨테이너 스타일 */
         .item-image {
             margin-right: 20px;
         }
 
+        /* 버튼 컨테이너 스타일 */
         .buttons {
             margin-top: 10px;
         }
 
+        /* 버튼 기본 스타일 */
         .btn {
             padding: 10px 20px;
             border-radius: 5px;
             cursor: pointer;
         }
 
+        /* 주요 버튼 스타일 */
         .btn-primary {
             background-color: #007bff;
             color: #fff;
             border: none;
         }
 
+        /* 보조 버튼 스타일 */
         .btn-secondary {
             background-color: #6c757d;
             color: #fff;
             border: none;
         }
+        /* 버튼 스타일 */
         button{
             margin-top: 20px;
         }
     </style>
 </th:block>
 <div layout:fragment="content">
+    <!-- 신고 내용 컨테이너 -->
     <div class="report-container">
+        <!-- 신고 ID 숨은 입력 필드 -->
         <input type="hidden" name="reportId" id="reportId" th:value="${reportItem.id}">
+
+        <!-- 신고 정보 -->
         <div class="info">
             <div class="label">신고번호 :</div>
             <div class="value" th:text="${reportItem.id}"></div>
         </div>
+
+        <!-- 신고자 정보 -->
         <div class="info">
             <div class="label">신고자 :</div>
             <div class="value" th:text="${reportItem.reporterMemberEmail}"></div>
         </div>
+
+        <!-- 상품 정보 -->
         <div class="item-info">
             <div class="item-image">
+                <!-- 대표 사진 -->
                 <img class="item-img" th:src="'/images/'+${reportItem.reportedItem.itemRepImgDTO.imgName}" alt="대표사진">
             </div>
             <div class="item-details">
+                <!-- 상품 이름 -->
                 <div><span class="sub-label">상품이름:</span> <a th:href="'/item/'+${reportItem.reportedItemId}" th:text="${reportItem.reportedItem.itemName}"></a></div>
+                <!-- 상품 번호 -->
                 <div><span class="sub-label">상품번호:</span> <span th:text="${reportItem.reportedItemId}"></span></div>
+                <!-- 판매자 -->
                 <div><span class="sub-label">판매자:</span> <span th:text="${reportItem.reportedItem.memberId}"></span></div>
             </div>
         </div>
+
+        <!-- 신고 내용 -->
         <div class="info">
             <div class="label">신고내용 :</div>
             <div class="value" th:text="${reportItem.content}"></div>
         </div>
+
+        <!-- 신고 상태 -->
         <div class="info">
             <div class="label">신고상태 :</div>
             <div class="value" th:text="${reportItem.reportStatus.getDescription()}"></div>
         </div>
+
+        <!-- 신고 태그 -->
         <div class="info">
             <div class="label">신고태그 :</div>
             <div class="value">
@@ -176,6 +227,8 @@
                 </p>
             </div>
         </div>
+
+        <!-- 신고 처리 목록 -->
         <label for="processSelect" class="form-group-text">신고 처리 목록</label>
         <select class="form-select" name="processSelect" id="processSelect">
             <option value="default">---선택---</option>
@@ -184,8 +237,10 @@
             <option value="ETC">직접처리</option>
         </select>
 
+        <!-- 처리 및 취소 버튼 -->
         <button class="btn btn-primary confirm" type="button">처리</button>
         <button class="btn btn-secondary cancel" type="button">취소</button>
     </div>
 </div>
+
 </html>

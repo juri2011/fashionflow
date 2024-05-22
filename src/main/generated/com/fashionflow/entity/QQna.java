@@ -51,7 +51,7 @@ public class QQna extends EntityPathBase<Qna> {
     public QQna(Class<? extends Qna> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.item = inits.isInitialized("item") ? new QItem(forProperty("item"), inits.get("item")) : null;
-        this.member = inits.isInitialized("member") ? new QMember(forProperty("member")) : null;
+        this.member = inits.isInitialized("member") ? new QMember(forProperty("member"), inits.get("member")) : null;
     }
 
 }

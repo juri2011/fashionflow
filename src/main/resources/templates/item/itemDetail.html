@@ -228,20 +228,11 @@
                              th:src="'/profile/' + ${shopMember.profileImageDTO.imgName}"
                              alt="Profile Image" class="profile-image">
                     </div>
-                </div>
-
-                <!-- 판매자 정보 탭 -->
-                <div class="tab-pane fade p-2" id="seller-info" role="tabpanel"
-                     aria-labelledby="sellerinfo-tab">
-
-                    <div class="border-top mt-2 p-2 border-bottom d-flex flex-row mb-2 gap-3">
-                        <div id="profile-container" class="profile-pic g-col-6">
-                            <!-- 판매자 프로필 이미지 -->
-                            <img th:if="${shopMember.profileImageDTO == null || #strings.isEmpty(shopMember.profileImageDTO.imgName)}"
-                                 src="/img/profile_default.png" alt="기본 프로필 이미지">
-                            <img th:if="${shopMember.profileImageDTO != null && not #strings.isEmpty(shopMember.profileImageDTO.imgName)}"
-                                 th:src="'/profile/' + ${shopMember.profileImageDTO.imgName}"
-                                 alt="Profile Image" class="profile-image">
+                    <!-- 판매자 정보 -->
+                    <div id="sellerinfo-container">
+                        <div style="height:50px; line-height: 50px;">
+                            <span class="info-label" th:text="${shopMember.nickname}"></span>
+                            <button style="float:right;" type="button" class="reportMemberBtn btn btn-warning">사용자 신고하기</button>
                         </div>
                         <div>
                             <span class="info-label">가입일</span>

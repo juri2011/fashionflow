@@ -21,7 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @ToString(exclude = "profileImage")
-public class Member {
+public class Member implements UserDetails {
 
     @Id
     @Column(name="member_id")

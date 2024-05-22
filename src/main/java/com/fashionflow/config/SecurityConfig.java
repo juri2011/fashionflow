@@ -19,7 +19,8 @@ public class SecurityConfig {
 
         // 권한 설정
         http.authorizeRequests(auth -> auth
-                .requestMatchers("/**").permitAll() // 루트 URL은 인증 없이 접근 허용
+                .requestMatchers("/","/members/**","/css/**","/img/**","/js/**").permitAll() // 루트 URL은 인증 없이 접근 허용
+                .requestMatchers("/chart","/report/itemdetail/**","/report/memberdetail/**").hasRole("ADMIN") // "/chart" 경로는 ADMIN 역할을 가진 사용자만 접근 가능
                 .anyRequest().authenticated()); // 다른 모든 요청은 인증 필요
 
         // OAuth2.0 설정

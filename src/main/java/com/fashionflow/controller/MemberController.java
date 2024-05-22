@@ -18,6 +18,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
 @Controller
@@ -165,20 +166,13 @@ public class MemberController {
 
     // 회원 탈퇴
     @PostMapping("/deleteMember")
-    public ResponseEntity<String> deleteMember() {
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteMember() {
         String email = memberService.currentMemberEmail();
         if (email == null) {
-            return new ResponseEntity<>("현재 로그인된 사용자를 찾을 수 없습니다.", HttpStatus.UNAUTHORIZED);
+            throw new IllegalArgumentException("로그인된 사용자가 없습니다.");
         }
-
-        try {
-            memberService.deleteMember(email);
-            return new ResponseEntity<>("회원 삭제가 완료되었습니다.", HttpStatus.OK);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            return new ResponseEntity<>("회원 삭제 중 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        memberService.deleteMember(email);
     }
 
     //아이디 찾기 페이지

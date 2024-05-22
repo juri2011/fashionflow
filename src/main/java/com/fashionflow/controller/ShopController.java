@@ -77,7 +77,7 @@ public class ShopController {
     @PostMapping("/members/item/new")
     public String saveItem(@Valid ItemFormDTO itemFormDTO, BindingResult bindingResult,
                            @RequestParam("itemImgFile") List<MultipartFile> itemImgFileList,
-                           @RequestParam("tagSelectList") List<String> tagSelectList,
+                           @RequestParam(value="tagSelectList", required = false) List<String> tagSelectList,
                            Model model) {
 
         // 현재 로그인된 사용자의 이메일 가져오기

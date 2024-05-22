@@ -178,6 +178,14 @@
             border-color: #6A6866; /* 호버 시 경계선 색상 변경 */
         }
 
+        .phone-inputs {
+            display: flex;
+            gap: 10px; /* 입력 칸 사이의 간격 */
+        }
+
+        .form-control.phone-part {
+            flex: 1; /* 세 입력 칸이 균일하게 분포 */
+        }
 
     </style>
 </th:block>
@@ -208,7 +216,14 @@
             </div>
             <div class="form-group mb-3">
                 <label for="phone">전화번호</label>
-                <input type="text" name="phone" id="phone" class="form-control" placeholder="전화번호를 입력해주세요" th:value="${memberFormDTO.phone}">
+                <div class="phone-inputs">
+                    <input type="text" name="phone1" id="phone1" class="form-control phone-part" maxlength="3" placeholder="010" oninput="numberOnly(this); nextInput(this, 'phone2')">
+                    <input type="text" name="phone2" id="phone2" class="form-control phone-part" maxlength="4" placeholder="1234" oninput="numberOnly(this); nextInput(this, 'phone3')">
+                    <input type="text" name="phone3" id="phone3" class="form-control phone-part" maxlength="4" placeholder="5678" oninput="numberOnly(this);">
+                    <!-- 숨겨진 필드 추가 -->
+                    <input type="hidden" name="phone" id="phone" th:value="${memberFormDTO.phone}">
+                </div>
+
             </div>
             <div class="form-group mb-3">
                 <label for="birth">생년월일</label>
@@ -315,6 +330,38 @@
         });
     });
 
+    // 전화번호 입력 타입 제한
+    function numberOnly(input) {
+        input.value = input.value.replace(/[^0-9]/g, '');
+    }
+
+    // 자동 번호칸 이동
+    function nextInput(currentInput, nextInputId) {
+        if(currentInput.value.length === currentInput.maxLength) {
+            const nextInput = document.getElementById(nextInputId);
+            if(nextInput) {
+                nextInput.focus();
+            }
+        }
+    }
+
+    function updateHiddenPhoneField() {
+        // 세 전화번호 필드의 값을 가져옵니다.
+        var phone1 = document.getElementById('phone1').value;
+        var phone2 = document.getElementById('phone2').value;
+        var phone3 = document.getElementById('phone3').value;
+
+        // 세 부분을 하나로 합칩니다.
+        var fullPhone = phone1 + phone2 + phone3;
+
+        // 숨겨진 필드에 합친 전화번호를 설정합니다.
+        document.getElementById('phone').value = fullPhone;
+    }
+
+    // 각 전화번호 입력 필드에 대해 'input' 이벤트 리스너를 추가합니다.
+    document.getElementById('phone1').addEventListener('input', updateHiddenPhoneField);
+    document.getElementById('phone2').addEventListener('input', updateHiddenPhoneField);
+    document.getElementById('phone3').addEventListener('input', updateHiddenPhoneField);
 
 
 </script>

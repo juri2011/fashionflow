@@ -6,6 +6,7 @@ import com.fashionflow.entity.ProfileImage;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 import org.modelmapper.ModelMapper;
@@ -39,6 +40,7 @@ public class MemberFormDTO {
     private String nickname; // 별명
 
     @NotBlank(message = "전화번호를 입력해주세요.")
+    @Size(min = 11, max = 11, message = "전화번호는 11자리여야 합니다.")
     private String phone; // 전화번호
 
     @NotNull(message = "생년월일을 입력해주세요.")

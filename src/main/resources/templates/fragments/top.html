@@ -22,7 +22,7 @@
             margin-left: 10px;
         }
 
-        .nav-link {
+        .top-link {
             color: white;
             text-decoration: none;
         }
@@ -69,11 +69,11 @@
             <ul style="display: flex; align-items: center; list-style-type: none; margin: 0; padding: 0;">
                 <!-- 로그인 링크 -->
                 <li class="nav-item" sec:authorize="isAnonymous()" style="margin-right:20px">
-                    <a class="nav-link active" aria-current="page" href="/members/login" th:href="@{/members/login}">로그인</a>
+                    <a class="top-link active" aria-current="page" href="/members/login" th:href="@{/members/login}">로그인</a>
                 </li>
                 <!-- 회원가입 링크 -->
                 <li class="top-item nav-item" sec:authorize="isAnonymous()">
-                    <a class="top-link nav-link active" aria-current="page" href="/members/register" th:href="@{/members/register}">회원가입</a>
+                    <a class="top-link top-link active" aria-current="page" href="/members/register" th:href="@{/members/register}">회원가입</a>
                 </li>
                 <!-- 로그아웃 폼 -->
                 <li class="top-item nav-item" sec:authorize="isAuthenticated()">
@@ -86,7 +86,7 @@
                 </li>
                 <!-- 마이페이지 드롭다운 -->
                 <li class="top-item nav-item dropdown" sec:authorize="isAuthenticated()">
-                    <a class="top-link nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="top-link top-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         마이페이지
                     </a>
                     <!-- 마이페이지 드롭다운 메뉴 -->

@@ -238,43 +238,43 @@ public class ItemService {
                 .orElseThrow(() -> new EntityNotFoundException("해당 상품이 존재하지 않습니다. id = " + itemId));
 
         // ItemFormDTO에서 받은 정보를 사용하여 Item 엔티티 업데이트
-        item.updateItemInfo(itemFormDTO.getItemName(), categoryRepository.findById(itemFormDTO.getCategoryDTO().getId())
+        item.updateItemInfo(itemFormDTO.getItemName(),
+                categoryRepository.findById(itemFormDTO.getCategoryDTO().getId())
                         .orElseThrow(() -> new EntityNotFoundException("카테고리가 존재하지 않습니다. id = " + itemFormDTO.getCategoryDTO().getId())),
                 itemFormDTO.getSellStatus(), itemFormDTO.getItemStatus(), itemFormDTO.getContent(),
                 itemFormDTO.getPrice(), itemFormDTO.getDelivery(), itemFormDTO.getAddress());
 
         int index = 0;
-        
-        //DB에 저장된 상품 이미지 목록 조회
+
+        // DB에 저장된 상품 이미지 목록 조회
         List<ItemImg> itemImgList = itemImgRepository.findByItemId(itemId);
-        //상품 이미지의 id를 List형으로 생성
+        // 상품 이미지의 id를 List형으로 생성
         List<Long> itemImgIdList = itemImgList.stream().map(ItemImg::getId).toList();
 
-        //기존에 이미지가 있을 때만 실행
-        if(itemImgIdStringList != null){
-            
-            //view로부터 전달받은 상품 이미지 id 목록을 Long형의 List로 변환
+        // 기존에 이미지가 있을 때만 실행
+        if (itemImgIdStringList != null) {
+
+            // view로부터 전달받은 상품 이미지 id 목록을 Long형의 List로 변환
             List<Long> requestImgIdList = itemImgIdStringList.stream().map(Long::parseLong).toList();
-            for(Long itemImgId : itemImgIdList){
-                //view로부터 전달받은 상품 이미지 목록 정보에 DB에 저장된 상품이미지 정보가 없다면  
-                if(!requestImgIdList.contains(itemImgId)){
-                    //해당 상품 이미지 데이터 삭제
+            for (Long itemImgId : itemImgIdList) {
+                // view로부터 전달받은 상품 이미지 목록 정보에 DB에 저장된 상품이미지 정보가 없다면
+                if (!requestImgIdList.contains(itemImgId)) {
+                    // 해당 상품 이미지 데이터 삭제
                     itemImgRepository.deleteById(itemImgId);
                 }
             }
             System.out.println("상품 이미지 삭제 작업 완료");
 
-            System.out.println(itemImgIdStringList.size());
-            //수정
-            for(; index<itemImgIdStringList.size(); index++){
+            // 수정
+            for (; index < itemImgIdStringList.size(); index++) {
                 Long itemImgId = Long.parseLong(itemImgIdStringList.get(index));
                 MultipartFile itemFile = itemImgFileList.get(index);
-                //사진이 있을 경우
-                if(!itemFile.isEmpty()){
-                    //view로부터 전달받은 상품 이미지 id가 유효한지 확인
+                // 사진이 있을 경우
+                if (!itemFile.isEmpty()) {
+                    // view로부터 전달받은 상품 이미지 id가 유효한지 확인
                     ItemImg itemImg = itemImgRepository.findById(itemImgId)
                             .orElseThrow(() -> new EntityNotFoundException("이미지 정보를 찾을 수 없습니다. id = " + itemImgId));
-                    //상품 이미지 수정
+                    // 상품 이미지 수정
                     itemImgService.saveItemImg(itemImg, itemFile);
                     System.out.println(itemImg);
                 }
@@ -282,20 +282,19 @@ public class ItemService {
             System.out.println("상품 이미지 변경 작업 완료");
         }
 
-        Optional<ItemImg> repItemImg = itemImgRepository.findFirstByItemIdAndRepimgYn(itemId,"Y");
-        //추가
-        for(;index<itemImgFileList.size();index++){
+        Optional<ItemImg> repItemImg = itemImgRepository.findFirstByItemIdAndRepimgYn(itemId, "Y");
+        // 추가
+        for (; index < itemImgFileList.size(); index++) {
             MultipartFile itemFile = itemImgFileList.get(index);
-            //전달받은 사진 파일이 있는 경우
-            if(!itemFile.isEmpty()){
-                //System.out.println("추가해야 할 이미지가 더 있음");
-                //새로운 ItemImg entity 생성
+            // 전달받은 사진 파일이 있는 경우
+            if (!itemFile.isEmpty()) {
+                // 새로운 ItemImg entity 생성
                 ItemImg itemImg = new ItemImg();
                 itemImg.setItem(item);
-                //현재 상품에 대표이미지가 없다면 대표이미지 생성
-                if(repItemImg.isEmpty()){
+                // 현재 상품에 대표이미지가 없다면 대표이미지 생성
+                if (repItemImg.isEmpty()) {
                     itemImg.setRepimgYn("Y");
-                }else{
+                } else {
                     itemImg.setRepimgYn("N");
                 }
                 itemImgService.saveItemImg(itemImg, itemFile);
@@ -305,9 +304,10 @@ public class ItemService {
 
         // ItemTagDTOList 업데이트
         List<ItemTagDTO> itemTagDTOList = itemFormDTO.getItemTagDTOList();
+        // 이전에 등록된 상품 태그 삭제
+        itemTagRepository.deleteByItemId(itemId);
+
         if (itemTagDTOList != null && !itemTagDTOList.isEmpty()) {
-            // 이전에 등록된 상품 태그 삭제
-            itemTagRepository.deleteByItemId(itemId);
             // 새로운 상품 태그 등록
             List<ItemTag> itemTags = itemTagDTOList.stream()
                     .map(tagDTO -> new ItemTag(tagDTO.getItemTagName(), item))
@@ -318,6 +318,7 @@ public class ItemService {
         // 변경된 상품 정보 저장
         itemRepository.save(item);
     }
+
 
 
     public void updateViewCount(Long itemId){

@@ -52,6 +52,10 @@
 <!-- 사용자 CSS 추가 -->
 <th:block layout:fragment="css">
     <style>
+        .content {
+            margin-top: 0;
+        }
+
         .container {
             display: flex;
             flex-direction: column;
@@ -63,7 +67,7 @@
             display: flex;
             flex-direction: column;
             margin-bottom: 20px;
-            width: 550px;
+            width: 750px;
         }
 
         .form-control, .custom-file-input {
@@ -137,6 +141,11 @@
             transition: background-color 0.3s ease;
         }
 
+        .mb-3 {
+            display: flex;
+            justify-content: right;
+        }
+
 
         .error {
             color: #FF6B6B; /* 에러 메시지 색상 */
@@ -190,7 +199,7 @@
 <div layout:fragment="content">
     <div class="container">
 
-
+        <h2 style="margin-bottom:30px;">간편 로그인 회원정보 등록</h2>
         <!-- 공백란 알림 메시지 출력 -->
         <p th:if="${errors}" class="error" th:each="error : ${errors}" th:text="${error.defaultMessage}"></p>
         <!-- 중복 알림 메시지 출력 -->

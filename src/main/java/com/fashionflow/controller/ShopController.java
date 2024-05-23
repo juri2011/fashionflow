@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -151,19 +152,24 @@ public class ShopController {
                              @ModelAttribute("itemFormDTO") ItemFormDTO itemFormDTO,
                              @RequestParam("itemImgFile") List<MultipartFile> itemImgFileList,
                              @RequestParam(value = "itemImgIds", required = false) List<String> itemImgIdStringList,
-                             @RequestParam("tagSelectList") List<String> tagSelectList,
+                             @RequestParam(value = "tagSelectList", required = false) List<String> tagSelectList,
                              RedirectAttributes redirectAttributes) {
-        for(String tagSelect : tagSelectList){
-            ItemTagDTO itemTagDTO = new ItemTagDTO();
-            itemTagDTO.setItemTagName(ItemTagName.valueOf(tagSelect));
 
-            itemFormDTO.getItemTagDTOList().add(itemTagDTO);
+        // 태그 목록이 null이 아닌 경우 처리
+        if (tagSelectList != null) {
+            for (String tagSelect : tagSelectList) {
+                ItemTagDTO itemTagDTO = new ItemTagDTO();
+                itemTagDTO.setItemTagName(ItemTagName.valueOf(tagSelect));
+                itemFormDTO.getItemTagDTOList().add(itemTagDTO);
+            }
+        } else {
+            // 태그 목록이 null인 경우, 기존 태그를 삭제하거나 유지하는 로직 추가 필요
+            itemFormDTO.setItemTagDTOList(new ArrayList<>());  // 기존 태그를 모두 제거하려면 빈 리스트로 설정
         }
 
         if (itemId == null) {
             // 아이템 ID가 null인 경우 처리
             redirectAttributes.addFlashAttribute("errorMessage", "상품 ID가 null입니다.");
-
             return "redirect:/myshop";
         }
 
@@ -175,6 +181,7 @@ public class ShopController {
             return "forward:/members/item/{itemId}";
         }
     }
+
 
     // 상품을 삭제하는 메서드
     @PostMapping("/members/item/delete/{itemId}")

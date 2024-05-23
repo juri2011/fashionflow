@@ -57,6 +57,10 @@
     <title>회원가입</title>
 
     <style>
+        .content {
+            margin-top: 0;
+        }
+
         .container {
             display: flex;
             flex-direction: column;
@@ -64,11 +68,15 @@
             padding: 40px;
         }
 
+        h1 {
+            margin-bottom: 20px;
+        }
+
         .form-group, .custom-file-input {
             display: flex;
             flex-direction: column;
             margin-bottom: 20px;
-            width: 550px;
+            width: 750px;
         }
 
         .form-control, .custom-file-input {
@@ -184,7 +192,7 @@
         <p th:if="${errors}" class="error" th:each="error : ${errors}" th:text="${error.defaultMessage}"></p>
         <!-- 중복 알림 메시지 출력 -->
         <p th:if="${error}" class="error" th:text="${error}"></p>
-
+        <h1>회원가입</h1>
         <form role="form" method="post" enctype="multipart/form-data" action="/members/register">
             <div class="form-group mb-3">
                 <label for="name">이름</label>

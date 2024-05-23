@@ -151,7 +151,7 @@ public class ShopController {
                              @ModelAttribute("itemFormDTO") ItemFormDTO itemFormDTO,
                              @RequestParam("itemImgFile") List<MultipartFile> itemImgFileList,
                              @RequestParam(value = "itemImgIds", required = false) List<String> itemImgIdStringList,
-                             @RequestParam("tagSelectList") List<String> tagSelectList,
+                             @RequestParam(value = "tagSelectList", required = false) List<String> tagSelectList,
                              RedirectAttributes redirectAttributes) {
         for(String tagSelect : tagSelectList){
             ItemTagDTO itemTagDTO = new ItemTagDTO();

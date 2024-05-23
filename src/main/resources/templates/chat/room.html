@@ -37,6 +37,7 @@
         <!-- 상품 정보 -->
         <ul class="list-group">
             <li class="list-group-item">
+                <h3>상품</h3>
                 <!-- 상품 이미지 불러오기 -->
                 <div th:if="${room.item} != null">
                     <img style="width: 100px; height:100px;"
@@ -58,6 +59,7 @@
                 </div>
             </li>
             <li class="list-group-item">
+                <h3>판매자</h3>
                 <!-- 판매자 정보 -->
                 <div th:if="${room.seller} != null">
                     <img style="width: 100px; height:100px;"
@@ -65,7 +67,7 @@
                     <!-- 프로필 이미지가 없을 경우 기본 이미지 표시 -->
                     <img style="width: 100px; height:100px;"
                          th:if="${room.seller.profileImageDTO} != null"
-                         th:src="${room.seller.profileImageDTO.uploadPath} + ${room.seller.profileImageDTO.filename}">
+                         th:src="${room.seller.profileImageDTO.imgUrl}">
                     <!-- 프로필 이미지가 있을 경우 해당 이미지 표시 -->
                     <span th:text="${room.seller.nickname}"></span>
                     <!-- 판매자 닉네임 표시 -->

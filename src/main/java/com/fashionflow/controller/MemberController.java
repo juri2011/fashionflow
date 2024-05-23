@@ -181,7 +181,7 @@ public class MemberController {
         if(memberService.findUnregisteredOAuthMember()){
             return "redirect:/oauth/login";
         }
-        return "/members/findId";
+        return "members/findId";
     }
 
     //회원 아이디 찾기
@@ -194,7 +194,7 @@ public class MemberController {
             return "members/findId";
         } catch (IllegalArgumentException e) {
             model.addAttribute("errorMessage", e.getMessage());
-            return "/members/findId";
+            return "members/findId";
         }
     }
 }

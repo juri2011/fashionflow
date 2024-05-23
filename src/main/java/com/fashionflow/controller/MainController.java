@@ -47,11 +47,11 @@ public class MainController {
         if ((authentication.getPrincipal() instanceof OAuth2User)) {
             // OAuth로 로그인한 경우, 오류 메시지를 표시하고 페이지 이동을 막음
             model.addAttribute("errorMessage", "간편 로그인 회원은 사용할 수 없는 서비스입니다.");
-            return "/error/errorPage";
+            return "error/errorPage";
         }
 
         // OAuth로 로그인한 사용자 아닌 경우에만 EmailVerify 페이지로 이동
-        return "/EmailVerify";
+        return "EmailVerify";
     }
 
     @GetMapping("/ResetPwd")

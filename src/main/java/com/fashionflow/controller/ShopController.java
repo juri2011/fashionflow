@@ -49,7 +49,7 @@ public class ShopController {
         String userEmail = memberService.currentMemberEmail();
         // 비회원인 경우 로그인 페이지로 리디렉션
         if (userEmail.equals("anonymousUser")) {
-            return "/error/loginError";
+            return "error/loginError";
         }
 
         // 새 ItemFormDTO 객체를 모델에 추가
@@ -84,11 +84,11 @@ public class ShopController {
         String userEmail = memberService.currentMemberEmail();
 
         if (userEmail.equals("anonymousUser")) {
-            return "/error/loginError";
+            return "error/loginError";
         }
 
         if (bindingResult.hasErrors()) {
-            return "/item/itemForm";  // 입력 폼으로 리턴
+            return "item/itemForm";  // 입력 폼으로 리턴
         }
 
         try {
@@ -97,7 +97,7 @@ public class ShopController {
             return "redirect:/myshop";
         } catch (Exception e) {
             model.addAttribute("errorMessage", "상품 등록 실패");
-            return "/item/itemForm";
+            return "item/itemForm";
         }
     }
 
@@ -111,7 +111,7 @@ public class ShopController {
         String userEmail = memberService.currentMemberEmail();
 
         if (userEmail.equals("anonymousUser")) {
-            return "/error/loginError";
+            return "error/loginError";
         }
 
         // 현재 사용자의 상품 목록, 리뷰 목록, 좋아요한 상품 목록 가져오기

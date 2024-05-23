@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -153,6 +154,10 @@ public class ShopController {
                              @RequestParam(value = "itemImgIds", required = false) List<String> itemImgIdStringList,
                              @RequestParam(value = "tagSelectList", required = false) List<String> tagSelectList,
                              RedirectAttributes redirectAttributes) {
+        System.out.println(tagSelectList);
+
+        if(tagSelectList == null){tagSelectList = new ArrayList<>();}
+
         for(String tagSelect : tagSelectList){
             ItemTagDTO itemTagDTO = new ItemTagDTO();
             itemTagDTO.setItemTagName(ItemTagName.valueOf(tagSelect));

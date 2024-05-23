@@ -305,9 +305,10 @@ public class ItemService {
 
         // ItemTagDTOList 업데이트
         List<ItemTagDTO> itemTagDTOList = itemFormDTO.getItemTagDTOList();
+        // 이전에 등록된 상품 태그 삭제
+        itemTagRepository.deleteByItemId(itemId);
         if (itemTagDTOList != null && !itemTagDTOList.isEmpty()) {
-            // 이전에 등록된 상품 태그 삭제
-            itemTagRepository.deleteByItemId(itemId);
+
             // 새로운 상품 태그 등록
             List<ItemTag> itemTags = itemTagDTOList.stream()
                     .map(tagDTO -> new ItemTag(tagDTO.getItemTagName(), item))

@@ -14,6 +14,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -21,6 +24,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,18 +38,36 @@ public class ReportMemberController {
 
     // 특정 신고 항목의 상세 정보를 조회하는 메서드
     @GetMapping("/report/memberdetail/{id}")
-    public String reportDetail(Model model, @PathVariable("id") Long id){
+    public String reportMemberDetail(@AuthenticationPrincipal User user, Model model, @PathVariable("id") Long id) {
         // 만약 OAuth로 등록되지 않은 회원이라면 로그인 페이지로 리디렉션
-        if(memberService.findUnregisteredOAuthMember()){
+        if (memberService.findUnregisteredOAuthMember()) {
             return "redirect:/oauth/login";
         }
+
+        // 비회원인 경우 접근 거부 페이지로 리디렉션
+        if (user == null || user.getUsername().equals("anonymousUser")) {
+            return "error/accessError";
+        }
+
+        // 현재 로그인된 사용자의 권한 가져오기
+        Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
+        boolean hasAdminRole = authorities.stream().anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+
+        // ADMIN 역할이 없는 경우 접근 거부 페이지로 리디렉션
+        if (!hasAdminRole) {
+            return "error/accessError";
+        }
+
         // 신고 항목 ID를 기반으로 신고 항목 DTO를 조회
         ReportMemberDTO reportMemberDTO = reportMemberService.getReportMemberDTOById(id);
         System.out.println(reportMemberDTO);
+
         // 모델에 신고 항목 DTO를 추가
         model.addAttribute("reportMember", reportMemberDTO);
         return "report/reportMemberDetail";
     }
+
+
 
     // 신고 항목을 추가하는 메서드
     @PostMapping("/report/reportMember")

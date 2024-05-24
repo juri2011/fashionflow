@@ -247,6 +247,17 @@
                     $('#btnContainer').append(str);
                 }
             }
+            //채팅 입력창에서 enter 입력 시 메시지 전송
+            $('#msg').keypress(function(e){
+                if(e.keyCode && e.keyCode == 13){
+                    $("#button-send").trigger('click');
+                    return false;
+                }
+
+                if(e.keyCode && e.keyCode == 13){
+                      e.preventDefault();
+                }
+            })
 
             // 거래 완료 버튼 클릭 이벤트 핸들러
             $('#btnContainer').on('click', '.sell-btn', function() {
@@ -345,6 +356,11 @@
                     var msg = document.getElementById("msg");
 
                     console.log(username + ":" + msg.value);
+                    if(!msg.value || msg.value.trim().length<1){
+                        msg.value = '';
+                        return;
+                    }
+
                     stomp.send('/pub/chat/message', {}, JSON.stringify({
                         roomId: roomId,
                         message: msg.value,

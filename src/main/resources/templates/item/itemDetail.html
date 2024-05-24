@@ -165,7 +165,10 @@
                 </div>
                 <!-- 상품 배송비, 조회수, 찜한 횟수, 등록일 -->
                 <div>
-                    <span class="info-label">배송비</span><span th:text="${#numbers.formatInteger(itemFormDTO.delivery, 1, 'COMMA') + '원'}"></span>
+                    <span class="info-label">배송비</span><span th:if="${itemFormDTO.delivery} > 0"
+                                                             th:text="${#numbers.formatInteger(itemFormDTO.delivery, 1, 'COMMA') + '원'}"></span>
+                                                        <span th:unless="${itemFormDTO.delivery} > 0"
+                                                             th:text="무료"></span>
                 </div>
                 <!-- 판매자 정보 -->
                 <div>

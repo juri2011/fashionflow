@@ -258,7 +258,7 @@
                             <span th:text="${shopMember.sellCount}"></span>
                             <div class="vr"></div>
                             <span class="info-label">매너점수</span>
-                            <span th:text="${#numbers.formatInteger(shopMember.mannerScore * 10, 1) + '점'}"></span>
+                            <span th:text="${#numbers.formatDecimal(shopMember.mannerScore, 1, 1) + '점'}"></span>
                         </div>
                         <!-- 판매자 소개 -->
                         <div class="seller-introduction">

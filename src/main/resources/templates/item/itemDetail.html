@@ -59,6 +59,12 @@
             line-height: 28px;
         }
 
+        #item-info div{
+            width: 1250px;
+            overflow:hidden;
+            word-wrap:break-word;
+        }
+
         /* 찜하기, 플로우톡 버튼 스타일 */
         .heartBtn, .chatBtn{
             margin-top: 20px;
@@ -183,6 +189,11 @@
                         <span th:case="SOLD_OUT">판매완료</span>
                     </div>
                 </div>
+                <!-- 조회수 -->
+                <div>
+                    <span class="info-label">조회수</span>
+                    <span th:text="${itemFormDTO.viewCount}"></span>
+                </div>
                 <!-- 찜하기 및 플로우톡 버튼 -->
                 <button type="button" class="heartBtn btn btn-primary">찜하기</button>
                 <button type="button" class="chatBtn btn btn-primary">플로우톡</button>
@@ -211,7 +222,9 @@
                 <div>
                     <h4>상품 정보</h4>
                     <!-- 상품 설명 -->
-                    <span th:text="${itemFormDTO.content}"></span>
+
+                    [[${itemFormDTO.content}]]
+
                 </div>
             </div>
 
@@ -306,7 +319,10 @@
                             <label for="tagSelect" class="form-label">태그선택</label>
                             <select class="form-select" name="tagSelect" id="tagSelect">
                                 <option value="default">--선택--</option>
-                                <option value="VIOLATION">규정위반</option>
+                                <option value="INAPPROPRIATE_CONTENT">부적절한 내용</option>
+                                <option value="HARMFUL_CONTENT">유해한 콘텐츠</option>
+                                <option value="SPAM_ADVERTISEMENT">스팸(광고성)</option>
+                                <option value="PERSONAL_INFORMATION_BREACH">개인정보 침해</option>
                             </select>
                             <div class="tagBox"></div>
                         </div>
@@ -346,6 +362,7 @@
                                 <option value="default">--선택--</option>
                                 <option value="DISRESPECTFUL">비매너</option>
                                 <option value="FRAUD">사기</option>
+                                <option value="HARMFUL_CONTENT_PROVIDED">유해 콘텐츠 제공</option>
                             </select>
                             <div class="tagBoxMember"></div>
                         </div>

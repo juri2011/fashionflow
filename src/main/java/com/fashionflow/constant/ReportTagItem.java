@@ -1,7 +1,10 @@
 package com.fashionflow.constant;
 
 public enum ReportTagItem {
-    VIOLATION("규정위반");
+    INAPPROPRIATE_CONTENT("부적절한 내용"),
+    HARMFUL_CONTENT("유해한 콘텐츠"),
+    SPAM_ADVERTISEMENT("스팸(광고성)"),
+    PERSONAL_INFORMATION_BREACH("개인정보 침해");
 
     // 각 열거형 상수에 대한 설명
     private final String description;

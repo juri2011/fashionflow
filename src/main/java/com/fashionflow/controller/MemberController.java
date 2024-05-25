@@ -61,7 +61,7 @@ public class MemberController {
 
     // 회원 정보 입력
     @PostMapping("/register")
-    public ModelAndView registerMember(@Valid MemberFormDTO memberFormDTO, BindingResult bindingResult) {
+    public ModelAndView registerMember(@Valid @ModelAttribute("memberFormDTO") MemberFormDTO memberFormDTO, BindingResult bindingResult) {
 
 
         ModelAndView modelAndView = new ModelAndView();
@@ -74,8 +74,6 @@ public class MemberController {
 
         // 유효성 검사 실패 시 회원가입 페이지로 다시 이동
         if (bindingResult.hasErrors()) {
-            modelAndView.addObject("errors", bindingResult.getAllErrors());
-            // 실패한 경우 ModelAndView에 기존에 입력한 정보 추가하여 전달
             modelAndView.addObject("memberFormDTO", memberFormDTO);
             modelAndView.setViewName("members/memberRegister");
             return modelAndView;

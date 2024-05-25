@@ -135,9 +135,9 @@ public class MemberService implements UserDetailsService {
                 // 사용자 정보에서 이메일 속성 추출
                 return (String) kakaoAccount.get("email");
             } else if ("naver".equals(oauthToken.getAuthorizedClientRegistrationId())) {
-                Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("response");
+                Map<String, Object> naverAccount = (Map<String, Object>) attributes.get("response");
                 // 사용자 정보에서 이메일 속성 추출
-                return (String) kakaoAccount.get("email"); }
+                return (String) naverAccount.get("email"); }
 
             // 구글 사용자 정보에서 이메일 속성 추출
             return (String) attributes.get("email");

@@ -1,39 +1,122 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout1}">
 <head>
-    <title>Reset Password</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <title>비밀번호 재설정</title>
 </head>
+
+<!-- 사용자 CSS 추가 -->
+<th:block layout:fragment="css">
+    <style>
+        .content {
+            width: 1250px;
+            margin-top: 0;
+            margin: 0 auto;
+            padding: 40px;
+            padding-top: 0;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .form-group, .mb-3 {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+            width: 550px;
+        }
+
+        .form-control {
+            padding: 15px;
+            font-size: 14px;
+            border-radius: 20px;
+            border: 2px solid #DADADA;
+            background-color: #FFFFFF;
+        }
+
+        label {
+            margin-bottom: 8px;
+            color: #8C8A88;
+            font-weight: bold;
+        }
+
+        #authCode {
+            width: 450px;
+        }
+
+        .btn-layout {
+            display: flex;
+            justify-content: right;
+        }
+
+        .btn {
+            padding: 10px 30px;
+            margin-right: 10px;
+            cursor: pointer;
+            background-color: #8C8A88;
+            border: none;
+            color: white;
+            font-size: 14px;
+            border-radius: 20px;
+            white-space: nowrap; /* 텍스트가 줄 바꿈되지 않도록 설정 */
+            transition: background-color 0.3s ease; /* 배경색 전환 효과 설정 */
+        }
+
+        .btn:hover {
+            background-color: #6A6866;
+        }
+
+        .error {
+            color: #FF6B6B;
+            margin: 10px 0;
+        }
+
+        .timer {
+            color: #FF6B6B;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+    </style>
+</th:block>
+
 <body>
-<div class="container mt-5">
-    <div class="container">
+<div layout:fragment="content">
+    <div class="container mt-5">
+        <div class="container">
 
-        <h1 class="mb-3">비밀번호 재설정</h1>
-        <form id="resetPasswordForm" th:action="@{/api/v1/auth/reset-password}" method="post" class="needs-validation" novalidate>
-            <input type="hidden" id="email" name="email" th:value="${email}"/>
+            <h1>비밀번호 재설정</h1>
+            <form id="resetPasswordForm" th:action="@{/api/v1/auth/reset-password}" method="post" class="needs-validation" novalidate>
+                <input type="hidden" id="email" name="email" th:value="${email}"/>
 
-            <div class="form-group">
-                <label for="newPassword">새 비밀번호:</label>
-                <input type="password" id="newPassword" name="newPassword" class="form-control" required>
-                <div class="invalid-feedback">
-                    새 비밀번호를 입력해주세요.
+                <div class="form-group">
+                    <label for="newPassword">새 비밀번호</label>
+                    <input type="password" id="newPassword" name="newPassword" class="form-control" required>
+                    <div class="invalid-feedback">
+                        새 비밀번호를 입력해주세요.
+                    </div>
                 </div>
-            </div>
 
-            <div class="form-group">
-                <label for="confirmPassword">비밀번호 확인:</label>
-                <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required>
-                <div class="invalid-feedback">
-                    비밀번호가 일치하지 않습니다.
+                <div class="form-group">
+                    <label for="confirmPassword">비밀번호 확인</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required>
+                    <div class="invalid-feedback">
+                        비밀번호가 일치하지 않습니다.
+                    </div>
                 </div>
-            </div>
 
-            <button type="submit" class="btn btn-primary">비밀번호 변경</button>
-            <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
-        </form>
+                <button type="submit" class="btn btn-primary">비밀번호 변경</button>
+                <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+            </form>
+        </div>
     </div>
-</div>
+
 
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -92,5 +175,6 @@
     });
     /*]]>*/
 </script>
+</div>
 </body>
 </html>

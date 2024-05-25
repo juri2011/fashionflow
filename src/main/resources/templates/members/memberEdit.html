@@ -52,134 +52,138 @@
 <!-- 사용자 CSS 추가 -->
 <th:block layout:fragment="css">
     <style>
-        .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 40px;
-        }
+        .content{
+           margin-top: 0;
+       }
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 20px;
-            width: 550px;
-        }
+       .container {
+           display: flex;
+           flex-direction: column;
+           align-items: center;
+           padding: 40px;
+       }
 
-        .custom-file-input {
-            margin-right: 5px;
-            margin-bottom: 20px;
-            width: 350px;
-        }
+       .form-group {
+           display: flex;
+           flex-direction: column;
+           margin-bottom: 20px;
+           width: 750px;
+       }
 
-        .form-control, .custom-file-input {
-            padding: 15px;
-            font-size: 14px;
-            border-radius: 20px;
-            border: 2px solid #DADADA; /* 경계선 색상 */
-            background-color: #FFFFFF; /* 배경 색상 */
-        }
+       .custom-file-input {
+           margin-right: 5px;
+           margin-bottom: 20px;
+           width: 350px;
+       }
 
-        label {
-            margin-bottom: 8px;
-            color: #8C8A88; /* 라벨 색상 */
-            font-weight: bold;
-        }
+       .form-control, .custom-file-input {
+           padding: 15px;
+           font-size: 14px;
+           border-radius: 20px;
+           border: 2px solid #DADADA; /* 경계선 색상 */
+           background-color: #FFFFFF; /* 배경 색상 */
+       }
 
-        /* 유효성 검사 결과 리스트의 점 제거 */
-        .error-message ul {
-            list-style-type: none; /* 리스트 항목 앞의 점 제거 */
-            padding-left: 0; /* 왼쪽 패딩 제거 */
-        }
+       label {
+           margin-bottom: 8px;
+           color: #8C8A88; /* 라벨 색상 */
+           font-weight: bold;
+       }
 
-        .btn-primary {
-            padding: 10px 30px;
-            margin-right: 10px;
-            cursor: pointer;
-            background-color: #8C8A88; /* 버튼 배경 색상 */
-            border: none;
-            color: white;
-            font-size: 14px;
-            border-radius: 20px;
-            white-space: nowrap;
-            transition: background-color 0.3s ease; /* 버튼 호버 효과 */
-        }
+       /* 유효성 검사 결과 리스트의 점 제거 */
+       .error-message ul {
+           list-style-type: none; /* 리스트 항목 앞의 점 제거 */
+           padding-left: 0; /* 왼쪽 패딩 제거 */
+       }
 
-        .btn-primary:hover {
-            background-color: #6A6866; /* 호버 시 색상 변경 */
-        }
+       .btn-primary {
+           padding: 10px 30px;
+           margin-right: 10px;
+           cursor: pointer;
+           background-color: #8C8A88; /* 버튼 배경 색상 */
+           border: none;
+           color: white;
+           font-size: 14px;
+           border-radius: 20px;
+           white-space: nowrap;
+           transition: background-color 0.3s ease; /* 버튼 호버 효과 */
+       }
 
-        .btn-group .btn {
-            margin-right: 5px; /* 버튼 간격 조정 */
-            padding: 15px; /* 패딩 */
-            font-size: 14px; /* 글자 크기 */
-            border-radius: 20px; /* 경계선 반경 */
-            border: 2px solid #DADADA; /* 경계선 색상 */
-            background-color: #FFFFFF; /* 배경 색상 */
-            color: #000000; /* 글자색 */
-            transition: all 0.3s ease; /* 부드러운 색상 전환 효과 */
-        }
+       .btn-primary:hover {
+           background-color: #6A6866; /* 호버 시 색상 변경 */
+       }
 
-        .btn-group .btn:last-child {
-            margin-right: 0;
-        }
+       .btn-group .btn {
+           margin-right: 5px; /* 버튼 간격 조정 */
+           padding: 15px; /* 패딩 */
+           font-size: 14px; /* 글자 크기 */
+           border-radius: 20px; /* 경계선 반경 */
+           border: 2px solid #DADADA; /* 경계선 색상 */
+           background-color: #FFFFFF; /* 배경 색상 */
+           color: #000000; /* 글자색 */
+           transition: all 0.3s ease; /* 부드러운 색상 전환 효과 */
+       }
 
-        .btn.active {
-            background-color: #333333; /* 활성화된 버튼의 배경색 (무채색에 가까운 짙은 밤색) */
-            color: white; /* 활성화된 버튼의 글자색 */
-            border-color: #333333; /* 활성화된 버튼의 경계선 색상 */
-        }
+       .btn-group .btn:last-child {
+           margin-right: 0;
+       }
 
-        /* 회원 탈퇴 버튼 스타일 */
-        .btn-danger {
-            padding: 10px 30px;
-            margin-right: 10px;
-            cursor: pointer;
-            border: none;
-            color: white;
-            font-size: 14px;
-            border-radius: 20px;
-            white-space: nowrap;
-            transition: background-color 0.3s ease;
-        }
+       .btn.active {
+           background-color: #333333; /* 활성화된 버튼의 배경색 (무채색에 가까운 짙은 밤색) */
+           color: white; /* 활성화된 버튼의 글자색 */
+           border-color: #333333; /* 활성화된 버튼의 경계선 색상 */
+       }
+
+       /* 회원 탈퇴 버튼 스타일 */
+       .btn-danger {
+           padding: 10px 30px;
+           margin-right: 10px;
+           cursor: pointer;
+           border: none;
+           color: white;
+           font-size: 14px;
+           border-radius: 20px;
+           white-space: nowrap;
+           transition: background-color 0.3s ease;
+       }
 
 
-        .error {
-            color: #FF6B6B; /* 에러 메시지 색상 */
-            margin: 10px 0;
-        }
+       .error {
+           color: #FF6B6B; /* 에러 메시지 색상 */
+           margin: 10px 0;
+       }
 
-        input[readonly] {
-            background-color: #f4f4f4; /* 배경색 */
-            color: #555; /* 텍스트 색상 */
-            cursor: not-allowed; /* 커서 모양 변경 */
-        }
+       input[readonly] {
+           background-color: #f4f4f4; /* 배경색 */
+           color: #555; /* 텍스트 색상 */
+           cursor: not-allowed; /* 커서 모양 변경 */
+       }
 
-        .postcode-wrapper {
-            display: flex;
-            justify-content: space-between; /* 필드와 버튼 사이의 공간을 균등하게 분배 */
-            align-items: center; /* 세로 중앙 정렬 */
-        }
+       .postcode-wrapper {
+           display: flex;
+           justify-content: space-between; /* 필드와 버튼 사이의 공간을 균등하게 분배 */
+           align-items: center; /* 세로 중앙 정렬 */
+       }
 
-        .postcode-btn {
-            width: 60px; /* 원하는 너비로 조정 */
-            height: auto; /* 높이를 자동으로 조정하여 비율 유지 */
-            padding: 10px 15px; /* 조정된 패딩 */
-            margin-left: 10px; /* 우편번호 입력 필드와의 간격 */
-            font-size: 14px; /* 글자 크기 */
-            border-radius: 20px; /* 경계선 반경 */
-            border: 2px solid #DADADA; /* 경계선 색상 */
-            background-color: #FFFFFF; /* 배경 색상 */
-            color: #000000; /* 글자색 */
-            cursor: pointer; /* 커서 모양 변경 */
-            transition: all 0.3s ease; /* 부드러운 색상 전환 효과 */
-        }
+       .postcode-btn {
+           width: 60px; /* 원하는 너비로 조정 */
+           height: auto; /* 높이를 자동으로 조정하여 비율 유지 */
+           padding: 10px 15px; /* 조정된 패딩 */
+           margin-left: 10px; /* 우편번호 입력 필드와의 간격 */
+           font-size: 14px; /* 글자 크기 */
+           border-radius: 20px; /* 경계선 반경 */
+           border: 2px solid #DADADA; /* 경계선 색상 */
+           background-color: #FFFFFF; /* 배경 색상 */
+           color: #000000; /* 글자색 */
+           cursor: pointer; /* 커서 모양 변경 */
+           transition: all 0.3s ease; /* 부드러운 색상 전환 효과 */
+       }
 
-        .postcode-btn:hover {
-            background-color: #6A6866; /* 호버 시 색상 변경 */
-            color: white; /* 호버 시 글자색 변경 */
-            border-color: #6A6866; /* 호버 시 경계선 색상 변경 */
-        }
+       .postcode-btn:hover {
+           background-color: #6A6866; /* 호버 시 색상 변경 */
+           color: white; /* 호버 시 글자색 변경 */
+           border-color: #6A6866; /* 호버 시 경계선 색상 변경 */
+       }
 
     </style>
 </th:block>
@@ -205,6 +209,7 @@
             </ul>
         </div>
 
+        <h2>회원정보 수정</h2>
 
         <form role="form" method="post" enctype="multipart/form-data" action="/members/memberEdit">
             <div class="form-group mb-3">

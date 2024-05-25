@@ -5,10 +5,85 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layout1}">
 <head>
-    <title>Email Verification</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <title>비밀번호 찾기</title>
 </head>
+<!-- 사용자 CSS 추가 -->
+<th:block layout:fragment="css">
+    <style>
+        .content {
+            width: 1250px;
+            margin-top: 0;
+            margin: 0 auto;
+            padding: 40px;
+            padding-top: 0;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .form-group, .mb-3 {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+            width: 550px;
+        }
+
+        .form-control {
+            padding: 15px;
+            font-size: 14px;
+            border-radius: 20px;
+            border: 2px solid #DADADA;
+            background-color: #FFFFFF;
+        }
+
+        label {
+            margin-bottom: 8px;
+            color: #8C8A88;
+            font-weight: bold;
+        }
+
+        #authCode {
+            width: 450px;
+        }
+
+        .btn-layout {
+            display: flex;
+            justify-content: right;
+        }
+
+        .btn {
+            padding: 10px 30px;
+            margin-right: 10px;
+            cursor: pointer;
+            background-color: #8C8A88;
+            border: none;
+            color: white;
+            font-size: 14px;
+            border-radius: 20px;
+            white-space: nowrap; /* 텍스트가 줄 바꿈되지 않도록 설정 */
+            transition: background-color 0.3s ease; /* 배경색 전환 효과 설정 */
+        }
+
+        .btn:hover {
+            background-color: #6A6866;
+        }
+
+        .error {
+            color: #FF6B6B;
+            margin: 10px 0;
+        }
+
+        .timer {
+            color: #FF6B6B;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+    </style>
+</th:block>
 <body>
 <div layout:fragment="content">
     <div class="container mt-5">
@@ -18,33 +93,38 @@
             <p>찾으시는 회원의 이름과 이메일을 입력해주세요.</p>
             <form id="verificationForm" class="needs-validation" novalidate>
                 <div class="form-group">
-                    <label for="name">이름 :</label>
-                    <input type="text" id="name" name="name" class="form-control" placeholder="NAME" required>
+                    <label for="name">이름</label>
+                    <input type="text" id="name" name="name" class="form-control" placeholder="이름을 입력해주세요" required>
                     <div class="invalid-feedback">
                         이름을 입력해주세요.
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="email">이메일 :</label>
-                    <input type="text" id="email" name="email" class="form-control" placeholder="EMAIL" required>
+                    <label for="email">이메일</label>
+                    <input type="text" id="email" name="email" class="form-control" placeholder="이메일을 입력해주세요" required>
                     <div class="invalid-feedback">
                         이메일을 입력해주세요.
                     </div>
                 </div>
-
-                <button type="button" id="sendEmail" class="btn btn-primary">인증번호 전송</button>
+                <div class="btn-layout">
+                    <button type="button" id="sendEmail" class="btn btn-primary">인증번호 전송</button>
+                </div>
                 <br><br>
 
                 <div class="form-group">
-                    <label for="authCode">인증번호 :</label>
-                    <input type="text" id="authCode" name="authCode" class="form-control" placeholder="CODE" required>
+                    <label for="authCode">인증번호</label>
+                    <div style="display: flex; align-items: center;">
+                        <input type="text" id="authCode" name="authCode" class="form-control" placeholder="인증번호 입력" required>
+                        <div id="timer" class="timer"></div>
+                    </div>
                     <div class="invalid-feedback">
                         인증번호를 입력해주세요.
                     </div>
                 </div>
-
-                <button type="button" id="confirmEmail" class="btn btn-success">인증번호 확인</button>
+                <div class="btn-layout">
+                    <button type="button" id="confirmEmail" class="btn btn-success">인증번호 확인</button>
+                </div>
                 <input type="hidden" id="csrfToken" th:value="${_csrf.token}" />
             </form>
         </div>
@@ -56,6 +136,8 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <script>
+        var interval;
+
         document.querySelector("#sendEmail").addEventListener("click", function () {
             var email = document.querySelector("#email").value;
             var name = document.querySelector("#name").value;
@@ -78,6 +160,12 @@
             }).then((response) => response.json())
               .then((result) => {
                   alert(result.message);
+                  if (result.code === 0) {
+                      if (interval) {
+                          clearInterval(interval); // 기존 타이머 중지
+                      }
+                      startTimer(180); // 3분 타이머 시작
+                  }
               });
         });
 
@@ -114,6 +202,33 @@
                   }
               });
         });
+
+        function startTimer(duration) {
+            var timer = duration, minutes, seconds;
+            var display = document.querySelector("#timer");
+            var authCodeInput = document.querySelector("#authCode");
+
+            if (interval) {
+                clearInterval(interval); // 기존 타이머 중지
+            }
+
+            authCodeInput.disabled = false; // 인증번호 입력 가능하게 설정
+            interval = setInterval(function () {
+                minutes = parseInt(timer / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                display.textContent = minutes + ":" + seconds;
+
+                if (--timer < 0) {
+                    clearInterval(interval);
+                    display.textContent = "시간 초과";
+                    authCodeInput.disabled = true; // 인증번호 입력 불가하게 설정
+                }
+            }, 1000);
+        }
     </script>
 </div>
 </body>

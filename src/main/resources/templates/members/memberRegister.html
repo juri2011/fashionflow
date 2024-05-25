@@ -57,6 +57,10 @@
     <title>회원가입</title>
 
     <style>
+        .content {
+            margin-top: 0;
+        }
+
         .container {
             display: flex;
             flex-direction: column;
@@ -64,11 +68,15 @@
             padding: 40px;
         }
 
+        h1 {
+            margin-bottom: 20px;
+        }
+
         .form-group, .custom-file-input {
             display: flex;
             flex-direction: column;
             margin-bottom: 20px;
-            width: 550px;
+            width: 750px;
         }
 
         .form-control, .custom-file-input {
@@ -225,7 +233,7 @@
                     <p th:each="error : ${#fields.errors('phone')}" th:text="${error}">Name Error</p>
                 </div>
                 <div class="phone-inputs">
-                    <input type="text" name="phone1" id="phone1" class="form-control phone-part" maxlength="3" oninput="numberOnly(this); nextInput(this, 'phone2')">
+                    <input type="text" name="phone1" id="phone1" class="form-control phone-part" maxlength="3" value="010" oninput="numberOnly(this); nextInput(this, 'phone2')" readonly>
                     <input type="text" name="phone2" id="phone2" class="form-control phone-part" maxlength="4" oninput="numberOnly(this); nextInput(this, 'phone3')">
                     <input type="text" name="phone3" id="phone3" class="form-control phone-part" maxlength="4" oninput="numberOnly(this);">
                     <!-- 숨겨진 필드 추가 -->

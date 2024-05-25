@@ -82,4 +82,8 @@ public class ReviewService {
 
         return reviewDTOs;
     }
+
+    public long countReviewsBySellerEmail(String email) {
+        return reviewRepository.countBySellerEmail(email);
+    }
 }

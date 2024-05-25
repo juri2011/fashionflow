@@ -11,6 +11,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,6 +21,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,18 +35,35 @@ public class ReportItemController {
 
     // 특정 신고 항목의 상세 정보를 조회하는 메서드
     @GetMapping("/report/itemdetail/{id}")
-    public String reportDetail(Model model, @PathVariable("id") Long id){
+    public String reportDetail(@AuthenticationPrincipal User user, Model model, @PathVariable("id") Long id){
         // 만약 OAuth로 등록되지 않은 회원이라면 로그인 페이지로 리디렉션
         if(memberService.findUnregisteredOAuthMember()){
             return "redirect:/oauth/login";
         }
+
+        // 비회원인 경우 접근 거부 페이지로 리디렉션
+        if (user == null || user.getUsername().equals("anonymousUser")) {
+            return "error/accessError";
+        }
+
+        // 현재 로그인된 사용자의 권한 가져오기
+        Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
+        boolean hasAdminRole = authorities.stream().anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+
+        // ADMIN 역할이 없는 경우 접근 거부 페이지로 리디렉션
+        if (!hasAdminRole) {
+            return "error/accessError";
+        }
+
         // 신고 항목 ID를 기반으로 신고 항목 DTO를 조회
         ReportItemDTO reportItemDTO = reportItemService.getReportItemDTOById(id);
         System.out.println(reportItemDTO);
+
         // 모델에 신고 항목 DTO를 추가
         model.addAttribute("reportItem", reportItemDTO);
         return "report/reportItemDetail";
     }
+
 
     // 신고 항목 목록을 조회하는 메서드
     @GetMapping({"/report/item", "/report/item/{page}"})
@@ -60,10 +81,18 @@ public class ReportItemController {
         Page<ReportItemDTO> reportItems = reportItemService.getReportItemDTOPage(pageable);
 
         // 로그인한 사용자가 자신이 작성한 신고 항목을 구분할 수 있도록 설정
-        if(principal != null){
+        /*if(principal != null){
             // 사용자가 작성한 신고 항목을 구분
             reportItems.getContent().forEach(reportItemDTO -> {
                 if(principal.getName().equals(reportItemDTO.getReporterMemberEmail())){
+                    reportItemDTO.setMyReport(true);
+                }
+            });
+        }*/
+        if(memberService.currentMemberEmail() != null || !memberService.currentMemberEmail().equals("anonymousUser")){
+            // 사용자가 작성한 신고 항목을 구분
+            reportItems.getContent().forEach(reportItemDTO -> {
+                if(memberService.currentMemberEmail().equals(reportItemDTO.getReporterMemberEmail())){
                     reportItemDTO.setMyReport(true);
                 }
             });

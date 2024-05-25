@@ -49,7 +49,7 @@ public class RoomController {
 
         String userEmail = memberService.currentMemberEmail();
         if (userEmail.equals("anonymousUser")) {
-            return "/error/loginError";
+            return "error/loginError";
         }
 
         log.info("# All Chat Rooms");
@@ -213,7 +213,7 @@ public class RoomController {
         model.addAttribute("room", chatRoomDTO);
         model.addAttribute("currentMember", currentMember);
 
-        return "/chat/room";
+        return "chat/room";
     }
 
     // 현재 사용자 정보(닉네임, 이메일)를 반환하는 메서드

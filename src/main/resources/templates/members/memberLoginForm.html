@@ -89,6 +89,8 @@
 <div layout:fragment="content">
     <div class="container">
 
+        <p th:if="${registeredMember}" th:text="${registeredMember}" style="color:red"></p>
+
         <!-- 로그인 폼 -->
         <form role="form" method="post" action="/members/login">
             <!-- 이메일 입력 폼 -->
@@ -116,8 +118,8 @@
 
         <!-- 소셜 로그인 버튼 -->
         <div class="oauth-container">
-            <a href="/oauth2/authorization/google"><img th:src="@{/img/googleOAuth.png}" alt="구글 로그인" class="OAuthImg"></a>
             <a href="/oauth2/authorization/kakao"><img th:src="@{/img/kakaoOAuth.png}" alt="카카오 로그인" class="OAuthImg"></a>
+            <a href="/oauth2/authorization/google"><img th:src="@{/img/googleOAuth.png}" alt="구글 로그인" class="OAuthImg"></a>
             <a href="/oauth2/authorization/naver"><img th:src="@{/img/naverOAuth.png}" alt="네이버 로그인" class="OAuthImg"></a>
         </div>
 

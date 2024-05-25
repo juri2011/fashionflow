@@ -3,8 +3,11 @@ package com.fashionflow.controller;
 import com.fashionflow.constant.ItemTagName;
 import com.fashionflow.dto.*;
 import com.fashionflow.entity.Item;
+import com.fashionflow.entity.Member;
+import com.fashionflow.entity.ProfileImage;
 import com.fashionflow.entity.Review;
 import com.fashionflow.repository.ItemRepository;
+import com.fashionflow.repository.ProfileImageRepository;
 import com.fashionflow.service.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -39,6 +42,8 @@ public class ShopController {
     private final ReviewService reviewService;
 
     private final HeartService heartService;
+
+    private final ProfileImageRepository profileImageRepository;
 
     // 상품 등록 폼을 보여주는 메서드
     @GetMapping("/members/item/new")
@@ -115,15 +120,30 @@ public class ShopController {
             return "/error/loginError";
         }
 
+        // 현재 사용자의 Member 정보 가져오기
+        Member member = memberService.findMemberByCurrentEmail();
+
         // 현재 사용자의 상품 목록, 리뷰 목록, 좋아요한 상품 목록 가져오기
         List<ItemFormDTO> items = itemService.getItemsWithImagesByUserEmail(userEmail);
         List<ReviewDTO> getItemReviewListWithImg = reviewService.getItemReviewListWithImg(userEmail);
         List<HeartDTO> getHeartItemsWithImagesByUserEmail = heartService.getHeartItemsWithImagesByUserEmail(userEmail);
 
+        // 리뷰 수 계산
+        long reviewCount = reviewService.countReviewsBySellerEmail(userEmail);
+        model.addAttribute("reviewCount", reviewCount);
+
+
+        // 현재 회원의 프로필 이미지 가져오기
+        ProfileImage profileImage = profileImageRepository.findByMemberId(member.getId());
+        model.addAttribute("profileImage", profileImage);
+
+
+
         // 모델에 데이터 추가
         model.addAttribute("items", items);
         model.addAttribute("getItemReviewListWithImg", getItemReviewListWithImg);
         model.addAttribute("getHeartItemsWithImagesByUserEmail", getHeartItemsWithImagesByUserEmail);
+        model.addAttribute("member", member);
 
         // myshop.html 페이지로 이동
         return "myshop";

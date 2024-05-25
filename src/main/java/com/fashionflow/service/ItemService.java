@@ -13,7 +13,9 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -459,6 +461,13 @@ public class ItemService {
 
 
         model.addAttribute("itemDTOs", itemDTOs);
+    }
+
+    public Page<Item> getItemsWithImagesByUserEmail(String userEmail, Pageable pageable) {
+        // 사용자 이메일에 해당하는 회원을 찾음
+        Member member = memberRepository.findByEmail(userEmail);
+        // 회원이 등록한 아이템을 등록 날짜 내림차순으로 가져옴
+        return itemRepository.findByMemberOrderByRegdateDesc(member, pageable);
     }
 
 }

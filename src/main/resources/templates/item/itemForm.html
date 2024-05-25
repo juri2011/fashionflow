@@ -158,7 +158,6 @@
                 <select th:field="*{sellStatus}" class="custom-select" style="width:100px;">
                     <option value="SELLING">판매중</option>
                     <option value="SUSPENDED">판매중단</option>
-                    <option value="SOLD_OUT">판매완료</option>
                 </select>
             </div>
 
@@ -490,8 +489,8 @@ $(document).ready(function(){
             alert('유효한 가격을 입력해주세요. (0보다 커야 합니다.)');
             document.getElementById('price').focus();
             isValid = false;
-        } else if ( price >= 99999999) { // 가격이 입력되지 않았거나 0 이하인 경우
-            alert('가격은 9,999,999원 이하로 입력해주세요.');
+        } else if ( price >= 10000000) { // 가격이 입력되지 않았거나 0 이하인 경우
+            alert('가격은 10,000,000원 이하로 입력해주세요.');
             document.getElementById('price').focus();
             isValid = false;
         } else if (!delivery || delivery < 0) { // 배송비가 입력되지 않았거나 음수인 경우

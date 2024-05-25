@@ -27,6 +27,33 @@
             flex: 1 1;
         }
 
+        #msg-container{
+            margin-top: 20px;
+            padding: 10px;
+        }
+
+        .item-info, .seller-info{
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .item-info>item-left,
+        .seller-info>seller-left
+        {
+            flex-shrink:0;
+        }
+
+        .item-price{
+            font-weight: 800;
+            font-size: 24px;
+        }
+
+        .seller-name{
+            font-weight: 800;
+        }
+
+
     </style>
 </th:block>
 <div layout:fragment="content">
@@ -39,19 +66,25 @@
             <li class="list-group-item">
                 <h3>상품</h3>
                 <!-- 상품 이미지 불러오기 -->
-                <div th:if="${room.item} != null">
-                    <img style="width: 100px; height:100px;"
-                         th:if="${room.item.itemRepImgDTO} != null"
-                         th:src="'/images/' + ${room.item.itemRepImgDTO.imgName}">
-                    <img style="width: 100px; height:100px;"
-                         th:if="${room.item.itemRepImgDTO} == null" src="/img/default.png">
-                    <a th:href="'/item/' + ${room.item.id}" th:text="${room.item.itemName}"></a>
-                    <th:block th:switch="${#strings.toString(room.item.sellStatus)}">
-                        <!-- 상품 판매 상태에 따라 뱃지 표시 -->
-                        <span class="badge text-bg-success" th:case="SELLING">판매중</span>
-                        <span class="badge text-bg-danger" th:case="SUSPENDED">판매중단</span>
-                        <span class="badge text-bg-secondary" th:case="SOLD_OUT">판매완료</span>
-                    </th:block>
+                <div class="item-info" th:if="${room.item} != null">
+                    <div class="item-left">
+                        <img style="width: 100px; height:100px;"
+                             th:if="${room.item.itemRepImgDTO} != null"
+                             th:src="'/images/' + ${room.item.itemRepImgDTO.imgName}">
+                        <img style="width: 100px; height:100px;"
+                             th:if="${room.item.itemRepImgDTO} == null" src="/img/default.png">
+                    </div>
+                    <div class="item-right">
+                        <a th:href="'/item/' + ${room.item.id}" th:text="${room.item.itemName}"></a>
+                        <th:block th:switch="${#strings.toString(room.item.sellStatus)}">
+                            <!-- 상품 판매 상태에 따라 뱃지 표시 -->
+                            <span class="badge text-bg-success" th:case="SELLING">판매중</span>
+                            <span class="badge text-bg-danger" th:case="SUSPENDED">판매중단</span>
+                            <span class="badge text-bg-secondary" th:case="SOLD_OUT">판매완료</span>
+                        </th:block>
+                        <div class="item-price" th:text="${#numbers.formatInteger(room.item.price, 1, 'COMMA') + '원'}"></div>
+                    </div>
+
                 </div>
                 <div th:unless="${room.item} != null">
                     <span>존재하지 않는 상품입니다.</span>
@@ -61,16 +94,32 @@
             <li class="list-group-item">
                 <h3>판매자</h3>
                 <!-- 판매자 정보 -->
-                <div th:if="${room.seller} != null">
-                    <img style="width: 100px; height:100px;"
-                         th:if="${room.seller.profileImageDTO} == null" src="/img/profile_default.png">
-                    <!-- 프로필 이미지가 없을 경우 기본 이미지 표시 -->
-                    <img style="width: 100px; height:100px;"
-                         th:if="${room.seller.profileImageDTO} != null"
-                         th:src="${room.seller.profileImageDTO.imgUrl}">
-                    <!-- 프로필 이미지가 있을 경우 해당 이미지 표시 -->
-                    <span th:text="${room.seller.nickname}"></span>
-                    <!-- 판매자 닉네임 표시 -->
+                <div class="seller-info" th:if="${room.seller} != null">
+                    <div class="seller-left">
+                        <img style="width: 100px; height:100px;"
+                             th:if="${room.seller.profileImageDTO} == null" src="/img/profile_default.png">
+                        <!-- 프로필 이미지가 없을 경우 기본 이미지 표시 -->
+                        <img style="width: 100px; height:100px;"
+                             th:if="${room.seller.profileImageDTO} != null"
+                             th:src="${room.seller.profileImageDTO.imgUrl}">
+                        <!-- 프로필 이미지가 있을 경우 해당 이미지 표시 -->
+                    </div>
+                    <div class="seller-right">
+                        <div class="seller-name" >
+                            <span th:text="${room.seller.nickname}"></span>
+                        </div>
+                        <div class="seller-detail" >
+                            <!-- 판매자 닉네임 표시 -->
+                            <span class="info-label">가입일</span>
+                            <span th:text="${#temporals.format(room.seller.regdate, 'yyyy-MM-dd')}"></span>
+                            <div class="vr"></div>
+                            <span class="info-label">판매수</span>
+                            <span th:text="${room.seller.sellCount}"></span>
+                            <div class="vr"></div>
+                            <span class="info-label">매너점수</span>
+                            <span th:text="${#numbers.formatDecimal(room.seller.mannerScore, 1, 1) + '점'}"></span>
+                        </div>
+                    </div>
                 </div>
                 <div th:unless="${room.seller} != null">
                     <span>존재하지 않는 회원입니다.</span>
@@ -80,10 +129,7 @@
         </ul>
 
         <!-- 채팅 영역 -->
-        <div class="col-6">
-            <h1>[[${room.name}]]</h1>
-        </div>
-        <div>
+        <div id="msg-container" class="border rounded">
             <div id="msgArea" class="col" style="height: 500px; overflow-y: scroll;"></div>
             <!-- 채팅 메시지 영역 -->
             <div>

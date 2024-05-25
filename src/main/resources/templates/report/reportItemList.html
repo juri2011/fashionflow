@@ -188,6 +188,12 @@
 
     <!-- 사용자 CSS 추가 -->
     <style>
+
+        .container{
+            width: 1250px;
+            padding: 40px;
+        }
+
         /* 스타일 시작 */
         .content{ display:block; }
 
@@ -220,67 +226,86 @@
         .page-item.disabled{
             cursor:default;
         }
+
+        .table>tbody>tr>td{
+            overflow:hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            -webkit-box-orient: vertical;
+            word-break: break-all;
+            max-width: 513px;
+        }
+
+        .myreport-btn{
+            display:inline-block;
+            margin-left: 10px;
+        }
     </style>
 </head>
 <div layout:fragment="content">
-    <!-- 신고 리스트 테이블 -->
-    <h1>신고 리스트</h1>
-    <table class="table">
-        <thead>
-        <tr>
-            <th>번호</th>
-            <th>내용</th>
-            <th>작성자</th>
-            <th>등록일</th>
-            <th>거래상태</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="reportItem : ${reportItemList.getContent()}">
-            <td th:text="${reportItem.id}"></td>
-            <!-- 관리자나 작성자인 경우만 표시 -->
-            <td><a th:href="'/report/itemdetail/'+${reportItem.id}">
-                <span th:text="${reportItem.content}"></span>
-            </a></td>
-            <td th:text="${reportItem.reporterMemberEmail}"></td>
-            <td th:text="${#temporals.format(reportItem.regdate, 'yyyy-MM-dd HH:mm:ss')}"></td>
-            <td th:switch="${#strings.toString(reportItem.reportStatus)}">
-                <span th:case="WAITING" style="color:red">처리대기중</span>
-                <span th:case="COMPLETE" style="color:green">처리완료</span>
-            </td>
-            <!--<td th:text="${reportItem.reportStatus}"></td>-->
-            <!-- 사용자의 아이디가 표시되는 경우에만 수정 가능 -->
-            <td th:if="${reportItem.isMyReport}">
-                <button th:attr="data-id=${reportItem.id}" class="updateReport" type="button">수정</button>
-                <button th:attr="data-id=${reportItem.id}" class="deleteReport" type="button">삭제</button></td>
+    <div class="container">
+        <!-- 신고 리스트 테이블 -->
+        <h1>신고 리스트</h1>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>번호</th>
+                <th>내용</th>
+                <th>작성자</th>
+                <th>등록일</th>
+                <th>거래상태</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="reportItem : ${reportItemList.getContent()}">
+                <td th:text="${reportItem.id}"></td>
+                <!-- 관리자나 작성자인 경우만 표시 -->
+                <td><a th:href="'/report/itemdetail/'+${reportItem.id}">
+                    <span th:text="${reportItem.content}"></span>
+                </a></td>
+                <td th:text="${reportItem.reporterMemberEmail}"></td>
+                <td th:text="${#temporals.format(reportItem.regdate, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                <td th:switch="${#strings.toString(reportItem.reportStatus)}">
+                    <span th:case="WAITING" style="color:red">처리대기중</span>
+                    <span th:case="COMPLETE" style="color:green">처리완료</span>
+                    <div class="myreport-btn" th:if="${reportItem.isMyReport}">
+                        <button th:attr="data-id=${reportItem.id}" class="updateReport btn btn-primary" type="button">수정</button>
+                        <button th:attr="data-id=${reportItem.id}" class="deleteReport btn btn-danger" type="button">삭제</button>
+                    </div>
+                </td>
+                <!--<td th:text="${reportItem.reportStatus}"></td>-->
+                <!-- 사용자의 아이디가 표시되는 경우에만 수정 가능 -->
 
-        </tr>
-        </tbody>
-    </table>
 
-    <!-- 페이지네이션 추가 -->
-    <div th:with="start=${(reportItemList.number/maxPage)*maxPage + 1}, end=(${(reportItemList.totalPages == 0) ? 1 : (start + (maxPage - 1) < reportItemList.totalPages ? start + (maxPage - 1) : reportItemList.totalPages)})" >
-        <ul class="pagination justify-content-center">
-            <!-- 이전 페이지 -->
-            <li class="page-item" th:classappend="${reportItemList.first}?'disabled'">
-                <a th:onclick="'javascript:page(' + ${reportItemList.number} + ')'" aria-label='Previous' class="page-link">
-                    <span aria-hidden='true'>Previous</span>
-                </a>
-            </li>
+            </tr>
+            </tbody>
+        </table>
 
-            <!-- 페이지 번호 -->
-            <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}" th:classappend="${reportItemList.number eq page-1}?'active':''">
-                <a th:onclick="'javascript:page(' + ${page} + ')'" th:inline="text" class="page-link">[[${page}]]</a>
-            </li>
+        <!-- 페이지네이션 추가 -->
+        <div th:with="start=${(reportItemList.number/maxPage)*maxPage + 1}, end=(${(reportItemList.totalPages == 0) ? 1 : (start + (maxPage - 1) < reportItemList.totalPages ? start + (maxPage - 1) : reportItemList.totalPages)})" >
+            <ul class="pagination justify-content-center">
+                <!-- 이전 페이지 -->
+                <li class="page-item" th:classappend="${reportItemList.first}?'disabled'">
+                    <a th:onclick="'javascript:page(' + ${reportItemList.number} + ')'" aria-label='Previous' class="page-link">
+                        <span aria-hidden='true'>Previous</span>
+                    </a>
+                </li>
 
-            <!-- 다음 페이지 -->
-            <li class="page-item" th:classappend="${reportItemList.last}?'disabled'">
-                <a th:onclick="'javascript:page(' + ${reportItemList.number + 2} + ')'" aria-label='Next' class="page-link">
-                    <span aria-hidden='true'>Next</span>
-                </a>
-            </li>
-        </ul>
+                <!-- 페이지 번호 -->
+                <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}" th:classappend="${reportItemList.number eq page-1}?'active':''">
+                    <a th:onclick="'javascript:page(' + ${page} + ')'" th:inline="text" class="page-link">[[${page}]]</a>
+                </li>
+
+                <!-- 다음 페이지 -->
+                <li class="page-item" th:classappend="${reportItemList.last}?'disabled'">
+                    <a th:onclick="'javascript:page(' + ${reportItemList.number + 2} + ')'" aria-label='Next' class="page-link">
+                        <span aria-hidden='true'>Next</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
     </div>
+
 
     <!-- 신고 상세보기 팝업창 출력 -->
     <div id="detailPopup" class="modal" tabindex="-1">

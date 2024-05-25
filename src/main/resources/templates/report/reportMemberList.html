@@ -224,6 +224,20 @@
         .page-Member.disabled{
             cursor:default;
         }
+
+        .table>tbody>tr>td{
+            overflow:hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            -webkit-box-orient: vertical;
+            word-break: break-all;
+            max-width: 513px;
+        }
+
+        .myreport-btn{
+            display:inline-block;
+            margin-left: 10px;
+        }
     </style>
 </head>
 <div layout:fragment="content">
@@ -250,13 +264,13 @@
             <td th:switch="${#strings.toString(reportMember.reportStatus)}">
                 <span th:case="WAITING" style="color:red">처리대기중</span>
                 <span th:case="COMPLETE" style="color:green">처리완료</span>
+                <div class="myreport-btn" th:if="${reportMember.isMyReport}">
+                    <button th:attr="data-id=${reportMember.id}" class="updateReport btn btn-primary" type="button">수정</button>
+                    <button th:attr="data-id=${reportMember.id}" class="deleteReport btn btn-danger" type="button">삭제</button>
+                </div>
             </td>
             <!--<td th:text="${reportMember.reportStatus}"></td>-->
             <!-- 사용자의 아이디가 표시되는 경우에만 수정 가능 -->
-            <td th:if="${reportMember.isMyReport}">
-                <button th:attr="data-id=${reportMember.id}" class="updateReport" type="button">수정</button>
-                <button th:attr="data-id=${reportMember.id}" class="deleteReport" type="button">삭제</button></td>
-
         </tr>
         </tbody>
     </table>

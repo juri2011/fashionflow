@@ -101,6 +101,23 @@
             white-space: normal; /* 공백 문자를 자동으로 줄 바꿈 */
             word-wrap: break-word; /* 긴 단어를 여러 줄로 나눔 */
         }
+
+        .report-info{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        .report-img{
+            flex-shrink: 0;
+            width: 100px;
+            height: 100px;
+        }
+        .report-name{
+            width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
     </style>
 </th:block>
 
@@ -322,13 +339,13 @@
                     </div>
                     <div class="modal-body">
                         <!-- 상품 이미지 및 이름 -->
-                        <div class="mb-3">
-                            <span th:each="itemImg, status: ${itemFormDTO.itemImgDTOList}">
+                        <div class="report-info mb-3">
+                            <div class="report-img" th:each="itemImg, status: ${itemFormDTO.itemImgDTOList}">
                                 <img class="img-thumbnail" th:alt="${itemImg.imgName}" style="width:100px; height:100px;"
                                      th:if="${itemImg.repimgYn} == 'Y'"
                                      th:src="'/images/'+${itemImg.imgName}">
-                            </span>
-                            <span th:text="${itemFormDTO.itemName}"></span>
+                            </div>
+                            <div class="report-name" th:text="${itemFormDTO.itemName}"></div>
                         </div>
                         <!-- 상품 신고 내용 입력 폼 -->
                         <div class="mb-3">

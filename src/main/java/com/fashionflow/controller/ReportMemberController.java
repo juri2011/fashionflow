@@ -126,16 +126,15 @@ public class ReportMemberController {
         Page<ReportMemberDTO> reportMembers = reportMemberService.getReportMemberDTOPage(pageable);
 
         // 로그인한 사용자가 자신이 작성한 신고 항목을 구분할 수 있도록 설정
-        if(principal != null){
+        if(memberService.currentMemberEmail() != null || !memberService.currentMemberEmail().equals("anonymousUser")){
             // 사용자가 작성한 신고 항목을 구분
             reportMembers.getContent().forEach(reportMemberDTO -> {
-                if(principal.getName().equals(reportMemberDTO.getReporterMemberEmail())){
+                if(memberService.currentMemberEmail().equals(reportMemberDTO.getReporterMemberEmail())){
                     reportMemberDTO.setMyReport(true);
                 }
             });
         }
-
-        reportMembers.getContent().forEach(reportItemDTO -> System.out.println("================" + reportItemDTO));
+        reportMembers.getContent().forEach(reportMemberDTO -> System.out.println("================" + reportMemberDTO));
 
         System.out.println("총 페이지 수 : " + reportMembers.getTotalPages());
 

@@ -2,18 +2,327 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layout1}">
+
+
+<th:block layout:fragment="script">
+
+    <!-- 스크립트 시작 -->
+    <script>
+        $(document).ready(function(){
+
+            const $body = document.querySelector('body');
+            function preventScroll(e) {
+                e.preventDefault();
+            }
+            // 상품 신고 버튼 클릭 시
+            $('.reportBtn').on('click', function(){
+                // 현재 사용자 이메일 및 상점 회원 이메일 확인
+                const currentMemberEmail = $('#currentMemberEmail').val();
+                const shopMemberEmail = $('#shopMemberEmail').val();
+                // 사용자 인증 여부 확인
+                if(currentMemberEmail === 'anonymousUser' || !currentMemberEmail){
+                    alert('로그인 후 이용해주세요.');
+                    location.href = "/members/login";
+                    return;
+                }else if(currentMemberEmail === shopMemberEmail){
+                    alert('등록한 상품은 신고할 수 없습니다.');
+                    return;
+                }else{
+                    $('#detailPopup').show();
+                    $body.addEventListener('wheel', preventScroll, { passive: false });
+                }
+            });
+
+            // 팝업 닫기 버튼 클릭 시
+            $('.closePopup').on('click', function(){
+                $('#detailPopup').hide();
+                $body.removeEventListener('wheel', preventScroll, { passive: false });
+            });
+
+            // 신고 확인 버튼 클릭 시
+            $('.reportConfirm').on('click', function(){
+                reportItem();
+                $('#detailPopup').hide();
+                $body.removeEventListener('wheel', preventScroll, { passive: false });
+            });
+
+            // 태그 선택 시
+            $('#tagSelect').on('input', function(){
+                let selectedOption = $('#tagSelect option:selected').val();
+                let selectedText = $('#tagSelect option:selected').text();
+                let tagBlock = '<span class="badge text-bg-secondary tagBlock" data-tag="'+selectedOption+'">' +
+                                selectedText +'</span>';
+                if(selectedOption !== 'default'){
+                    if($('.tagBox').find('.tagBlock[data-tag="'+selectedOption+'"]').length>0){alert('존재함')}
+                    else $('.tagBox').append(tagBlock);
+                }
+                $('#tagSelect option:eq(0)').prop('selected', true);
+            });
+
+            // 태그 삭제 시
+            $('.tagBox').on('click', '.tagBlock', function() {
+                console.log($(event.target).text());
+                $(event.target).remove();
+            });
+
+            // 찜하기 버튼 클릭 시
+            $('.heartBtn').on('click', function(){
+                const currentMemberEmail = $('#currentMemberEmail').val();
+                const shopMemberEmail = $('#shopMemberEmail').val();
+                if(currentMemberEmail === shopMemberEmail){
+                    alert('등록한 상품은 찜할 수 없습니다.');
+                    return;
+                }else{
+                    heartItem();
+                }
+            });
+
+            // 사용자 신고 버튼 클릭 시
+            $('.reportMemberBtn').on('click', function(){
+                const currentMemberEmail = $('#currentMemberEmail').val();
+                const shopMemberEmail = $('#shopMemberEmail').val();
+                if(currentMemberEmail === 'anonymousUser' || !currentMemberEmail){
+                    alert('로그인 후 이용해주세요.');
+                    location.href = "/members/login";
+                    return;
+                }else if(currentMemberEmail === shopMemberEmail){
+                    alert('자신은 신고할 수 없습니다.');
+                    return;
+                }else{
+                    $('#detailPopupMember').show();
+                    $body.addEventListener('wheel', preventScroll, { passive: false });
+                }
+
+            });
+
+            // 사용자 신고 확인 버튼 클릭 시
+            $('.reportConfirmMember').on('click', function(){
+                reportMember();
+                $('#detailPopupMember').hide();
+                $body.removeEventListener('wheel', preventScroll, { passive: false });
+            });
+
+            // 사용자 신고 팝업 닫기 버튼 클릭 시
+
+
+            // 사용자 태그 선택 시
+            $('#tagSelectMember').on('input', function(){
+                let selectedOption = $('#tagSelectMember option:selected').val();
+                let selectedText = $('#tagSelectMember option:selected').text();
+                let tagBlock = '<span class="badge text-bg-secondary tagBlockMember" data-tag="'+selectedOption+'">'+
+                                selectedText +'</span>';
+                if(selectedOption !== 'default'){
+                    if($('.tagBoxMember').find('.tagBlockMember[data-tag="'+selectedOption+'"]').length>0){alert('존재함')}
+                    else $('.tagBoxMember').append(tagBlock);
+                }
+                $('#tagSelect option:eq(0)').prop('selected', true);
+            });
+
+            // 사용자 태그 삭제 시
+            $('.tagBoxMember').on('click', '.tagBlockMember', function() {
+                console.log($(event.target).text());
+                $(event.target).remove();
+            });
+
+            // 채팅 버튼 클릭 시
+            $(".chatBtn").on("click", function (e){
+                e.preventDefault();
+
+                const currentMemberEmail = $('#currentMemberEmail').val();
+                console.log(currentMemberEmail);
+                const shopMemberEmail = $('#shopMemberEmail').val();
+
+                if(currentMemberEmail === 'anonymousUser' || !currentMemberEmail){
+                    alert('로그인 후 이용해주세요.');
+                    location.href = "/members/login";
+                    return;
+                }else if(currentMemberEmail === shopMemberEmail){
+                    location.href = "/chat/flowtalk";
+                }else{
+                    $("#chat-form").submit();
+                }
+            });
+
+            $('.carousel-zoomin').on('click', function(e){
+                e.preventDefault();
+                $('.image-modal').show();
+                $('.modal-image').empty();
+                const str = $.trim($('.carousel-item.active').html());
+                $('.modal-image').append(str);
+                $body.addEventListener('wheel', preventScroll, { passive: false });
+            });
+
+            $('.closeImageModal').on('click', function(){
+                $('.image-modal').hide();
+                $body.removeEventListener('wheel', preventScroll, { passive: false });
+            });
+
+            $('html').click(function(e) {
+                if($(e.target).parents('.modal-content').length < 1){
+                    if($(e.target).closest('.modal').is(':visible')){
+                        $(e.target).closest('.modal').hide();
+                        $body.removeEventListener('wheel', preventScroll, { passive: false });
+                    }
+                }
+            });
+
+            $(document).keyup(function(e) {
+                 if (e.keyCode == 27) { // escape key maps to keycode `27`
+                    if($('.modal:visible').length > 0){
+                        console.log('화면닫기');
+                        $('.modal').hide();
+                        $body.removeEventListener('wheel', preventScroll, { passive: false });
+                    }
+                }
+            });
+
+        });// end of ready
+
+        //상품 찜하기
+        function heartItem(){
+            // CSRF 토큰 및 헤더 설정
+            const token = $("meta[name='_csrf']").attr("content");
+            const header = $("meta[name='_csrf_header']").attr("content");
+            const url = "/heart/addHeart";
+            const paramData = {id: $('#itemId').val()};
+            console.log(paramData);
+            const param = JSON.stringify(paramData);
+            // AJAX 호출
+            $.ajax({
+                url: url,
+                type: "POST",
+                contentType: "application/json",
+                data: param,
+                beforeSend: function (xhr) {
+                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                    xhr.setRequestHeader(header, token);
+                },
+                dataType: "json",
+                cache: false,
+                success: function (result, status) {
+                    alert("찜 상품에 추가되었습니다.");
+                },
+                error: function (jqXHR, status, error) {
+                    if (jqXHR.status == '401') {
+                        alert('로그인 후 이용해주세요');
+                        location.href = "/members/login";
+                    } else {
+                        alert(jqXHR.responseText);
+                    }
+                }
+            });
+        }
+
+        //사용자 신고
+        function reportMember(){
+            // CSRF 토큰 및 헤더 설정
+            const token = $("meta[name='_csrf']").attr("content");
+            const header = $("meta[name='_csrf_header']").attr("content");
+            const url = "/report/reportMember";
+            const tagArray = $('.tagBlockMember').map(function(){
+                return $(this).data('tag');
+            }).get();
+
+            const paramData = {
+                reportedMemberEmail:$('#shopMemberEmail').val(),
+                content: $('#reportContentMember').val(),
+                reportMemberTagStringList: tagArray
+            };
+
+            console.log(paramData);
+
+            const param = JSON.stringify(paramData);
+
+            // AJAX 호출
+            $.ajax({
+                url: url,
+                type: "POST",
+                contentType: "application/json",
+                data: param,
+                beforeSend: function (xhr) {
+                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                    xhr.setRequestHeader(header, token);
+                },
+                dataType: "json",
+                cache: false,
+                success: function (result, status) {
+                    alert("신고처리 되었습니다.");
+                    location.href = '/report/member';
+                },
+                error: function (jqXHR, status, error) {
+                    if (jqXHR.status == '401') {
+                        alert('로그인 후 이용해주세요');
+                        location.href = '/members/login';
+                    } else {
+                        alert(jqXHR.responseText);
+                    }
+                }
+            });
+        }
+
+        //상품 신고
+        function reportItem(){
+            // CSRF 토큰 및 헤더 설정
+            const token = $("meta[name='_csrf']").attr("content");
+            const header = $("meta[name='_csrf_header']").attr("content");
+            const url = "/report/reportItem";
+            const tagArray = $('.tagBlock').map(function(){
+                return $(this).data('tag');
+            }).get();
+
+            const paramData = {
+                reportedItemId:$('#itemId').val(),
+                content: $('#reportContent').val(),
+                reportTagItemList: tagArray
+            };
+
+            console.log(paramData);
+
+            const param = JSON.stringify(paramData);
+
+            // AJAX 호출
+            $.ajax({
+                url: url,
+                type: "POST",
+                contentType: "application/json",
+                data: param,
+                beforeSend: function (xhr) {
+                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                    xhr.setRequestHeader(header, token);
+                },
+                dataType: "json",
+                cache: false,
+                success: function (result, status) {
+                    alert("신고처리 되었습니다.");
+                    location.href = '/report/item';
+                },
+                error: function (jqXHR, status, error) {
+                    if (jqXHR.status == '401') {
+                        alert('로그인 후 이용해주세요');
+                        location.href = '/members/login';
+                    } else {
+                        alert(jqXHR.responseText);
+                    }
+                }
+            });
+        }
+    </script>
+    <!-- 스크립트 종료 -->
+</th:block>
 <th:block layout:fragment="css">
     <!-- CSS 스타일 정의 -->
     <style>
         /* 팝업 창 스타일 */
         #detailPopup, #detailPopupMember{
             display: none;
-            width: 600px;
-            height: 600px;
             top: 0;
             left: 50%;
             transform: translateX(-50%);
             position: fixed;
+            background-color: rgba(0,0,0,0.5);
+        }
+        #detailImage{
+            background-color: rgba(0,0,0,0.5);
         }
 
         /* 태그 블록 스타일 */
@@ -118,6 +427,18 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
+        .carousel-zoomin{
+            display: block;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            left: 0;
+            right: 0;
+        }
+
+        .modal-image>img{
+            width: 100%;
+        }
     </style>
 </th:block>
 
@@ -162,7 +483,9 @@
                             <img src="/img/default.png" class="d-block object-fit-contain" alt="...">
                         </div>
                     </th:block>
+                    <a class="carousel-zoomin" href="#"></a>
                 </div>
+
                 <!-- Carousel 이전/다음 버튼 -->
                 <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -412,273 +735,24 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> <!-- end of report modal -->
 
+        <!-- 이미지 모달 -->
+        <div id="detailImage" class="image-modal modal modal-lg" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="btn-close closeImageModal" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="modal-image"></div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- end of image modal -->
     </div>
 </div>
 
 
-<th:block layout:fragment="script">
-    <!-- 스크립트 시작 -->
-    <script>
-        $(document).ready(function(){
-            // 상품 신고 버튼 클릭 시
-            $('.reportBtn').on('click', function(){
-                // 현재 사용자 이메일 및 상점 회원 이메일 확인
-                const currentMemberEmail = $('#currentMemberEmail').val();
-                const shopMemberEmail = $('#shopMemberEmail').val();
-                // 사용자 인증 여부 확인
-                if(currentMemberEmail === 'anonymousUser' || !currentMemberEmail){
-                    alert('로그인 후 이용해주세요.');
-                    location.href = "/members/login";
-                    return;
-                }else if(currentMemberEmail === shopMemberEmail){
-                    alert('등록한 상품은 신고할 수 없습니다.');
-                    return;
-                }else{
-                    $('#detailPopup').show();
-                }
-            });
-
-            // 팝업 닫기 버튼 클릭 시
-            $('.closePopup').on('click', function(){
-                $('#detailPopup').hide();
-            });
-
-            // 신고 확인 버튼 클릭 시
-            $('.reportConfirm').on('click', function(){
-                reportItem();
-                $('#detailPopup').hide();
-            });
-
-            // 태그 선택 시
-            $('#tagSelect').on('input', function(){
-                let selectedOption = $('#tagSelect option:selected').val();
-                let selectedText = $('#tagSelect option:selected').text();
-                let tagBlock = '<span class="badge text-bg-secondary tagBlock" data-tag="'+selectedOption+'">' +
-                                selectedText +'</span>';
-                if(selectedOption !== 'default'){
-                    if($('.tagBox').find('.tagBlock[data-tag="'+selectedOption+'"]').length>0){alert('존재함')}
-                    else $('.tagBox').append(tagBlock);
-                }
-                $('#tagSelect option:eq(0)').prop('selected', true);
-            });
-
-            // 태그 삭제 시
-            $('.tagBox').on('click', '.tagBlock', function() {
-                console.log($(event.target).text());
-                $(event.target).remove();
-            });
-
-            // 찜하기 버튼 클릭 시
-            $('.heartBtn').on('click', function(){
-                const currentMemberEmail = $('#currentMemberEmail').val();
-                const shopMemberEmail = $('#shopMemberEmail').val();
-                if(currentMemberEmail === shopMemberEmail){
-                    alert('등록한 상품은 찜할 수 없습니다.');
-                    return;
-                }else{
-                    heartItem();
-                }
-            });
-
-            // 사용자 신고 버튼 클릭 시
-            $('.reportMemberBtn').on('click', function(){
-                const currentMemberEmail = $('#currentMemberEmail').val();
-                const shopMemberEmail = $('#shopMemberEmail').val();
-                if(currentMemberEmail === 'anonymousUser' || !currentMemberEmail){
-                    alert('로그인 후 이용해주세요.');
-                    location.href = "/members/login";
-                    return;
-                }else if(currentMemberEmail === shopMemberEmail){
-                    alert('자신은 신고할 수 없습니다.');
-                    return;
-                }else{
-                    $('#detailPopupMember').show();
-                }
-
-            });
-
-            // 사용자 신고 확인 버튼 클릭 시
-            $('.reportConfirmMember').on('click', function(){
-                reportMember();
-                $('#detailPopupMember').hide();
-            });
-
-            // 사용자 신고 팝업 닫기 버튼 클릭 시
-            $('.closePopupMember').on('click', function(){
-                $('#detailPopupMember').hide();
-            });
-
-            // 사용자 태그 선택 시
-            $('#tagSelectMember').on('input', function(){
-                let selectedOption = $('#tagSelectMember option:selected').val();
-                let selectedText = $('#tagSelectMember option:selected').text();
-                let tagBlock = '<span class="badge text-bg-secondary tagBlockMember" data-tag="'+selectedOption+'">'+
-                                selectedText +'</span>';
-                if(selectedOption !== 'default'){
-                    if($('.tagBoxMember').find('.tagBlockMember[data-tag="'+selectedOption+'"]').length>0){alert('존재함')}
-                    else $('.tagBoxMember').append(tagBlock);
-                }
-                $('#tagSelect option:eq(0)').prop('selected', true);
-            });
-
-            // 사용자 태그 삭제 시
-            $('.tagBoxMember').on('click', '.tagBlockMember', function() {
-                console.log($(event.target).text());
-                $(event.target).remove();
-            });
-
-            // 채팅 버튼 클릭 시
-            $(".chatBtn").on("click", function (e){
-                e.preventDefault();
-
-                const currentMemberEmail = $('#currentMemberEmail').val();
-                console.log(currentMemberEmail);
-                const shopMemberEmail = $('#shopMemberEmail').val();
-
-                if(currentMemberEmail === 'anonymousUser' || !currentMemberEmail){
-                    alert('로그인 후 이용해주세요.');
-                    location.href = "/members/login";
-                    return;
-                }else if(currentMemberEmail === shopMemberEmail){
-                    location.href = "/chat/flowtalk";
-                }else{
-                    $("#chat-form").submit();
-                }
-            });
-        });
-
-        //상품 찜하기
-        function heartItem(){
-            // CSRF 토큰 및 헤더 설정
-            const token = $("meta[name='_csrf']").attr("content");
-            const header = $("meta[name='_csrf_header']").attr("content");
-            const url = "/heart/addHeart";
-            const paramData = {id: $('#itemId').val()};
-            console.log(paramData);
-            const param = JSON.stringify(paramData);
-            // AJAX 호출
-            $.ajax({
-                url: url,
-                type: "POST",
-                contentType: "application/json",
-                data: param,
-                beforeSend: function (xhr) {
-                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
-                    xhr.setRequestHeader(header, token);
-                },
-                dataType: "json",
-                cache: false,
-                success: function (result, status) {
-                    alert("찜 상품에 추가되었습니다.");
-                },
-                error: function (jqXHR, status, error) {
-                    if (jqXHR.status == '401') {
-                        alert('로그인 후 이용해주세요');
-                        location.href = "/members/login";
-                    } else {
-                        alert(jqXHR.responseText);
-                    }
-                }
-            });
-        }
-
-        //사용자 신고
-        function reportMember(){
-            // CSRF 토큰 및 헤더 설정
-            const token = $("meta[name='_csrf']").attr("content");
-            const header = $("meta[name='_csrf_header']").attr("content");
-            const url = "/report/reportMember";
-            const tagArray = $('.tagBlockMember').map(function(){
-                return $(this).data('tag');
-            }).get();
-
-            const paramData = {
-                reportedMemberEmail:$('#shopMemberEmail').val(),
-                content: $('#reportContentMember').val(),
-                reportMemberTagStringList: tagArray
-            };
-
-            console.log(paramData);
-
-            const param = JSON.stringify(paramData);
-
-            // AJAX 호출
-            $.ajax({
-                url: url,
-                type: "POST",
-                contentType: "application/json",
-                data: param,
-                beforeSend: function (xhr) {
-                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
-                    xhr.setRequestHeader(header, token);
-                },
-                dataType: "json",
-                cache: false,
-                success: function (result, status) {
-                    alert("신고처리 되었습니다.");
-                    location.href = '/report/member';
-                },
-                error: function (jqXHR, status, error) {
-                    if (jqXHR.status == '401') {
-                        alert('로그인 후 이용해주세요');
-                        location.href = '/members/login';
-                    } else {
-                        alert(jqXHR.responseText);
-                    }
-                }
-            });
-        }
-
-        //상품 신고
-        function reportItem(){
-            // CSRF 토큰 및 헤더 설정
-            const token = $("meta[name='_csrf']").attr("content");
-            const header = $("meta[name='_csrf_header']").attr("content");
-            const url = "/report/reportItem";
-            const tagArray = $('.tagBlock').map(function(){
-                return $(this).data('tag');
-            }).get();
-
-            const paramData = {
-                reportedItemId:$('#itemId').val(),
-                content: $('#reportContent').val(),
-                reportTagItemList: tagArray
-            };
-
-            console.log(paramData);
-
-            const param = JSON.stringify(paramData);
-
-            // AJAX 호출
-            $.ajax({
-                url: url,
-                type: "POST",
-                contentType: "application/json",
-                data: param,
-                beforeSend: function (xhr) {
-                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
-                    xhr.setRequestHeader(header, token);
-                },
-                dataType: "json",
-                cache: false,
-                success: function (result, status) {
-                    alert("신고처리 되었습니다.");
-                    location.href = '/report/item';
-                },
-                error: function (jqXHR, status, error) {
-                    if (jqXHR.status == '401') {
-                        alert('로그인 후 이용해주세요');
-                        location.href = '/members/login';
-                    } else {
-                        alert(jqXHR.responseText);
-                    }
-                }
-            });
-        }
-    </script>
-    <!-- 스크립트 종료 -->
-</th:block>
 
 </html>

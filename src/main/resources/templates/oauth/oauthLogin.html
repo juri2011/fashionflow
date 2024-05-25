@@ -212,7 +212,7 @@
             <div class="form-group mb-3">
                 <label for="phone">전화번호</label>
                 <div class="phone-inputs">
-                    <input type="text" name="phone1" id="phone1" class="form-control phone-part" maxlength="3" oninput="numberOnly(this); nextInput(this, 'phone2')">
+                    <input type="text" name="phone1" id="phone1" class="form-control phone-part" maxlength="3" value="010" oninput="numberOnly(this); nextInput(this, 'phone2')" readonly>
                     <input type="text" name="phone2" id="phone2" class="form-control phone-part" maxlength="4" oninput="numberOnly(this); nextInput(this, 'phone3')">
                     <input type="text" name="phone3" id="phone3" class="form-control phone-part" maxlength="4" oninput="numberOnly(this);">
                     <!-- 숨겨진 필드 추가 -->

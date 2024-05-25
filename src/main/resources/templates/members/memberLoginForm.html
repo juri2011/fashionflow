@@ -89,6 +89,8 @@
 <div layout:fragment="content">
     <div class="container">
 
+        <p th:if="${registeredMember}" th:text="${registeredMember}" style="color:red"></p>
+
         <!-- 로그인 폼 -->
         <form role="form" method="post" action="/members/login">
             <!-- 이메일 입력 폼 -->

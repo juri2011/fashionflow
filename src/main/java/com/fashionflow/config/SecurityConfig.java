@@ -1,6 +1,8 @@
 package com.fashionflow.config;
 
 
+import com.fashionflow.service.CustomOAuth2UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,11 +15,14 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    @Bean
+    public CustomOAuth2UserService customOAuth2UserService() {
+        return new CustomOAuth2UserService();
+    }
     /* 임시 권한 부여 */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        // 권한 설정
         // 권한 설정
         http.authorizeRequests(auth -> auth
                 .requestMatchers("/chart","/report/itemdetail/**","/report/memberdetail/**").hasRole("ADMIN") // "/chart" 경로는 ADMIN 역할을 가진 사용자만 접근 가능
@@ -28,7 +33,9 @@ public class SecurityConfig {
         http.oauth2Login(oauth2Login -> oauth2Login
                 .loginPage("/members/login") // 사용자 지정 로그인 페이지 경로
                 .defaultSuccessUrl("/oauth/login", true) // OAuth 로그인 성공 후 리다이렉션될 경로
-                .failureUrl("/login")); // 로그인 실패 시 리다이렉션될 경로
+                .failureUrl("/members/oauthError")
+                .userInfoEndpoint(userInfo -> userInfo
+                        .userService(customOAuth2UserService())));
 
         // 폼 로그인 설정
         http.formLogin(form -> form

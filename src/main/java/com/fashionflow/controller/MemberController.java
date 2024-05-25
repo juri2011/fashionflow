@@ -6,6 +6,8 @@ import com.fashionflow.entity.ProfileImage;
 import com.fashionflow.repository.ProfileImageRepository;
 import com.fashionflow.service.MemberService;
 import com.fashionflow.service.ProfileImgService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -48,6 +50,14 @@ public class MemberController {
         model.addAttribute("loginErrorMsg", "아이디 비밀번호를 확인해주세요");
         return "members/memberLoginForm";
     }
+
+    @GetMapping("/oauthError")
+    public String oauthError(Model model) {
+
+        model.addAttribute("registeredMember", "이미 다른 방법으로 등록된 이메일입니다.");
+        return "members/memberLoginForm";
+    }
+
 
     //회원가입 페이지 이동
     @GetMapping("/register")

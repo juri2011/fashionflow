@@ -66,7 +66,7 @@
         }
 
         /* 찜하기, 플로우톡 버튼 스타일 */
-        .heartBtn, .chatBtn{
+        .heartBtn, .chatBtn, .reportBtn{
             margin-top: 20px;
         }
 
@@ -146,6 +146,7 @@
                 <!-- 상품 이름 및 태그 -->
                 <div>
                     <h2 th:text="${itemFormDTO.itemName}"></h2>
+
                     <div style="margin-bottom: 20px;">
                         <span th:each="itemTag, status: ${itemFormDTO.itemTagDTOList}">
                             <!-- 각 태그에 따른 뱃지 표시 -->
@@ -161,7 +162,7 @@
                 <!-- 상품 가격 및 신고하기 버튼 -->
                 <div style="line-height: 32px;">
                     <span style="font-size:32px; font-weight: 800;" th:text="${#numbers.formatInteger(itemFormDTO.price, 1, 'COMMA') + '원'}"></span>
-                    <button style="float:right;" type="button" class="reportBtn btn btn-warning">신고하기</button>
+
                 </div>
                 <!-- 상품 배송비, 조회수, 찜한 횟수, 등록일 -->
                 <div>
@@ -200,6 +201,7 @@
                 <!-- 찜하기 및 플로우톡 버튼 -->
                 <button type="button" class="heartBtn btn btn-primary">찜하기</button>
                 <button type="button" class="chatBtn btn btn-primary">플로우톡</button>
+                <button type="button" class="reportBtn btn btn-warning">신고하기</button>
             </div>
         </div>
 

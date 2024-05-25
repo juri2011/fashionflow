@@ -2,7 +2,10 @@ package com.fashionflow.controller;
 
 import com.fashionflow.service.MemberService;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import com.fashionflow.dto.BuyerDTO;
 import com.fashionflow.dto.ListingItemDTO;
@@ -15,6 +18,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.Collection;
 import java.util.List;
 
 @Controller
@@ -70,7 +74,21 @@ public class MainController {
     }
 
     @GetMapping("/chart") // 과목별 점수 합계 + 평균  // 두 종류의 그래프
-    public String allItems(Model model) {
+    public String allItems(@AuthenticationPrincipal User user, Model model) {
+
+        // 비회원인 경우 접근 거부 페이지로 리디렉션
+        if (user == null || user.getUsername().equals("anonymousUser")) {
+            return "error/accessError";
+        }
+
+        // 현재 로그인된 사용자의 권한 가져오기
+        Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
+        boolean hasAdminRole = authorities.stream().anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+
+        // ADMIN 역할이 없는 경우 접근 거부 페이지로 리디렉션
+        if (!hasAdminRole) {
+            return "error/accessError";
+        }
         itemService.addallItems(model);
         return "chart";
     }

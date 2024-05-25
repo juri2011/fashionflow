@@ -19,4 +19,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long>{
 
     //판매자 이메일로 리스트 조회
     List<Review> findBySellerEmailOrderByRegDateDesc(String email);
+
+    long countBySellerEmail(String email);
 }

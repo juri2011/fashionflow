@@ -105,8 +105,18 @@
                                 <span class="product-name clickable">${product.itemName}</span>
                                 <span class="product-price">${formatPrice(product.price)} 원</span>
                                 <span class="product-date">${dateDisplay}</span>
+                                <span style="display:none;" class="selling-status">${product.sellStatus}</span>
 
                             `;
+
+                            // 판매 상태가 SOLD_OUT이면 sold-out 클래스를 추가
+                            const sellingStatusElement = productElement.querySelector('.selling-status');
+                            const soldoutproducts = productElement.querySelector('.product-name');
+                            if (sellingStatusElement.textContent.trim() === 'SOLD_OUT') {
+                                soldoutproducts.classList.add('sold-out');
+                            }
+
+
                             document.querySelector('.product-list').appendChild(productElement);
 
                             // 이미지와 상품명에 클릭 이벤트 리스너 추가
@@ -256,6 +266,7 @@
 
                 updateAndLoadProducts();
             });
+
         });
 
         function toggleSection(sectionId) {
@@ -495,6 +506,11 @@
         .product-price {
             margin-bottom: 10px;
         }
+
+        .sold-out {
+            text-decoration: line-through; /* 취소선 적용 */
+        }
+
     </style>
 </head>
 

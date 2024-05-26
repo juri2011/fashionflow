@@ -45,17 +45,26 @@
 
             // 카테고리 ID와 이름 매핑
             var categoryNames = {
-                "4": "MEN_OUTER", "5": "MEN_TOPS", "6": "MEN_PANTS", "7": "MEN_SETS",
-                "8": "WOMEN_OUTER", "9": "WOMEN_TOP", "10": "WOMEN_PANTS", "11": "WOMEN_SKRITS",
-                "12": "WOMEN_DRESSES", "13": "WOMEN_SETS", "14": "SHOES_SNEAKERS", "15": "SHOES_MENS",
-                "16": "SHOES_WOMENS", "17": "SHOES_SPORTS"
+                "4": "남성아우터", "5": "남성상의", "6": "남성바지", "7": "남성셋업",
+                "8": "여성아우터", "9": "여성상의", "10": "여성바지", "11": "여성치마",
+                "12": "여성원피스", "13": "여성셋업", "14": "스니커즈", "15": "남성화",
+                "16": "여성화", "17": "스포츠화"
+            };
+
+            var statusNames = {
+                "New": "새상품",
+                "NO_SIGNS_OF_USE": "사용감 없음",
+                "SOME_SIGNS_OF_USE": "사용감 적음",
+                "SIGNIFICANT_SIGNS_OF_USE": "사용감 많음",
+                "FAULTY": "파손"
             };
 
             itemDTOs.forEach(function(item) {
                 var categoryName = categoryNames[item.categoryId] || "기타";
                 categoryCounts[categoryName] = (categoryCounts[categoryName] || 0) + 1;
-                statusCounts[item.itemStatus] = (statusCounts[item.itemStatus] || 0) + 1;
-
+                var statusName = statusNames[item.itemStatus] || "기타 상태"; // 영어 상태를 한글로 매핑
+                statusCounts[statusName] = (statusCounts[statusName] || 0) + 1;
+                
                 if(item.price <= 10000) priceRanges['0-10000']++;
                 else if(item.price <= 100000) priceRanges['10001-100000']++;
                 else if(item.price <= 500000) priceRanges['100001-500000']++;

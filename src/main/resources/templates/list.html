@@ -19,7 +19,7 @@
         let currentSaleStatus = []; // 현재 선택된 판매 상태
         let currentProductCategories = []; // 현재 선택된 제품 카테고리
         let currentMinPrice = 0; // 현재 선택된 최소 가격
-        let currentMaxPrice = 999999999; // 현재 선택된 최대 가격
+        let currentMaxPrice = 10000000; // 현재 선택된 최대 가격
         let currentSort = 'regdate'; // 현재 정렬 기준
         let currentDirection = 'DESC'; // 현재 정렬 방향
         let searchQuery = ''; // 현재 검색어
@@ -30,7 +30,7 @@
             return price.toLocaleString();
         }
 
-        function loadMoreProducts(size, isInitialLoad = false, searchQuery, productCategories = [], categories = [], saleStatus = [], minPrice = 0, maxPrice = 999999999) {
+        function loadMoreProducts(size, isInitialLoad = false, searchQuery, productCategories = [], categories = [], saleStatus = [], minPrice = 0, maxPrice = 10000000) {
 
             // 초기 로드일 경우, 현재 상태 업데이트
             if(isInitialLoad) {
@@ -105,8 +105,18 @@
                                 <span class="product-name clickable">${product.itemName}</span>
                                 <span class="product-price">${formatPrice(product.price)} 원</span>
                                 <span class="product-date">${dateDisplay}</span>
+                                <span style="display:none;" class="selling-status">${product.sellStatus}</span>
 
                             `;
+
+                            // 판매 상태가 SOLD_OUT이면 sold-out 클래스를 추가
+                            const sellingStatusElement = productElement.querySelector('.selling-status');
+                            const soldoutproducts = productElement.querySelector('.product-name');
+                            if (sellingStatusElement.textContent.trim() === 'SOLD_OUT') {
+                                soldoutproducts.classList.add('sold-out');
+                            }
+
+
                             document.querySelector('.product-list').appendChild(productElement);
 
                             // 이미지와 상품명에 클릭 이벤트 리스너 추가
@@ -175,7 +185,7 @@
             }
 
             let minPrice = 0; // 가격 범위 최소값을 글로벌 변수로 관리
-            let maxPrice = 999999999; // 가격 범위 최대값을 글로벌 변수로 관리
+            let maxPrice = 10000000; // 가격 범위 최대값을 글로벌 변수로 관리
             // 카테고리 매핑
             let categoryMapping = {
                 'men': [4,5,6,7],
@@ -204,12 +214,12 @@
             // 가격 범위
             document.getElementById('applyPriceFilter').addEventListener('click', function() {
                 minPrice = document.getElementById('minPrice').value || 0;
-                maxPrice = document.getElementById('maxPrice').value || 999999999;
+                maxPrice = document.getElementById('maxPrice').value || 10000000;
 
                 // 가격 유효성
                 // 최대 가격
-                if (maxPrice > 999999999) {
-                    alert("최대가격은 999999999 입니다.");
+                if (maxPrice > 10000000) {
+                    alert("최대가격은 10000000 입니다.");
                     event.preventDefault();
                 }
 
@@ -256,6 +266,7 @@
 
                 updateAndLoadProducts();
             });
+
         });
 
         function toggleSection(sectionId) {
@@ -495,6 +506,11 @@
         .product-price {
             margin-bottom: 10px;
         }
+
+        .sold-out {
+            text-decoration: line-through; /* 취소선 적용 */
+        }
+
     </style>
 </head>
 

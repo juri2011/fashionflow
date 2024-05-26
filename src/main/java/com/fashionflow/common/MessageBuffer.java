@@ -54,11 +54,11 @@ public class MessageBuffer {
     }
 
     // 비동기 버퍼 초기화
-    /*@Async
+    @Async
     public CompletableFuture<Void> flushBufferAsync() {
         System.out.println("========================flushBufferAsync 실행");
         return CompletableFuture.runAsync(this::flushBuffer);
-    }*/
+    }
 
 
     // 일정 시간 간격으로 버퍼 초기화

@@ -10,45 +10,56 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script th:inline="javascript">
         $(document).ready(function(){
-            var errorMessage = [[${errorMessage}]];
-            if(errorMessage != null){
-                alert(errorMessage);
-            }
-            bindDomEvent();
-        });
+           var errorMessage = [[${errorMessage}]];
+           if(errorMessage != null){
+               alert(errorMessage);
+           }
+           bindDomEvent();
 
-        function bindDomEvent(){
-            $(".custom-file-input").on("change", function() {
-                var fileName = $(this).val().split("\\").pop();
-                var fileExt = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
-                if(!['jpg', 'jpeg', 'gif', 'png', 'bmp'].includes(fileExt)){
-                    alert("이미지 파일만 등록이 가능합니다.");
-                    $(this).val('');
-                    return;
-                }
-                $(this).siblings(".custom-file-label").html(fileName);
-            });
-        }
- 
-        function previewProfileImage(event) {
-    var input = event.target;
-    var reader = new FileReader();
+           // 프로필 이미지 삭제 이벤트 핸들러
+           $('#deleteProfileImage').on('click', function() {
+               if(confirm('프로필 이미지를 삭제하시겠습니까?')) {
+                   // 이미지 미리보기 초기화
+                   $('#profileImagePreview').attr('src', '').hide();
+                   // 파일 인풋 초기화
+                   $('#profileImageFile').val('');
+                   $('.custom-file-label').html('저장된 이미지 없음');
+               }
+           });
+       });
 
-    reader.onload = function() {
-        var dataURL = reader.result;
-        var output = document.getElementById('profileImagePreview');
-        output.src = dataURL;
-        output.style.display = 'block';
-    };
+       function bindDomEvent(){
+           $(".custom-file-input").on("change", function() {
+               var fileName = $(this).val().split("\\").pop();
+               var fileExt = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
+               if(!['jpg', 'jpeg', 'gif', 'png', 'bmp'].includes(fileExt)){
+                   alert("이미지 파일만 등록이 가능합니다.");
+                   $(this).val('');
+                   return;
+               }
+               $(this).siblings(".custom-file-label").html(fileName);
+           });
+       }
 
-    if (input.files && input.files[0]) {
-        reader.readAsDataURL(input.files[0]);
-    } else {
-        var output = document.getElementById('profileImagePreview');
-        output.src = '#';
-        output.style.display = 'none';
-    }
-}
+       function previewProfileImage(event) {
+           var input = event.target;
+           var reader = new FileReader();
+
+           reader.onload = function() {
+               var dataURL = reader.result;
+               var output = document.getElementById('profileImagePreview');
+               output.src = dataURL;
+               output.style.display = 'block';
+           };
+
+           if (input.files && input.files[0]) {
+               reader.readAsDataURL(input.files[0]);
+           } else {
+               var output = document.getElementById('profileImagePreview');
+               output.src = '#';
+               output.style.display = 'none';
+           }
+       }
     </script>
 </th:block>
 
@@ -289,6 +300,7 @@
                 <label for="profileImageFile">프로필 이미지</label>
                 <div class="custom-file">
                     <input type="file" class="custom-file-input" id="profileImageFile" name="profileImageFile" onchange="previewProfileImage(event)">
+                    <button type="button" id="deleteProfileImage" class="btn btn-danger" style="width:150px; height:30px; padding:0 30px;">이미지 삭제</button>
                 </div>
                 <!-- 이미지 미리보기 영역 추가 -->
                 <div class="form-control">

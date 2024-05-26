@@ -135,7 +135,6 @@ public class MemberController {
     }
 
 
-    // 회원 수정
     @PostMapping("/memberEdit")
     public String memberEdit(@Valid MemberFormDTO memberFormDTO, BindingResult bindingResult, Model model) {
         // 현재 멤버 정보를 가져옴
@@ -143,36 +142,42 @@ public class MemberController {
         // 프로필 이미지 정보를 가져옴
         ProfileImage profileImage = profileImageRepository.findByMemberId(currentMember.getId());
 
-
         // 유효성 검사 실패 시
         if (bindingResult.hasErrors()) {
             model.addAttribute("currentMember", currentMember);
-            model.addAttribute("profileImage", profileImage);  // 프로필 이미지 추가
-            // 유효성 검사에 실패한 필드에 대한 오류 메시지를 추출하여 모델에 추가
+            model.addAttribute("profileImage", profileImage);
             model.addAttribute("errors", bindingResult.getAllErrors());
-            // 유효성 검사 실패에 따른 오류 메시지를 뷰로 전달
-            return "members/memberEdit"; // 에러가 발생한 페이지로 리디렉션 또는 해당 페이지로 포워딩
+            return "members/memberEdit";
         }
 
         // 비밀번호와 비밀번호 확인 일치 여부 확인
         if (!memberFormDTO.getPwd().equals(memberFormDTO.getConfirmPwd())) {
             model.addAttribute("pwdErrorMessage", "비밀번호와 비밀번호 확인이 일치하지 않습니다.");
             model.addAttribute("currentMember", currentMember);
-            model.addAttribute("profileImage", profileImage);  // 프로필 이미지 추가
-            return "members/memberEdit"; // 에러가 발생한 페이지로 리디렉션 또는 해당 페이지로 포워딩
+            model.addAttribute("profileImage", profileImage);
+            return "members/memberEdit";
         }
 
-        // 닉네임 중복 검사
+        // 닉네임 중복 검사 및 회원 정보 업데이트
         try {
-            memberService.updateMember(memberFormDTO, passwordEncoder);
+            boolean deleteImage = (memberFormDTO.getProfileImageFile() != null && memberFormDTO.getProfileImageFile().isEmpty());
+            memberService.updateMember(memberFormDTO, passwordEncoder, deleteImage);
             return "redirect:/";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("currentMember", currentMember);
+            model.addAttribute("profileImage", profileImage);
+            model.addAttribute("duplicateErrorMessage", e.getMessage());
+            return "members/memberEdit";
         } catch (Exception e) {
             model.addAttribute("currentMember", currentMember);
-            model.addAttribute("profileImage", profileImage);  // 프로필 이미지 추가
-            model.addAttribute("duplicateErrorMessage", e.getMessage());
-            return "members/memberEdit"; // 에러가 발생한 페이지로 리디렉션 또는 해당 페이지로 포워딩
+            model.addAttribute("profileImage", profileImage);
+            model.addAttribute("generalErrorMessage", "회원 정보 업데이트 중 오류가 발생했습니다.");
+            return "members/memberEdit";
         }
     }
+
+
+
 
 
     // 회원 탈퇴

@@ -91,6 +91,9 @@
 
         <p th:if="${registeredMember}" th:text="${registeredMember}" style="color:red"></p>
 
+        <!-- 로그인 오류 메시지 출력 -->
+        <p th:if="${loginErrorMsg}" class="error" th:text="${loginErrorMsg}"></p>
+
         <!-- 로그인 폼 -->
         <form role="form" method="post" action="/members/login">
             <!-- 이메일 입력 폼 -->
@@ -103,9 +106,8 @@
                 <label th:for="password">비밀번호</label>
                 <input type="password" name="password" id="password" class="passwordControl" placeholder="비밀번호 입력">
             </div>
-            <!-- 로그인 오류 메시지 출력 -->
+
             <div class="mb-3">
-                <p th:if="${loginErrorMsg}" class="error" th:text="${loginErrorMsg}"></p>
                 <!-- 로그인, 회원가입, 이메일 찾기, 비밀번호 찾기 버튼 -->
                 <button class="loginBtns">로그인</button>
                 <button type="button" class="loginBtns" onClick="location.href='/members/register'">회원가입</button>

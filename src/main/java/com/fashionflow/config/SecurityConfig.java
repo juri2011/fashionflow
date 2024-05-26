@@ -1,6 +1,7 @@
 package com.fashionflow.config;
 
 
+import com.fashionflow.controller.CustomAuthenticationFailureController;
 import com.fashionflow.service.CustomOAuth2UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -19,6 +20,8 @@ public class SecurityConfig {
     public CustomOAuth2UserService customOAuth2UserService() {
         return new CustomOAuth2UserService();
     }
+
+
     /* 임시 권한 부여 */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -40,7 +43,7 @@ public class SecurityConfig {
         http.formLogin(form -> form
                 .loginPage("/members/login") // 로그인 페이지 경로
                 .defaultSuccessUrl("/", true) // 로그인 성공 후 리다이렉션될 경로
-                .failureUrl("/members/login/error") // 로그인 실패 시 리다이렉션될 경로
+                .failureHandler(customAuthenticationFailureController())
                 .usernameParameter("email") // 사용자 이름 파라미터
                 .passwordParameter("password") // 비밀번호 파라미터
                 .permitAll()); // 로그인 페이지는 모든 사용자에게 접근 허용
@@ -56,6 +59,10 @@ public class SecurityConfig {
         return http.build(); // SecurityFilterChain 반환
     }
 
+    @Bean
+    public CustomAuthenticationFailureController customAuthenticationFailureController() {
+        return new CustomAuthenticationFailureController();
+    }
     // 비밀번호 인코더 빈 설정
     @Bean
     public PasswordEncoder passwordEncoder() {

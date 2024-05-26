@@ -211,15 +211,16 @@
     <div class="container">
 
         <h2 style="margin-bottom:30px;">간편 로그인 회원정보 등록</h2>
-        <!-- 공백란 알림 메시지 출력 -->
-        <p th:if="${errors}" class="error" th:each="error : ${errors}" th:text="${error.defaultMessage}"></p>
         <!-- 중복 알림 메시지 출력 -->
         <p th:if="${error}" class="error" th:text="${error}"></p>
 
-        <form role="form" method="post" enctype="multipart/form-data" action="/oauth/register">
+        <form role="form" method="post" th:object="${memberFormDTO}" enctype="multipart/form-data" action="/oauth/register">
             <div class="form-group mb-3">
                 <label for="name">이름</label>
-                <input type="text" name="name" id="name" class="form-control" placeholder="이름을 입력해주세요" th:value="${memberFormDTO.name}">
+                <div th:if="${#fields.hasErrors('name')}" class="error">
+                    <p th:each="error : ${#fields.errors('name')}" th:text="${error}">Name Error</p>
+                </div>
+                <input type="text" name="name" id="name" class="form-control" th:field="*{name}" placeholder="이름을 입력해주세요" th:value="${memberFormDTO.name}">
             </div>
             <div class="form-group mb-3">
                 <label for="email">이메일주소</label>
@@ -227,22 +228,30 @@
             </div>
             <div class="form-group mb-3">
                 <label for="nickname">닉네임</label>
-                <input type="text" name="nickname" id="nickname" class="form-control" placeholder="닉네임을 입력해주세요" th:value="${memberFormDTO.nickname}">
+                <div th:if="${#fields.hasErrors('nickname')}" class="error">
+                    <p th:each="error : ${#fields.errors('nickname')}" th:text="${error}">Name Error</p>
+                </div>
+                <input type="text" name="nickname" id="nickname" class="form-control" th:field="*{nickname}" placeholder="닉네임을 입력해주세요" th:value="${memberFormDTO.nickname}">
             </div>
             <div class="form-group mb-3">
                 <label for="phone">전화번호</label>
+                <div th:if="${#fields.hasErrors('phone')}" class="error">
+                    <p th:each="error : ${#fields.errors('phone')}" th:text="${error}">Name Error</p>
+                </div>
                 <div class="phone-inputs">
                     <input type="text" name="phone1" id="phone1" class="form-control phone-part" maxlength="3" value="010" oninput="numberOnly(this); nextInput(this, 'phone2')" readonly>
                     <input type="text" name="phone2" id="phone2" class="form-control phone-part" maxlength="4" oninput="numberOnly(this); nextInput(this, 'phone3')">
                     <input type="text" name="phone3" id="phone3" class="form-control phone-part" maxlength="4" oninput="numberOnly(this);">
                     <!-- 숨겨진 필드 추가 -->
-                    <input type="hidden" name="phone" id="phone" th:value="${memberFormDTO.phone}">
+                    <input type="hidden" name="phone" id="phone" th:field="*{phone}" th:value="${memberFormDTO.phone}">
                 </div>
-
             </div>
             <div class="form-group mb-3">
                 <label for="birth">생년월일</label>
-                <input type="date" name="birth" id="birth" class="form-control" th:value="${memberFormDTO.birth}">
+                <div th:if="${#fields.hasErrors('birth')}" class="error">
+                    <p th:each="error : ${#fields.errors('birth')}" th:text="${error}">Name Error</p>
+                </div>
+                <input type="date" name="birth" id="birth" class="form-control" th:field="*{birth}" th:value="${memberFormDTO.birth}">
             </div>
             <div class="form-group mb-3">
                 <label for="gender">성별</label>
@@ -256,18 +265,27 @@
             <div class="form-row">
                 <div class="form-group col-md-3 mb-3">
                     <label for="sample6_postcode">우편번호</label>
+                    <div th:if="${#fields.hasErrors('userStnum')}" class="error">
+                        <p th:each="error : ${#fields.errors('userStnum')}" th:text="${error}">Name Error</p>
+                    </div>
                     <div class="postcode-wrapper">
-                        <input type="text" name="userStnum" id="sample6_postcode" class="form-control" placeholder="우편번호" style="width:40%" th:value="${memberFormDTO.userStnum}" readonly>
+                        <input type="text" name="userStnum" th:field="*{userStnum}" id="sample6_postcode" class="form-control" placeholder="우편번호" th:value="${memberFormDTO.userStnum}" style="width:40%"  readonly>
                         <img src="/img/search.png" alt="우편번호 찾기" class="btn-primary postcode-btn" onclick="sample6_execDaumPostcode()">
                     </div>
                 </div>
                 <div class="form-group col-md-6 mb-3">
                     <label for="sample6_address">주소</label>
-                    <input type="text" name="userAddr" id="sample6_address" class="form-control" placeholder="주소" th:value="${memberFormDTO.userAddr}" readonly>
+                    <div th:if="${#fields.hasErrors('userAddr')}" class="error">
+                        <p th:each="error : ${#fields.errors('userAddr')}" th:text="${error}">Name Error</p>
+                    </div>
+                    <input type="text" name="userAddr" th:field="*{userAddr}" id="sample6_address" class="form-control" placeholder="주소" th:value="${memberFormDTO.userAddr}" readonly>
                 </div>
                 <div class="form-group col-md-3 mb-3">
                     <label for="sample6_detailAddress">상세주소</label>
-                    <input type="text" name="userDaddr" id="sample6_detailAddress" class="form-control" placeholder="상세주소를 입력해주세요" th:value="${memberFormDTO.userDaddr}">
+                    <div th:if="${#fields.hasErrors('userDaddr')}" class="error">
+                        <p th:each="error : ${#fields.errors('userDaddr')}" th:text="${error}">Name Error</p>
+                    </div>
+                    <input type="text" name="userDaddr" th:field="*{userDaddr}" id="sample6_detailAddress" class="form-control" placeholder="상세주소를 입력해주세요" th:value="${memberFormDTO.userDaddr}">
                 </div>
 
             </div>

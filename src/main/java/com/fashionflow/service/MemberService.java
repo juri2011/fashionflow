@@ -1,5 +1,6 @@
 package com.fashionflow.service;
 
+import com.fashionflow.constant.Role;
 import com.fashionflow.dto.*;
 import com.fashionflow.entity.*;
 import com.fashionflow.repository.ItemSellRepository;
@@ -12,6 +13,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -109,6 +111,10 @@ public class MemberService implements UserDetailsService {
             throw new UsernameNotFoundException(email);
         }
 
+        if (member.getRole() == Role.BLACK) {
+            throw new DisabledException("이 계정은 접근이 차단되었습니다.");
+        }
+
         return User.builder()
                 .username(member.getEmail())
                 .password(member.getPwd())
@@ -135,9 +141,9 @@ public class MemberService implements UserDetailsService {
                 // 사용자 정보에서 이메일 속성 추출
                 return (String) kakaoAccount.get("email");
             } else if ("naver".equals(oauthToken.getAuthorizedClientRegistrationId())) {
-                Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("response");
+                Map<String, Object> naverAccount = (Map<String, Object>) attributes.get("response");
                 // 사용자 정보에서 이메일 속성 추출
-                return (String) kakaoAccount.get("email"); }
+                return (String) naverAccount.get("email"); }
 
             // 구글 사용자 정보에서 이메일 속성 추출
             return (String) attributes.get("email");

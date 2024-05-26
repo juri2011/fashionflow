@@ -81,10 +81,18 @@ public class ReportItemController {
         Page<ReportItemDTO> reportItems = reportItemService.getReportItemDTOPage(pageable);
 
         // 로그인한 사용자가 자신이 작성한 신고 항목을 구분할 수 있도록 설정
-        if(principal != null){
+        /*if(principal != null){
             // 사용자가 작성한 신고 항목을 구분
             reportItems.getContent().forEach(reportItemDTO -> {
                 if(principal.getName().equals(reportItemDTO.getReporterMemberEmail())){
+                    reportItemDTO.setMyReport(true);
+                }
+            });
+        }*/
+        if(memberService.currentMemberEmail() != null || !memberService.currentMemberEmail().equals("anonymousUser")){
+            // 사용자가 작성한 신고 항목을 구분
+            reportItems.getContent().forEach(reportItemDTO -> {
+                if(memberService.currentMemberEmail().equals(reportItemDTO.getReporterMemberEmail())){
                     reportItemDTO.setMyReport(true);
                 }
             });

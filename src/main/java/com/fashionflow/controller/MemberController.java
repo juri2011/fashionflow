@@ -6,6 +6,8 @@ import com.fashionflow.entity.ProfileImage;
 import com.fashionflow.repository.ProfileImageRepository;
 import com.fashionflow.service.MemberService;
 import com.fashionflow.service.ProfileImgService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -43,11 +45,20 @@ public class MemberController {
     }
 
     @GetMapping("/login/error")
-    public String loginError(Model model){
+    public String loginError(HttpServletRequest request, Model model){
 
-        model.addAttribute("loginErrorMsg", "아이디 비밀번호를 확인해주세요");
+        String errorMessage = (String) request.getSession().getAttribute("loginErrorMsg");
+        model.addAttribute("loginErrorMsg", errorMessage);
         return "members/memberLoginForm";
     }
+
+    @GetMapping("/oauthError")
+    public String oauthError(Model model) {
+
+        model.addAttribute("registeredMember", "이미 다른 방법으로 등록된 이메일입니다.");
+        return "members/memberLoginForm";
+    }
+
 
     //회원가입 페이지 이동
     @GetMapping("/register")
@@ -61,7 +72,7 @@ public class MemberController {
 
     // 회원 정보 입력
     @PostMapping("/register")
-    public ModelAndView registerMember(@Valid MemberFormDTO memberFormDTO, BindingResult bindingResult) {
+    public ModelAndView registerMember(@Valid @ModelAttribute("memberFormDTO") MemberFormDTO memberFormDTO, BindingResult bindingResult) {
 
 
         ModelAndView modelAndView = new ModelAndView();
@@ -74,8 +85,6 @@ public class MemberController {
 
         // 유효성 검사 실패 시 회원가입 페이지로 다시 이동
         if (bindingResult.hasErrors()) {
-            modelAndView.addObject("errors", bindingResult.getAllErrors());
-            // 실패한 경우 ModelAndView에 기존에 입력한 정보 추가하여 전달
             modelAndView.addObject("memberFormDTO", memberFormDTO);
             modelAndView.setViewName("members/memberRegister");
             return modelAndView;
@@ -112,6 +121,7 @@ public class MemberController {
         Member currentMember = memberService.findMemberByCurrentEmail();
 
         model.addAttribute("currentMember", currentMember);
+        model.addAttribute("memberFormDTO", new MemberFormDTO());
 
         // 현재 회원의 프로필 이미지 가져오기
         ProfileImage profileImage = profileImageRepository.findByMemberId(currentMember.getId());
@@ -132,6 +142,7 @@ public class MemberController {
         Member currentMember = memberService.findMemberByCurrentEmail();
         // 프로필 이미지 정보를 가져옴
         ProfileImage profileImage = profileImageRepository.findByMemberId(currentMember.getId());
+
 
         // 유효성 검사 실패 시
         if (bindingResult.hasErrors()) {
@@ -181,7 +192,7 @@ public class MemberController {
         if(memberService.findUnregisteredOAuthMember()){
             return "redirect:/oauth/login";
         }
-        return "/members/findId";
+        return "members/findId";
     }
 
     //회원 아이디 찾기
@@ -194,7 +205,7 @@ public class MemberController {
             return "members/findId";
         } catch (IllegalArgumentException e) {
             model.addAttribute("errorMessage", e.getMessage());
-            return "/members/findId";
+            return "members/findId";
         }
     }
 }

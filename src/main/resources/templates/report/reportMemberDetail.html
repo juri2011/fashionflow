@@ -132,6 +132,16 @@
         button{
             margin-top: 20px;
         }
+
+        .value{
+            width: 100%;
+            overflow:hidden;
+            display: -webkit-box; /* 웹킷 브라우저를 위한 플렉스 박스 표시 */
+            -webkit-box-orient: vertical; /* 플렉스 박스의 수직 방향을 설정 */
+            text-overflow: ellipsis; /* 텍스트가 잘리는 경우 ...으로 표시 */
+            white-space: normal; /* 공백 문자를 자동으로 줄 바꿈 */
+            word-wrap: break-word; /* 긴 단어를 여러 줄로 나눔 */
+        }
     </style>
 </th:block>
 
@@ -170,9 +180,9 @@
             <!-- 신고 태그 표시 -->
             <div class="label">신고태그 :</div>
             <div class="value">
-                <p th:each="reportTag, status: ${reportMember.reportMemberTagDTOList}">
+                <span th:each="reportTag, status: ${reportMember.reportMemberTagDTOList}">
                     <span class="badge text-bg-secondary" th:text="${reportTag.reportTagDesc}"></span>
-                </p>
+                </span>
             </div>
         </div>
         <!-- 신고 처리 목록 선택 -->

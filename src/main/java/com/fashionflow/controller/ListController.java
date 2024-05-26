@@ -43,7 +43,7 @@ public class ListController {
             return "redirect:/oauth/login";
         }
 
-        return "/list";
+        return "list";
     }
 
     @GetMapping("/list/more")

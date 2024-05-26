@@ -10,6 +10,9 @@
 <th:block layout:fragment="script">
     <!-- jQuery CDN -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- 다음 지도 API 및 주소 API -->
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=ccf60626a8f7a9dd92f47ae1e5d3f812&libraries=services"></script>
     <script th:inline="javascript">
         $(document).ready(function(){
             var errorMessage = [[${errorMessage}]];
@@ -17,7 +20,134 @@
                 alert(errorMessage);
             }
             bindDomEvent();
-        });
+
+            $('#RegistForm').submit(function(event) {
+                if (!validateForm()) {
+                    event.preventDefault(); // 폼 제출을 중지
+                }
+            });
+
+            $('#selectedTagsDisplay').on('click', '.tag-block', function() {
+
+                //태그 블록 삭제
+                $(event.target).remove();
+
+                for(let i=0; i<selectedTags.length; i++){
+                    //selectedTags 배열에서 삭제(태그 중복 등록 방지를 위한 배열)
+                    if(selectedTags[i] === $(event.target).data('code')){
+                        selectedTags.splice(i,1);
+
+                        //input 삭제
+                        $('input[name="tagSelectList"]').each(function() {
+                            if($(this).val() === $(event.target).data('code')){
+                                $(this).remove();
+                            }
+                        });
+                        i--;
+                    }
+                }
+
+            });
+
+            $('.btn-noRegion').on('click', function(){
+                setNoRegion();
+            });
+
+            $('.btn-findAddress').on('click', function(){
+                sample5_execDaumPostcode();
+            });
+
+            document.getElementById('subCategorySelect').addEventListener('change', function() {
+                var parentText = document.getElementById('parentCategorySelect').options[document.getElementById('parentCategorySelect').selectedIndex].text;
+                var subText = this.options[this.selectedIndex].text;
+                console.log(parentText);
+                console.log(subText);
+                updateSelectedCategoryDisplay(parentText, subText);
+            });
+
+
+            var mapContainer = document.getElementById('map'); // 지도를 표시할 div
+            var mapOption = {
+                    center: new daum.maps.LatLng(37.537187, 127.005476), // 지도의 중심좌표
+                    level: 5 // 지도의 확대 레벨
+                };
+
+            //지도를 미리 생성
+            var map = new daum.maps.Map(mapContainer, mapOption);
+            //주소-좌표 변환 객체를 생성
+            var geocoder = new daum.maps.services.Geocoder();
+            //마커를 미리 생성
+            var marker = new daum.maps.Marker({
+                position: new daum.maps.LatLng(37.537187, 127.005476),
+                map: map
+            });
+
+            function sample5_execDaumPostcode() {
+
+                //변수가 초기화되지 않았으면 할당
+                if(mapContainer === undefined){
+                    console.log("mapContainer is undefined");
+                    document.getElementById('map');
+                }
+                if(mapOption === undefined){
+                    console.log("mapOption is undefined");
+                    mapOption = {
+                        center: new daum.maps.LatLng(37.537187, 127.005476), // 지도의 중심좌표
+                        level: 5 // 지도의 확대 레벨
+                    };
+                }
+                if(map === undefined){
+                    console.log("map is undefined");
+                    map = new daum.maps.Map(mapContainer, mapOption);
+                }
+                if(geocoder === undefined){
+                    console.log("geocoder is undefined");
+                    geocoder = new daum.maps.services.Geocoder();
+                }
+                if(marker === undefined){
+                    console.log("marker is undefined");
+                    marker = new daum.maps.Marker({
+                        position: new daum.maps.LatLng(37.537187, 127.005476),
+                        map: map
+                    });
+                }
+
+
+                new daum.Postcode({
+                    oncomplete: function(data) {
+                        var addr = data.address; // 최종 주소 변수
+
+                        // 주소 정보를 해당 필드에 넣는다.
+                        document.getElementById("sample5_address").value = addr;
+                        // 주소로 상세 정보를 검색
+                        geocoder.addressSearch(data.address, function(results, status) {
+                            // 정상적으로 검색이 완료됐으면
+                            if (status === daum.maps.services.Status.OK) {
+
+                                var result = results[0]; //첫번째 결과의 값을 활용
+
+                                // 해당 주소에 대한 좌표를 받아서
+                                var coords = new daum.maps.LatLng(result.y, result.x);
+                                // 지도를 보여준다.
+                                mapContainer.style.display = "block";
+                                map.relayout();
+                                // 지도 중심을 변경한다.
+                                map.setCenter(coords);
+                                // 마커를 결과값으로 받은 위치로 옮긴다.
+                                marker.setPosition(coords)
+                            }
+                        });
+                    }
+                }).open();
+            }
+
+            // 지역설정안함 버튼
+            function setNoRegion() {
+                document.getElementById('sample5_address').value = "지역설정안함";
+            }
+
+        }); //end of document.ready
+
 
         function bindDomEvent(){
             $(".custom-file-input").on("change", function() {
@@ -31,7 +161,125 @@
                 $(this).siblings(".custom-file-label").html(fileName);
             });
         }
+
+
+        // 카테고리 선택 메뉴
+        function updateSubcategories() {
+            var parentId = document.getElementById('parentCategorySelect').value;
+            var parentText = document.getElementById('parentCategorySelect').options[document.getElementById('parentCategorySelect').selectedIndex].text;
+            var subCategorySelect = document.getElementById('subCategorySelect');
+            subCategorySelect.innerHTML = '<option value="">--- 하위 카테고리 선택 ---</option>';  // 초기화
+
+            updateSelectedCategoryDisplay(parentText, ''); // 하위 카테고리가 아직 선택되지 않았으므로 업데이트
+
+            if (parentId) {
+                fetch('/getSubcategories/' + parentId)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.forEach(function(subCategory) {
+                            var option = new Option(subCategory.name, subCategory.id);
+                            subCategorySelect.add(option);
+                        });
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+        }
+
+        function updateSelectedCategoryDisplay(parentText, subText) {
+            var displayText = parentText ? `${parentText}` : 'None';
+            if (subText) {
+                displayText += ' > ' + subText;
+            }
+            document.getElementById('selectedCategory').textContent = displayText;
+        }
+
+        // 선택된 태그 출력, 추가
+       var selectedTags = [];  // 선택된 태그의 코드를 저장하는 배열
+
+         function addTag() {
+
+            var tagSelect = document.getElementById('tagSelect');
+            var selectedOption = tagSelect.options[tagSelect.selectedIndex];
+            if(selectedTags === undefined){
+                console.log("selectedTags is undefined!!!!!!!");
+                selectedTags = [];
+            }
+            // 선택된 옵션을 확인하고 배열에 없으면 추가
+            if (selectedOption.value !== "" && !selectedTags.includes(selectedOption.value)) {
+                selectedTags.push(selectedOption.value); // 배열에 태그 코드 추가
+                updateTagsDisplay();  // 화면에 선택된 태그들을 업데이트
+                tagSelect.selectedIndex = 0;  // 셀렉트 박스를 초기화
+
+                str = '<input type="hidden" name="tagSelectList" value="'+ selectedOption.value +'"/>';
+                $('#RegistForm').append(str);
+            }
+        }
+
+
+        function updateTagsDisplay() {
+            $('#selectedTagsDisplay').empty();
+            var displayText = selectedTags.map(code => {
+                var option = document.querySelector(`#tagSelect option[value="${code}"]`);
+                return option ? option.textContent : code;
+            });
+            console.log(displayText);
+            displayText.forEach((tag, i) => {
+                $('#selectedTagsDisplay').append('<span data-code="'+selectedTags[i]+'" class="tag-block badge text-bg-secondary">'+tag+'</span>');
+            });
+        }
+
+    function validateForm() {
+        var isValid = true;
+        var itemName = document.getElementById('itemName').value.trim();
+        var parentCategory = document.getElementById('parentCategorySelect').value;
+        var subCategory = document.getElementById('subCategorySelect').value;
+        var sellStatus = document.querySelector('input[name="sellStatus"]:checked');
+        var itemStatus = document.querySelector('input[name="itemStatus"]:checked');
+        var content = document.getElementById('content').value.trim();
+        var price = document.getElementById('price').value.trim();
+        var delivery = document.getElementById('delivery').value.trim();
+        var address = document.getElementById('sample5_address').value.trim();
+
+        if (!itemName) {
+            alert('상품명을 입력해주세요.');
+            document.getElementById('itemName').focus();
+            isValid = false;
+        } else if (!parentCategory) {
+            alert('상위 카테고리를 선택해주세요.');
+            document.getElementById('parentCategorySelect').focus();
+            isValid = false;
+        } else if (!subCategory) {
+            alert('하위 카테고리를 선택해주세요.');
+            document.getElementById('subCategorySelect').focus();
+            isValid = false;
+        } else if (!itemStatus) {
+            alert('상품 상태를 선택해주세요.');
+            document.getElementsByName('itemStatus')[0].focus();
+            isValid = false;
+        } else if (!content) {
+            alert('상품 상세 내용을 입력해주세요.');
+            document.getElementById('content').focus();
+            isValid = false;
+        } else if (!price || price <= 0) { // 가격이 입력되지 않았거나 0 이하인 경우
+            alert('유효한 가격을 입력해주세요. (0보다 커야 합니다.)');
+            document.getElementById('price').focus();
+            isValid = false;
+        } else if (!delivery || delivery < 0) { // 배송비가 입력되지 않았거나 음수인 경우
+            alert('유효한 배송비를 입력해주세요.');
+            document.getElementById('delivery').focus();
+            isValid = false;
+        } else if (!address || !address === '지역설정안함') {
+            alert('거래 지역을 설정해주세요.');
+            document.getElementById('sample5_address').focus();
+            isValid = false;
+        }
+
+        return isValid; // 모든 검사가 통과되면 true를 반환
+    }
     </script>
+
+
+
 </th:block>
 
 <!-- 사용자 CSS 추가 -->
@@ -256,8 +504,8 @@
                     <span class="input-group-text">거래지역</span>
                 </div>
                 <input type="text" id="sample5_address" class="form-control std" placeholder="거래지역을 설정해주세요" th:field="*{address}" readonly>
-                <button type="button" onclick="sample5_execDaumPostcode()" class="btn btn-primary">주소 찾기</button>
-                <button type="button" onclick="setNoRegion()" class="btn btn-secondary">지역설정안함</button>
+                <button type="button" class="btn-findAddress btn btn-primary">주소 찾기</button>
+                <button type="button" class="btn-noRegion btn btn-secondary">지역설정안함</button>
             </div>
             <div id="map" ></div> <!-- 지도를 표시할 div -->
 
@@ -275,267 +523,3 @@
 
 
 </html>
-
-
-<!-- 다음 지도 API 및 주소 API -->
-<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-<script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=ccf60626a8f7a9dd92f47ae1e5d3f812&libraries=services"></script>
-<script>
-
-    var mapContainer = document.getElementById('map'), // 지도를 표시할 div
-        mapOption = {
-            center: new daum.maps.LatLng(37.537187, 127.005476), // 지도의 중심좌표
-            level: 5 // 지도의 확대 레벨
-        };
-
-    //지도를 미리 생성
-    var map = new daum.maps.Map(mapContainer, mapOption);
-    //주소-좌표 변환 객체를 생성
-    var geocoder = new daum.maps.services.Geocoder();
-    //마커를 미리 생성
-    var marker = new daum.maps.Marker({
-        position: new daum.maps.LatLng(37.537187, 127.005476),
-        map: map
-    });
-
-
-    function sample5_execDaumPostcode() {
-        new daum.Postcode({
-            oncomplete: function(data) {
-                var addr = data.address; // 최종 주소 변수
-
-                // 주소 정보를 해당 필드에 넣는다.
-                document.getElementById("sample5_address").value = addr;
-                // 주소로 상세 정보를 검색
-                geocoder.addressSearch(data.address, function(results, status) {
-                    // 정상적으로 검색이 완료됐으면
-                    if (status === daum.maps.services.Status.OK) {
-
-                        var result = results[0]; //첫번째 결과의 값을 활용
-
-                        // 해당 주소에 대한 좌표를 받아서
-                        var coords = new daum.maps.LatLng(result.y, result.x);
-                        // 지도를 보여준다.
-                        mapContainer.style.display = "block";
-                        map.relayout();
-                        // 지도 중심을 변경한다.
-                        map.setCenter(coords);
-                        // 마커를 결과값으로 받은 위치로 옮긴다.
-                        marker.setPosition(coords)
-                    }
-                });
-            }
-        }).open();
-    }
-
-    // 지역설정안함 버튼
-    function setNoRegion() {
-    document.getElementById('sample5_address').value = "지역설정안함";
-}
-
-    // 카테고리 선택 메뉴
-    function updateSubcategories() {
-        var parentId = document.getElementById('parentCategorySelect').value;
-        var parentText = document.getElementById('parentCategorySelect').options[document.getElementById('parentCategorySelect').selectedIndex].text;
-        var subCategorySelect = document.getElementById('subCategorySelect');
-        subCategorySelect.innerHTML = '<option value="">----------------- 하위 카테고리 선택 -----------------</option>';  // 초기화
-
-        updateSelectedCategoryDisplay(parentText, ''); // 하위 카테고리가 아직 선택되지 않았으므로 업데이트
-
-        if (parentId) {
-            fetch('/getSubcategories/' + parentId)
-                .then(response => response.json())
-                .then(data => {
-                    data.forEach(function(subCategory) {
-                        var option = new Option(subCategory.name, subCategory.id);
-                        subCategorySelect.add(option);
-                    });
-                })
-                .catch(error => console.error('Error:', error));
-        }
-    }
-
-    document.getElementById('subCategorySelect').addEventListener('change', function() {
-        var parentText = document.getElementById('parentCategorySelect').options[document.getElementById('parentCategorySelect').selectedIndex].text;
-        var subText = this.options[this.selectedIndex].text;
-        updateSelectedCategoryDisplay(parentText, subText);
-    });
-
-    function updateSelectedCategoryDisplay(parentText, subText) {
-        var displayText = parentText ? `${parentText}` : 'None';
-        if (subText) {
-            displayText += ' > ' + subText;
-        }
-        document.getElementById('selectedCategory').textContent = displayText;
-    }
-
-    // 선택된 태그 출력, 추가
-   var selectedTags = [];  // 선택된 태그의 코드를 저장하는 배열
-
-     function addTag() {
-        var tagSelect = document.getElementById('tagSelect');
-        var selectedOption = tagSelect.options[tagSelect.selectedIndex];
-        // 선택된 옵션을 확인하고 배열에 없으면 추가
-        if (selectedOption.value !== "" && !selectedTags.includes(selectedOption.value)) {
-            selectedTags.push(selectedOption.value); // 배열에 태그 코드 추가
-            updateTagsDisplay();  // 화면에 선택된 태그들을 업데이트
-            tagSelect.selectedIndex = 0;  // 셀렉트 박스를 초기화
-
-            str = '<input type="hidden" name="tagSelectList" value="'+ selectedOption.value +'"/>';
-            $('#RegistForm').append(str);
-        }
-    }
-
-
-    function updateTagsDisplay() {
-        $('#selectedTagsDisplay').empty();
-        var displayText = selectedTags.map(code => {
-            var option = document.querySelector(`#tagSelect option[value="${code}"]`);
-            return option ? option.textContent : code;
-        });
-        console.log(displayText);
-        displayText.forEach((tag, i) => {
-            $('#selectedTagsDisplay').append('<span data-code="'+selectedTags[i]+'" class="tag-block badge text-bg-secondary">'+tag+'</span>');
-        });
-    }
-
-
-
-$(document).ready(function(){
-
-
-
-    $('#RegistForm').submit(function(event) {
-
-        // 상품명에 숫자만 있는지 확인하여 경고 메시지 표시 및 유효성 검사 결과 업데이트
-        var itemName = $('#itemName').val();
-        var containsOnlyNumbers = /^\d+$/.test(itemName); // 숫자만 포함되어 있는지 여부 확인
-        if (containsOnlyNumbers) {
-            alert('상품명에는 숫자만 포함될 수 없습니다.');
-            event.preventDefault(); // 폼 제출을 중지
-            document.getElementById('itemName').focus();
-            return; // 함수 실행 종료
-        }
-
-         // 상품 상세 내용에 숫자만 있는지 확인하여 경고 메시지 표시 및 유효성 검사 결과 업데이트
-        var content = $('#content').val();
-        var containsOnlyNumbers = /^\d+$/.test(content); // 숫자만 포함되어 있는지 여부 확인
-        if (containsOnlyNumbers) {
-            alert('상품 상세 내용에는 숫자만 포함될 수 없습니다.');
-            event.preventDefault(); // 폼 제출을 중지
-            document.getElementById('content').focus();
-            return; // 함수 실행 종료
-        }
-
-        // 폼 유효성 검사를 진행합니다.
-        var isValid = validateForm();
-
-        // 검사 결과가 유효하지 않으면 폼 제출을 중지합니다.
-        if (!isValid) {
-            event.preventDefault(); // 폼 제출을 중지
-        }
-    });
-
-    $('#selectedTagsDisplay').on('click', '.tag-block', function() {
-        //태그 블록 삭제
-        $(this).remove();
-
-        var code = $(this).data('code');
-
-        // 선택된 태그 배열에서 삭제
-        var index = selectedTags.indexOf(code);
-        if (index !== -1) {
-            selectedTags.splice(index, 1);
-
-            // input 태그 삭제
-            $('input[name="tagSelectList"][value="' + code + '"]').remove();
-        }
-    });
-
-    function validateForm() {
-
-        var isValid = true;
-        var itemName = document.getElementById('itemName').value.trim();
-        var parentCategory = document.getElementById('parentCategorySelect').value;
-        var subCategory = document.getElementById('subCategorySelect').value;
-        var sellStatus = document.querySelector('input[name="sellStatus"]:checked');
-        var itemStatus = document.querySelector('input[name="itemStatus"]:checked');
-        var content = document.getElementById('content').value.trim();
-        var price = document.getElementById('price').value.trim();
-        var delivery = document.getElementById('delivery').value.trim();
-        var address = document.getElementById('sample5_address').value.trim();
-
-        if (!itemName) {
-            alert('상품명을 입력해주세요.');
-            document.getElementById('itemName').focus();
-            isValid = false;
-        } else if (!parentCategory || parentCategory == '----------------- 상위 카테고리 선택 -----------------' ) {
-            alert('상위 카테고리를 선택해주세요.');
-            document.getElementById('parentCategorySelect').focus();
-            isValid = false;
-        } else if (!subCategory || subCategory == '----------------- 하위 카테고리 선택 -----------------') {
-            alert('하위 카테고리를 선택해주세요.');
-            document.getElementById('subCategorySelect').focus();
-            isValid = false;
-        } else if (!itemStatus) {
-            alert('상품 상태를 선택해주세요.');
-            document.getElementsByName('itemStatus')[0].focus();
-            isValid = false;
-        } else if (!content) {
-            alert('상품 상세 내용을 입력해주세요.');
-            document.getElementById('content').focus();
-            isValid = false;
-        } else if (!price || price <= 0) { // 가격이 입력되지 않았거나 0 이하인 경우
-            alert('유효한 가격을 입력해주세요. (0보다 커야 합니다.)');
-            document.getElementById('price').focus();
-            isValid = false;
-        } else if ( price >= 10000000) { // 가격이 입력되지 않았거나 0 이하인 경우
-            alert('가격은 10,000,000원 이하로 입력해주세요.');
-            document.getElementById('price').focus();
-            isValid = false;
-        } else if (!delivery || delivery < 0) { // 배송비가 입력되지 않았거나 음수인 경우
-            alert('유효한 배송비를 입력해주세요.');
-            document.getElementById('delivery').focus();
-            isValid = false;
-        } else if (!address) {
-            alert('거래 지역을 설정해주세요.');
-            document.getElementById('sample5_address').focus();
-            isValid = false;
-        }
-
-        return isValid; // 모든 검사가 통과되면 true를 반환
-    }
-
-        // 상품명 입력란의 글자 수를 실시간으로 카운트하여 표시하는 함수
-    $('#itemName').on('input', function() {
-        var maxLength = 40; // 최대 글자 수
-        var currentLength = $(this).val().length; // 현재 입력된 글자 수
-
-        // 글자 수 표시 업데이트
-        $('#itemNameLength').text(currentLength + ' / ' + maxLength);
-
-        // 상품명 길이가 최대 길이를 초과할 경우
-        if (currentLength > maxLength) {
-            // 초과한 부분 제거
-            $(this).val($(this).val().substring(0, maxLength));
-        }
-    });
-
-    $('#content').on('input', function() {
-        var maxLength = 200; // 최대 글자 수
-        var currentLength = $(this).val().length; // 현재 입력된 글자 수
-
-        // 글자 수 표시 업데이트
-        $('#contentLength').text(currentLength + ' / ' + maxLength);
-
-        // 상품명 길이가 최대 길이를 초과할 경우
-        if (currentLength > maxLength) {
-            // 초과한 부분 제거
-            $(this).val($(this).val().substring(0, maxLength));
-        }
-    });
-});
-
-
-</script>
-

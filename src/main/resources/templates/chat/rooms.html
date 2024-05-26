@@ -106,12 +106,12 @@
                                              th:if="${room.item.itemRepImgDTO} != null"
                                              th:src="'/images/' + ${room.item.itemRepImgDTO.imgName}">
                                         <img style="width: 50px; height:50px;"
-                                             th:if="${room.item.itemRepImgDTO} == null" src="/img/default.png">
+                                             th:if="${room.item.itemRepImgDTO} == null" src="/img/default.PNG">
                                     </th:block>
 
                                     <!-- 상품 대표이미지 없음 -->
                                     <th:block th:if="${room.item} == null">
-                                        <img style="width: 50px; height:50px;" src="/img/default.png">
+                                        <img style="width: 50px; height:50px;" src="/img/default.PNG">
                                         <a th:href="@{/chat/room(roomId=${room.roomId})}" th:text="${room.name}"></a>
                                     </th:block>
 
@@ -125,7 +125,7 @@
                         <!-- 구매자가 없는 경우 -->
                         <div class="room-info" th:if="${room.buyer} == null">
                             <div class="roomlist-left">
-                                <img style="width: 100px; height:100px;" src="/img/default.png">
+                                <img style="width: 100px; height:100px;" src="/img/default.PNG">
                             </div>
                             <div class="roomlist-right">
                                 <div class="buyer-name">(탈퇴한 사용자)</div>
@@ -138,11 +138,11 @@
                                              th:if="${room.item.itemRepImgDTO} != null"
                                              th:src="'/images/' + ${room.item.itemRepImgDTO.imgName}">
                                         <img style="width: 50px; height:50px;"
-                                             th:if="${room.item.itemRepImgDTO} == null" src="/img/default.png">
+                                             th:if="${room.item.itemRepImgDTO} == null" src="/img/default.PNG">
                                     </th:block>
                                     <!-- 상품이 없는 경우 -->
                                     <th:block th:if="${room.item} == null">
-                                        <img style="width: 50px; height:50px;" src="/img/default.png">
+                                        <img style="width: 50px; height:50px;" src="/img/default.PNG">
                                     </th:block>
 
                                     <!-- 채팅방 이름 -->
@@ -185,12 +185,12 @@
                                              th:if="${room.item.itemRepImgDTO} != null"
                                              th:src="'/images/' + ${room.item.itemRepImgDTO.imgName}">
                                         <img style="width: 50px; height:50px;"
-                                             th:if="${room.item.itemRepImgDTO} == null" src="/img/default.png">
+                                             th:if="${room.item.itemRepImgDTO} == null" src="/img/default.PNG">
                                     </th:block>
 
                                     <!-- 상품 대표이미지 없음 -->
                                     <th:block th:if="${room.item} == null">
-                                        <img style="width: 50px; height:50px;" src="/img/default.png">
+                                        <img style="width: 50px; height:50px;" src="/img/default.PNG">
                                     </th:block>
 
                                     <!-- 채팅방 이름 -->
@@ -207,7 +207,7 @@
                         <div class="room-info" th:if="${room.seller} == null">
                             <!-- 판매자 정보 및 프로필 이미지 -->
                             <div class="roomlist-left">
-                                <img style="width: 100px; height:100px;" src="/img/default.png">
+                                <img style="width: 100px; height:100px;" src="/img/default.PNG">
                             </div>
                             <div class="roomlist-right">
 
@@ -222,12 +222,12 @@
                                              th:if="${room.item.itemRepImgDTO} != null"
                                              th:src="'/images/' + ${room.item.itemRepImgDTO.imgName}">
                                         <img style="width: 50px; height:50px;"
-                                             th:if="${room.item.itemRepImgDTO} == null" src="/img/default.png">
+                                             th:if="${room.item.itemRepImgDTO} == null" src="/img/default.PNG">
                                     </th:block>
 
                                     <!-- 상품 대표이미지 없음 -->
                                     <th:block th:if="${room.item} == null">
-                                        <img style="width: 50px; height:50px;" src="/img/default.png">
+                                        <img style="width: 50px; height:50px;" src="/img/default.PNG">
                                     </th:block>
 
                                     <!-- 채팅방 이름 -->

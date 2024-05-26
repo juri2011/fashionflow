@@ -72,7 +72,7 @@
                              th:if="${room.item.itemRepImgDTO} != null"
                              th:src="'/images/' + ${room.item.itemRepImgDTO.imgName}">
                         <img style="width: 100px; height:100px;"
-                             th:if="${room.item.itemRepImgDTO} == null" src="/img/default.png">
+                             th:if="${room.item.itemRepImgDTO} == null" src="/img/default.PNG">
                     </div>
                     <div class="item-right">
                         <a th:href="'/item/' + ${room.item.id}" th:text="${room.item.itemName}"></a>
@@ -97,7 +97,7 @@
                 <div class="seller-info" th:if="${room.seller} != null">
                     <div class="seller-left">
                         <img style="width: 100px; height:100px;"
-                             th:if="${room.seller.profileImageDTO} == null" src="/img/profile_default.png">
+                             th:if="${room.seller.profileImageDTO} == null" src="/img/profile_default.PNG">
                         <!-- 프로필 이미지가 없을 경우 기본 이미지 표시 -->
                         <img style="width: 100px; height:100px;"
                              th:if="${room.seller.profileImageDTO} != null"

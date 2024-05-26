@@ -52,6 +52,11 @@
             white-space: nowrap;
         }
 
+        .item-tag{
+            display: inline-block;
+            margin-right: 10px;
+        }
+
         .item-price{
             font-weight: 800;
             font-size: 24px;
@@ -83,13 +88,13 @@
                              th:if="${room.item.itemRepImgDTO} == null" src="/img/default.PNG">
                     </div>
                     <div class="item-right">
-                        <a th:href="'/item/' + ${room.item.id}" th:text="${room.item.itemName}"></a>
-                        <th:block th:switch="${#strings.toString(room.item.sellStatus)}">
+                        <div class="item-tag" th:switch="${#strings.toString(room.item.sellStatus)}">
                             <!-- 상품 판매 상태에 따라 뱃지 표시 -->
                             <span class="badge text-bg-success" th:case="SELLING">판매중</span>
                             <span class="badge text-bg-danger" th:case="SUSPENDED">판매중단</span>
                             <span class="badge text-bg-secondary" th:case="SOLD_OUT">판매완료</span>
-                        </th:block>
+                        </div>
+                        <a th:href="'/item/' + ${room.item.id}" th:text="${room.item.itemName}"></a>
                         <div class="item-price" th:text="${#numbers.formatInteger(room.item.price, 1, 'COMMA') + '원'}"></div>
                     </div>
 

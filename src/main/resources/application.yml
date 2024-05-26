@@ -19,12 +19,16 @@ spring:
 
   thymeleaf:
     cache: false
+    prefix: classpath:/templates/
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/fashiondb
-    username: ff
-    password: 12345
+    #url: jdbc:mysql://localhost:3306/fashiondb
+    #username: ff
+    #password: 12345
+    url: jdbc:mysql://fashiondb.c56ewsqyarkd.ap-northeast-2.rds.amazonaws.com:3306/fashiondb
+    username: root
+    password: fashionflow0416
 
   jpa:
     properties:
@@ -62,11 +66,14 @@ spring:
 
 
 
-itemImgLocation: C:/shop/item
+#itemImgLocation: C:/shop/item
+itemImgLocation: /home/ubuntu/shop/item
 
-profileImgLocation: C:/shop/profile
+#profileImgLocation: C:/shop/profile
+profileImgLocation: /home/ubuntu/shop/profile
 
-uploadPath: file:///C:/shop/
+#uploadPath: file:///C:/shop/
+uploadPath: file:////home/ubuntu/shop/
 
 logging:
   level:

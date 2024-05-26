@@ -15,54 +15,121 @@
         /*]]>*/
     </script>
     <style>
-        /* 탭 메뉴 스타일링 */
-        .content{
-            display: block;
-            width: 1250px;
-            margin: 0 auto;
-            padding: 40px;
-        }
-        .tab {
-            overflow: hidden;
-            border: 1px solid #ccc;
-            background-color: #f1f1f1;
-        }
-        .tab button {
-            background-color: inherit;
-            float: left;
-            width: 33.33%; /* 각 탭 버튼 너비를 균일하게 설정 */
-            border: none;
-            outline: none;
-            cursor: pointer;
-            padding: 14px 16px;
-            transition: 0.3s;
-            font-size: 17px;
-        }
-        .tab button:hover {
-            background-color: #ddd;
-        }
-        .tab button.active {
-            background-color: #ccc;
-        }
-        .tabcontent {
-            display: none;
-            padding: 6px 12px;
-            border: 1px solid #ccc;
-            border-top: none;
-        }
 
-         table {
-        width: 100%;
-        border-collapse: collapse;
+        .container {
+      display: flex;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      overflow: hidden;
+      width: 1170px;
+      height: 400px;
+      margin-bottom:20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  .left-panel {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 35%;
+      border-right: 1px solid #ccc;
+  }
+  .left-panel img {
+      width: 80px;
+      height: 80px;
+      margin-top:100px;
+      margin-bottom: 10px;
+  }
+  .left-panel .store-name {
+      margin-bottom: 10px;
+      font-weight: bold;
+  }
+  .left-panel .score {
+      margin-bottom: 20px;
+      color: #888;
+  }
+  .right-panel {
+      padding: 20px;
+      width: 70%;
+  }
+  .right-panel .store-header {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 20px;
+  }
+  .right-panel .store-info {
+      display: flex;
+  }
+  .right-panel .store-info div {
+      font-size:16px;
+      color: #555;
+  }
+
+  .store-info div {
+    margin-left: 30px;
+    text-align: center;
+  }
+
+  h3 {
+      margin: 20px;
+  }
+
+  /* 탭 메뉴 스타일링 */
+  .content{
+      display: block;
+      width: 1250px;
+      margin: 0 auto;
+      padding: 40px;
+  }
+  .tab {
+      overflow: hidden;
+      border: 1px solid #ccc;
+      background-color: #f1f1f1;
+  }
+  .tab button {
+      background-color: inherit;
+      float: left;
+      width: 33.33%; /* 각 탭 버튼 너비를 균일하게 설정 */
+      border: none;
+      outline: none;
+      cursor: pointer;
+      padding: 14px 16px;
+      transition: 0.3s;
+      font-size: 17px;
+  }
+  .tab button:hover {
+      background-color: #ddd;
+  }
+  .tab button.active {
+      background-color: #ccc;
+  }
+  .tabcontent {
+      display: none;
+      padding: 6px 12px;
+      border: 1px solid #ccc;
+      border-top: none;
+  }
+
+   table {
+  width: 100%;
+  border-collapse: collapse;
+}
+th, td {
+  border: 1px solid #dddddd;
+  text-align: center;
+  padding: 8px;
+}
+th {
+  background-color: #f2f2f2;
+}
+
+.profile-image {
+        width: 200px; /* 원하는 너비 설정 */
+        height: 200px; /* 원하는 높이 설정 */
+        object-fit: cover; /* 이미지가 잘리지 않고 크기에 맞게 조절 */
+        border-radius: 50%; /* 원형 이미지로 만들기 */
     }
-    th, td {
-        border: 1px solid #dddddd;
-        text-align: center;
-        padding: 8px;
-    }
-    th {
-        background-color: #f2f2f2;
-    }
+
+
     </style>
 </head>
 <body>
@@ -70,9 +137,36 @@
 
 <div layout:fragment="content">
     <!-- 상품 등록 버튼 -->
-    <form th:action="@{/members/item/new}" method="get">
-        <button type="submit" class="btn btn-primary">내 상품 등록</button>
-    </form>
+
+
+    <div class="container">
+        <div class="left-panel">
+            <img th:if="${member.profileImage == null || #strings.isEmpty(member.profileImage.imgName)}"
+                 src="/img/profile_default.png" alt="기본 프로필 이미지" class="profile-image">
+            <img th:if="${member.profileImage != null && not #strings.isEmpty(member.profileImage.imgName)}"
+                 th:src="'/profile/' + ${member.profileImage.imgName}"
+                 alt="Profile Image" class="profile-image">
+            <div class="store-name" th:text="${member.nickname} + '의 상점'"></div>
+            <div class="score" th:text="'매너점수: ' + ${member.mannerScore} + '점'"></div>
+            <form th:action="@{/members/item/new}" method="get">
+                <button type="submit" class="btn btn-primary">내 상품 등록</button>
+            </form>
+        </div>
+        <div class="right-panel">
+            <div class="store-header" th:text="${member.nickname} + '의 상점'">의 상점</div>
+            <hr>
+            <div class="store-info">
+                <div>상점 오픈일<br th:text="${#temporals.format(member.regdate, 'yyyy-MM-dd')}"></div>
+                <div>상품 판매수<br th:text="${reviewCount} + '회'"></div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
     <!-- 탭 메뉴 -->
     <div class="tab">
         <button class="tablinks" onclick="openTab(event, 'Home')">상품 관리</button>
@@ -101,12 +195,12 @@
                     <!-- 이미지가 있을 경우, 첫 번째 이미지를 표시 -->
                     <img th:if="${not #lists.isEmpty(item.itemImgDTOList)}"
                          th:src="@{'/images/' + ${item.itemImgDTOList.get(0).imgName}}"
-                         alt="상품 이미지" style="width:100px;">
+                         alt="상품 이미지" style="width:150px; height:130px;">
 
                     <!-- 이미지 리스트가 비어있을 경우, 대체 이미지 표시 -->
                     <img th:unless="${not #lists.isEmpty(item.itemImgDTOList)}"
                          th:src="@{/img/default.PNG}"
-                         alt="대체 이미지" style="width:100px;">
+                         alt="대체 이미지" style="width:150px; height:130px;">
                 </td>
                 <td>
                     <!-- 상품명을 클릭하면 상세 페이지로 이동 -->
@@ -121,7 +215,7 @@
                         <span th:case="'FAULTY'">파손, 고장 상품</span>
                     </span>
                 </td>
-                <td th:text="${item.price}"></td>
+                <td th:text="${#numbers.formatInteger(item.price, 1, 'COMMA') + '원'}"></td>
                 <td th:text="${item.address}"></td>
                 <td>
                     <span th:switch="${item.sellStatus.name()}">
@@ -142,9 +236,9 @@
             <form method="post" class="review-box">
 
                 <input type="hidden" name="id" th:value="${review.id}" />
-                <img th:if="${review.imgName != null}" th:src="${review.imgName}" alt="Product Image" class="product-image" style="width:100px;">
+                <img th:if="${review.imgName != null}" th:src="${review.imgName}" alt="Product Image" class="product-image" style="width:100px; margin:20px;">
                 <span th:if="${review.itemName}" th:text="'상품명: ' + ${review.itemName}" ></span>
-                <span th:if="${review.price}" th:text="'가격: ' + ${review.price}" ></span>
+                <span th:if="${review.price}" th:text="'가격: ' + ${#numbers.formatInteger(review.price, 1, 'COMMA') + '원'}" ></span>
                 <span th:if="${review.score}" th:text="'매너점수: ' + ${review.score}" ></span>
                 <span th:if="${review.regDate}" th:text="'거래일: ' + ${#temporals.format(review.regDate, 'yyyy-MM-dd')}" ></span>
                 <!-- 리뷰 태그 정보 출력 -->
@@ -162,10 +256,10 @@
             <form method="post" class="heart-box" th:action="@{/heart/removeHeart/{heartId}(heartId=${heart.id})}">
                 <input type="hidden" name="id" th:value="${heart.id}" />
                 <a th:href="'/item/' + ${heart.id}">
-                    <img th:if="${heart.imgName != null}" th:src="${heart.imgName}" alt="Product Image" class="product-image" style="width:100px;">
+                    <img th:if="${heart.imgName != null}" th:src="${heart.imgName}" alt="Product Image" class="product-image" style="width:140px; height:130px; margin:20px;">
                 </a>
                 <span th:if="${heart.itemName}" th:text="'상품명: ' + ${heart.itemName}" ></span>
-                <span th:if="${heart.price}" th:text="'가격: ' + ${heart.price}" ></span>
+                <span th:if="${heart.price}" th:text="'가격: ' + ${#numbers.formatInteger(heart.price, 1, 'COMMA') + '원'}" ></span>
                 <button type="submit">찜 삭제</button>
             </form>
         </div>

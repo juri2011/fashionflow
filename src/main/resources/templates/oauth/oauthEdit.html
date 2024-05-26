@@ -56,6 +56,9 @@
 <!-- 사용자 CSS 추가 -->
 <th:block layout:fragment="css">
     <style>
+        .content{
+            margin-top: 0;
+        }
 
         .container {
             display: flex;
@@ -68,7 +71,7 @@
             display: flex;
             flex-direction: column;
             margin-bottom: 20px;
-            width: 550px;
+            width: 750px;
         }
 
         .form-control, .custom-file-input {
@@ -193,18 +196,10 @@
         <div th:if="${pwdErrorMessage}" style="color:red;" class="error-message">
             <p th:text="${pwdErrorMessage}"></p>
         </div>
-        <!-- 유효성 검사 결과를 출력하는 부분 -->
-        <div class="error-message" style="color:red;" th:if="${errors}">
-            <p>다음 항목을 확인해주세요:</p>
-            <ul>
-                <li th:each="error : ${errors}">
-                    <span th:text="${error.defaultMessage}"></span>
-                </li>
-            </ul>
-        </div>
 
+        <h2>회원정보 수정</h2>
 
-        <form role="form" method="post" enctype="multipart/form-data" action="/oauth/oauthEdit">
+        <form role="form" method="post" th:object="${memberFormDTO}" enctype="multipart/form-data" action="/oauth/oauthEdit">
             <div class="form-group mb-3">
                 <label for="name">이름</label>
                 <input type="text" name="name" id="name" class="form-control" placeholder="이름을 입력해주세요" readonly th:value="${currentMember.name}">
@@ -215,6 +210,9 @@
             </div>
             <div class="form-group mb-3">
                 <label for="nickname">닉네임</label>
+                <div th:if="${#fields.hasErrors('nickname')}" class="error">
+                    <p th:each="error : ${#fields.errors('nickname')}" th:text="${error}">Name Error</p>
+                </div>
                 <input type="text" name="nickname" id="nickname" class="form-control" placeholder="닉네임을 입력해주세요" th:value="${currentMember.nickname}">
             </div>
             <div class="form-group mb-3">
@@ -248,6 +246,9 @@
                 </div>
                 <div class="form-group col-md-3 mb-3">
                     <label for="sample6_detailAddress">상세주소</label>
+                    <div th:if="${#fields.hasErrors('userDaddr')}" class="error">
+                        <p th:each="error : ${#fields.errors('userDaddr')}" th:text="${error}">Name Error</p>
+                    </div>
                     <input type="text" name="userDaddr" id="sample6_detailAddress" class="form-control" placeholder="상세주소를 입력해주세요" th:value="${currentMember.userDaddr}">
                 </div>
 

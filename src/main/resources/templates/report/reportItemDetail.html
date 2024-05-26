@@ -91,6 +91,11 @@
         /* 기본 스타일 */
         .content{ display:block; }
 
+        .container{
+            width: 1250px;
+            padding: 40px;
+        }
+
         /* 신고 컨테이너 스타일 */
         .report-container {
             margin-bottom: 20px;
@@ -128,6 +133,17 @@
         /* 서브 라벨 스타일 */
         .sub-label {
             font-weight: bold;
+        }
+
+        /* 상품 이름 */
+        .item-details, .value{
+            width: 100%;
+            overflow:hidden;
+            display: -webkit-box; /* 웹킷 브라우저를 위한 플렉스 박스 표시 */
+            -webkit-box-orient: vertical; /* 플렉스 박스의 수직 방향을 설정 */
+            text-overflow: ellipsis; /* 텍스트가 잘리는 경우 ...으로 표시 */
+            white-space: normal; /* 공백 문자를 자동으로 줄 바꿈 */
+            word-wrap: break-word; /* 긴 단어를 여러 줄로 나눔 */
         }
 
         /* 아이템 이미지 스타일 */
@@ -173,74 +189,77 @@
     </style>
 </th:block>
 <div layout:fragment="content">
-    <!-- 신고 내용 컨테이너 -->
-    <div class="report-container">
-        <!-- 신고 ID 숨은 입력 필드 -->
-        <input type="hidden" name="reportId" id="reportId" th:value="${reportItem.id}">
+    <div class="container">
+        <!-- 신고 내용 컨테이너 -->
+        <div class="report-container">
+            <!-- 신고 ID 숨은 입력 필드 -->
+            <input type="hidden" name="reportId" id="reportId" th:value="${reportItem.id}">
 
-        <!-- 신고 정보 -->
-        <div class="info">
-            <div class="label">신고번호 :</div>
-            <div class="value" th:text="${reportItem.id}"></div>
-        </div>
-
-        <!-- 신고자 정보 -->
-        <div class="info">
-            <div class="label">신고자 :</div>
-            <div class="value" th:text="${reportItem.reporterMemberEmail}"></div>
-        </div>
-
-        <!-- 상품 정보 -->
-        <div class="item-info">
-            <div class="item-image">
-                <!-- 대표 사진 -->
-                <img class="item-img" th:src="'/images/'+${reportItem.reportedItem.itemRepImgDTO.imgName}" alt="대표사진">
+            <!-- 신고 정보 -->
+            <div class="info">
+                <div class="label">신고번호 :</div>
+                <div class="value" th:text="${reportItem.id}"></div>
             </div>
-            <div class="item-details">
-                <!-- 상품 이름 -->
-                <div><span class="sub-label">상품이름:</span> <a th:href="'/item/'+${reportItem.reportedItemId}" th:text="${reportItem.reportedItem.itemName}"></a></div>
-                <!-- 상품 번호 -->
-                <div><span class="sub-label">상품번호:</span> <span th:text="${reportItem.reportedItemId}"></span></div>
-                <!-- 판매자 -->
-                <div><span class="sub-label">판매자:</span> <span th:text="${reportItem.reportedItem.memberId}"></span></div>
+
+            <!-- 신고자 정보 -->
+            <div class="info">
+                <div class="label">신고자 :</div>
+                <div class="value" th:text="${reportItem.reporterMemberEmail}"></div>
             </div>
-        </div>
 
-        <!-- 신고 내용 -->
-        <div class="info">
-            <div class="label">신고내용 :</div>
-            <div class="value" th:text="${reportItem.content}"></div>
-        </div>
-
-        <!-- 신고 상태 -->
-        <div class="info">
-            <div class="label">신고상태 :</div>
-            <div class="value" th:text="${reportItem.reportStatus.getDescription()}"></div>
-        </div>
-
-        <!-- 신고 태그 -->
-        <div class="info">
-            <div class="label">신고태그 :</div>
-            <div class="value">
-                <p th:each="reportTag, status: ${reportItem.reportItemTagDTOList}">
-                    <span class="badge text-bg-secondary" th:text="${reportTag.reportTagDesc}"></span>
-                </p>
+            <!-- 상품 정보 -->
+            <div class="item-info">
+                <div class="item-image">
+                    <!-- 대표 사진 -->
+                    <img class="item-img" th:src="'/images/'+${reportItem.reportedItem.itemRepImgDTO.imgName}" alt="대표사진">
+                </div>
+                <div class="item-details">
+                    <!-- 상품 이름 -->
+                    <div class="item-name"><span class="sub-label">상품이름:</span> <a th:href="'/item/'+${reportItem.reportedItemId}" th:text="${reportItem.reportedItem.itemName}"></a></div>
+                    <!-- 상품 번호 -->
+                    <div><span class="sub-label">상품번호:</span> <span th:text="${reportItem.reportedItemId}"></span></div>
+                    <!-- 판매자 -->
+                    <div><span class="sub-label">판매자:</span> <span th:text="${reportItem.reportedItem.memberId}"></span></div>
+                </div>
             </div>
+
+            <!-- 신고 내용 -->
+            <div class="info">
+                <div class="label">신고내용 :</div>
+                <div class="value" th:text="${reportItem.content}"></div>
+            </div>
+
+            <!-- 신고 상태 -->
+            <div class="info">
+                <div class="label">신고상태 :</div>
+                <div class="value" th:text="${reportItem.reportStatus.getDescription()}"></div>
+            </div>
+
+            <!-- 신고 태그 -->
+            <div class="info">
+                <div class="label">신고태그 :</div>
+                <div class="value">
+                    <span th:each="reportTag, status: ${reportItem.reportItemTagDTOList}">
+                        <span class="badge text-bg-secondary" th:text="${reportTag.reportTagDesc}"></span>
+                    </span>
+                </div>
+            </div>
+
+            <!-- 신고 처리 목록 -->
+            <label for="processSelect" class="form-group-text">신고 처리 목록</label>
+            <select class="form-select" name="processSelect" id="processSelect">
+                <option value="default">---선택---</option>
+                <option value="SUSPEND">판매중지</option>
+                <option value="DELETE">삭제</option>
+                <option value="ETC">직접처리</option>
+            </select>
+
+            <!-- 처리 및 취소 버튼 -->
+            <button class="btn btn-primary confirm" type="button">처리</button>
+            <button class="btn btn-secondary cancel" type="button">취소</button>
         </div>
-
-        <!-- 신고 처리 목록 -->
-        <label for="processSelect" class="form-group-text">신고 처리 목록</label>
-        <select class="form-select" name="processSelect" id="processSelect">
-            <option value="default">---선택---</option>
-            <option value="SUSPEND">판매중지</option>
-            <option value="DELETE">삭제</option>
-            <option value="ETC">직접처리</option>
-        </select>
-
-        <!-- 처리 및 취소 버튼 -->
-        <button class="btn btn-primary confirm" type="button">처리</button>
-        <button class="btn btn-secondary cancel" type="button">취소</button>
     </div>
+
 </div>
 
 </html>

@@ -3,8 +3,11 @@ package com.fashionflow.controller;
 import com.fashionflow.constant.ItemTagName;
 import com.fashionflow.dto.*;
 import com.fashionflow.entity.Item;
+import com.fashionflow.entity.Member;
+import com.fashionflow.entity.ProfileImage;
 import com.fashionflow.entity.Review;
 import com.fashionflow.repository.ItemRepository;
+import com.fashionflow.repository.ProfileImageRepository;
 import com.fashionflow.service.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -13,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -22,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,6 +42,8 @@ public class ShopController {
 
     private final HeartService heartService;
 
+    private final ProfileImageRepository profileImageRepository;
+
     // 상품 등록 폼을 보여주는 메서드
     @GetMapping("/members/item/new")
     public String itemForm(@AuthenticationPrincipal User user, Model model) {
@@ -49,7 +54,7 @@ public class ShopController {
         String userEmail = memberService.currentMemberEmail();
         // 비회원인 경우 로그인 페이지로 리디렉션
         if (userEmail.equals("anonymousUser")) {
-            return "/error/loginError";
+            return "error/loginError";
         }
 
         // 새 ItemFormDTO 객체를 모델에 추가
@@ -84,11 +89,11 @@ public class ShopController {
         String userEmail = memberService.currentMemberEmail();
 
         if (userEmail.equals("anonymousUser")) {
-            return "/error/loginError";
+            return "error/loginError";
         }
 
         if (bindingResult.hasErrors()) {
-            return "/item/itemForm";  // 입력 폼으로 리턴
+            return "item/itemForm";  // 입력 폼으로 리턴
         }
 
         try {
@@ -97,7 +102,7 @@ public class ShopController {
             return "redirect:/myshop";
         } catch (Exception e) {
             model.addAttribute("errorMessage", "상품 등록 실패");
-            return "/item/itemForm";
+            return "item/itemForm";
         }
     }
 
@@ -111,18 +116,33 @@ public class ShopController {
         String userEmail = memberService.currentMemberEmail();
 
         if (userEmail.equals("anonymousUser")) {
-            return "/error/loginError";
+            return "error/loginError";
         }
+
+        // 현재 사용자의 Member 정보 가져오기
+        Member member = memberService.findMemberByCurrentEmail();
 
         // 현재 사용자의 상품 목록, 리뷰 목록, 좋아요한 상품 목록 가져오기
         List<ItemFormDTO> items = itemService.getItemsWithImagesByUserEmail(userEmail);
         List<ReviewDTO> getItemReviewListWithImg = reviewService.getItemReviewListWithImg(userEmail);
         List<HeartDTO> getHeartItemsWithImagesByUserEmail = heartService.getHeartItemsWithImagesByUserEmail(userEmail);
 
+        // 리뷰 수 계산
+        long reviewCount = reviewService.countReviewsBySellerEmail(userEmail);
+        model.addAttribute("reviewCount", reviewCount);
+
+
+        // 현재 회원의 프로필 이미지 가져오기
+        ProfileImage profileImage = profileImageRepository.findByMemberId(member.getId());
+        model.addAttribute("profileImage", profileImage);
+
+
+
         // 모델에 데이터 추가
         model.addAttribute("items", items);
         model.addAttribute("getItemReviewListWithImg", getItemReviewListWithImg);
         model.addAttribute("getHeartItemsWithImagesByUserEmail", getHeartItemsWithImagesByUserEmail);
+        model.addAttribute("member", member);
 
         // myshop.html 페이지로 이동
         return "myshop";
@@ -151,19 +171,24 @@ public class ShopController {
                              @ModelAttribute("itemFormDTO") ItemFormDTO itemFormDTO,
                              @RequestParam("itemImgFile") List<MultipartFile> itemImgFileList,
                              @RequestParam(value = "itemImgIds", required = false) List<String> itemImgIdStringList,
-                             @RequestParam("tagSelectList") List<String> tagSelectList,
+                             @RequestParam(value = "tagSelectList", required = false) List<String> tagSelectList,
                              RedirectAttributes redirectAttributes) {
-        for(String tagSelect : tagSelectList){
-            ItemTagDTO itemTagDTO = new ItemTagDTO();
-            itemTagDTO.setItemTagName(ItemTagName.valueOf(tagSelect));
 
-            itemFormDTO.getItemTagDTOList().add(itemTagDTO);
+        // 태그 목록이 null이 아닌 경우 처리
+        if (tagSelectList != null) {
+            for (String tagSelect : tagSelectList) {
+                ItemTagDTO itemTagDTO = new ItemTagDTO();
+                itemTagDTO.setItemTagName(ItemTagName.valueOf(tagSelect));
+                itemFormDTO.getItemTagDTOList().add(itemTagDTO);
+            }
+        } else {
+            // 태그 목록이 null인 경우, 기존 태그를 삭제하거나 유지하는 로직 추가 필요
+            itemFormDTO.setItemTagDTOList(new ArrayList<>());  // 기존 태그를 모두 제거하려면 빈 리스트로 설정
         }
 
         if (itemId == null) {
             // 아이템 ID가 null인 경우 처리
             redirectAttributes.addFlashAttribute("errorMessage", "상품 ID가 null입니다.");
-
             return "redirect:/myshop";
         }
 
@@ -175,6 +200,7 @@ public class ShopController {
             return "forward:/members/item/{itemId}";
         }
     }
+
 
     // 상품을 삭제하는 메서드
     @PostMapping("/members/item/delete/{itemId}")

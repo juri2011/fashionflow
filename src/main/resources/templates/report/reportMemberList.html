@@ -247,99 +247,100 @@
     </style>
 </head>
 <div layout:fragment="content">
-    <h1>신고 리스트</h1>
-    <table class="table">
-        <thead>
-        <tr>
-            <th>번호</th>
-            <th>내용</th>
-            <th>작성자</th>
-            <th>등록일</th>
-            <th>거래상태</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="reportMember : ${reportMemberList.getContent()}">
-            <td th:text="${reportMember.id}"></td>
-            <!-- 관리자나 작성자인 경우만 표시 -->
-            <td><a th:href="'/report/memberdetail/'+${reportMember.id}">
-                <span th:text="${reportMember.content}"></span>
-            </a></td>
-            <td th:text="${reportMember.reporterMemberEmail}"></td>
-            <td th:text="${#temporals.format(reportMember.regdate, 'yyyy-MM-dd HH:mm:ss')}"></td>
-            <td th:switch="${#strings.toString(reportMember.reportStatus)}">
-                <span th:case="WAITING" style="color:red">처리대기중</span>
-                <span th:case="COMPLETE" style="color:green">처리완료</span>
-                <div class="myreport-btn" th:if="${reportMember.isMyReport}">
-                    <button th:attr="data-id=${reportMember.id}" class="updateReport btn btn-primary" type="button">수정</button>
-                    <button th:attr="data-id=${reportMember.id}" class="deleteReport btn btn-danger" type="button">삭제</button>
-                </div>
-            </td>
-            <!--<td th:text="${reportMember.reportStatus}"></td>-->
-            <!-- 사용자의 아이디가 표시되는 경우에만 수정 가능 -->
-        </tr>
-        </tbody>
-    </table>
-
-    <!-- 페이지네이션 추가 -->
-
-    <div th:with="start=${(reportMemberList.number/maxPage)*maxPage + 1}, end=(${(reportMemberList.totalPages == 0) ? 1 : (start + (maxPage - 1) < reportMemberList.totalPages ? start + (maxPage - 1) : reportMemberList.totalPages)})" >
-        <ul class="pagination justify-content-center">
-
-            <li class="page-Member" th:classappend="${reportMemberList.first}?'disabled'">
-                <a th:onclick="'javascript:page(' + ${reportMemberList.number} + ')'" aria-label='Previous' class="page-link">
-                    <span aria-hidden='true'>Previous</span>
-                </a>
-            </li>
-
-            <li class="page-Member" th:each="page: ${#numbers.sequence(start, end)}" th:classappend="${reportMemberList.number eq page-1}?'active':''">
-                <a th:onclick="'javascript:page(' + ${page} + ')'" th:inline="text" class="page-link">[[${page}]]</a>
-                <!--<a th:onclick="'javascript:page(' + ${page - 1} + ')'" th:inline="text" class="page-link">[[${page}]]</a>-->
-            </li>
-
-            <li class="page-Member" th:classappend="${reportMemberList.last}?'disabled'">
-                <a th:onclick="'javascript:page(' + ${reportMemberList.number + 2} + ')'" aria-label='Next' class="page-link">
-                    <span aria-hidden='true'>Next</span>
-                </a>
-            </li>
-
-        </ul>
-    </div>
-    <div id="detailPopup" class="modal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">사용자 신고</h5>
-                    <button type="button" class="btn-close closePopup" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <span class="memberName"></span>
+    <div class="container">
+        <h1>신고 리스트</h1>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>번호</th>
+                <th>내용</th>
+                <th>작성자</th>
+                <th>등록일</th>
+                <th>거래상태</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="reportMember : ${reportMemberList.getContent()}">
+                <td th:text="${reportMember.id}"></td>
+                <!-- 관리자나 작성자인 경우만 표시 -->
+                <td><a th:href="'/report/memberdetail/'+${reportMember.id}">
+                    <span th:text="${reportMember.content}"></span>
+                </a></td>
+                <td th:text="${reportMember.reporterMemberEmail}"></td>
+                <td th:text="${#temporals.format(reportMember.regdate, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                <td th:switch="${#strings.toString(reportMember.reportStatus)}">
+                    <span th:case="WAITING" style="color:red">처리대기중</span>
+                    <span th:case="COMPLETE" style="color:green">처리완료</span>
+                    <div class="myreport-btn" th:if="${reportMember.isMyReport}">
+                        <button th:attr="data-id=${reportMember.id}" class="updateReport btn btn-primary" type="button">수정</button>
+                        <button th:attr="data-id=${reportMember.id}" class="deleteReport btn btn-danger" type="button">삭제</button>
                     </div>
+                </td>
+                <!--<td th:text="${reportMember.reportStatus}"></td>-->
+                <!-- 사용자의 아이디가 표시되는 경우에만 수정 가능 -->
+            </tr>
+            </tbody>
+        </table>
 
-                    <div class="mb-3">
-                        <label for="reportContent" class="form-label">신고 내용</label>
-                        <textarea class="form-control" id="reportContent" name="reportContent" placeholder="내용을 입력하세요"></textarea>
+        <!-- 페이지네이션 추가 -->
+
+        <div th:with="start=${(reportMemberList.number/maxPage)*maxPage + 1}, end=(${(reportMemberList.totalPages == 0) ? 1 : (start + (maxPage - 1) < reportMemberList.totalPages ? start + (maxPage - 1) : reportMemberList.totalPages)})" >
+            <ul class="pagination justify-content-center">
+
+                <li class="page-Member" th:classappend="${reportMemberList.first}?'disabled'">
+                    <a th:onclick="'javascript:page(' + ${reportMemberList.number} + ')'" aria-label='Previous' class="page-link">
+                        <span aria-hidden='true'>Previous</span>
+                    </a>
+                </li>
+
+                <li class="page-Member" th:each="page: ${#numbers.sequence(start, end)}" th:classappend="${reportMemberList.number eq page-1}?'active':''">
+                    <a th:onclick="'javascript:page(' + ${page} + ')'" th:inline="text" class="page-link">[[${page}]]</a>
+                    <!--<a th:onclick="'javascript:page(' + ${page - 1} + ')'" th:inline="text" class="page-link">[[${page}]]</a>-->
+                </li>
+
+                <li class="page-Member" th:classappend="${reportMemberList.last}?'disabled'">
+                    <a th:onclick="'javascript:page(' + ${reportMemberList.number + 2} + ')'" aria-label='Next' class="page-link">
+                        <span aria-hidden='true'>Next</span>
+                    </a>
+                </li>
+
+            </ul>
+        </div>
+        <div id="detailPopup" class="modal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">사용자 신고</h5>
+                        <button type="button" class="btn-close closePopup" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <span class="memberName"></span>
+                        </div>
 
-                    <div class="mb-3">
-                        <label for="tagSelect" class="form-label">태그선택</label>
-                        <select name="tagSelect" id="tagSelect">
-                            <option value="default">--선택--</option>
-                            <option value="DISRESPECTFUL">비매너</option>
-                            <option value="FRAUD">사기</option>
-                        </select>
-                        <div class="tagBox"></div>
+                        <div class="mb-3">
+                            <label for="reportContent" class="form-label">신고 내용</label>
+                            <textarea class="form-control" id="reportContent" name="reportContent" placeholder="내용을 입력하세요"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="tagSelect" class="form-label">태그선택</label>
+                            <select name="tagSelect" id="tagSelect">
+                                <option value="default">--선택--</option>
+                                <option value="DISRESPECTFUL">비매너</option>
+                                <option value="FRAUD">사기</option>
+                            </select>
+                            <div class="tagBox"></div>
+                        </div>
+
                     </div>
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary reportConfirm">신고하기</button>
-                    <button type="button" class="btn btn-secondary closePopup">취소</button>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary reportConfirm">신고하기</button>
+                        <button type="button" class="btn btn-secondary closePopup">취소</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- 신고하기 팝업창(구현하려면 검색기능 있어야 함) -->
 </div>
 </html>

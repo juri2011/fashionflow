@@ -85,6 +85,10 @@
     <style>
         .content{ display:block; }
 
+        .container{
+            width: 1250px;
+            padding: 40px;
+        }
         /* 컨테이너 스타일 */
         .report-container {
             margin-bottom: 20px;
@@ -129,7 +133,7 @@
             color: #fff;
             border: none;
         }
-        button{
+        .confirm, .cancel{
             margin-top: 20px;
         }
 
@@ -147,57 +151,58 @@
 
 
 <div layout:fragment="content">
-    <!-- 신고 내용 표시 -->
-    <div class="report-container">
-        <input type="hidden" name="reportId" id="reportId" th:value="${reportMember.id}">
-        <div class="info">
-            <!-- 신고번호 표시 -->
-            <div class="label">신고번호 :</div>
-            <div class="value" th:text="${reportMember.id}"></div>
-        </div>
-        <div class="info">
-            <!-- 신고자 이메일 표시 -->
-            <div class="label">신고자 :</div>
-            <div class="value" th:text="${reportMember.reporterMemberEmail}"></div>
-        </div>
-        <div class="info">
-            <!-- 신고 대상 닉네임 및 이메일 표시 -->
-            <div class="label">신고대상 :</div>
-            <div class="value" th:text="${reportMember.reportedMember.nickname}
+    <div class="container">
+        <!-- 신고 내용 표시 -->
+        <div class="report-container">
+            <input type="hidden" name="reportId" id="reportId" th:value="${reportMember.id}">
+            <div class="info">
+                <!-- 신고번호 표시 -->
+                <div class="label">신고번호 :</div>
+                <div class="value" th:text="${reportMember.id}"></div>
+            </div>
+            <div class="info">
+                <!-- 신고자 이메일 표시 -->
+                <div class="label">신고자 :</div>
+                <div class="value" th:text="${reportMember.reporterMemberEmail}"></div>
+            </div>
+            <div class="info">
+                <!-- 신고 대상 닉네임 및 이메일 표시 -->
+                <div class="label">신고대상 :</div>
+                <div class="value" th:text="${reportMember.reportedMember.nickname}
                             +'('+${reportMember.reportedMember.email}+')'"></div>
-        </div>
-        <div class="info">
-            <!-- 신고 내용 표시 -->
-            <div class="label">신고내용 :</div>
-            <div class="value" th:text="${reportMember.content}"></div>
-        </div>
-        <div class="info">
-            <!-- 신고 상태 표시 -->
-            <div class="label">신고상태 :</div>
-            <div class="value" th:text="${reportMember.reportStatus.getDescription()}"></div>
-        </div>
-        <div class="info">
-            <!-- 신고 태그 표시 -->
-            <div class="label">신고태그 :</div>
-            <div class="value">
+            </div>
+            <div class="info">
+                <!-- 신고 내용 표시 -->
+                <div class="label">신고내용 :</div>
+                <div class="value" th:text="${reportMember.content}"></div>
+            </div>
+            <div class="info">
+                <!-- 신고 상태 표시 -->
+                <div class="label">신고상태 :</div>
+                <div class="value" th:text="${reportMember.reportStatus.getDescription()}"></div>
+            </div>
+            <div class="info">
+                <!-- 신고 태그 표시 -->
+                <div class="label">신고태그 :</div>
+                <div class="value">
                 <span th:each="reportTag, status: ${reportMember.reportMemberTagDTOList}">
                     <span class="badge text-bg-secondary" th:text="${reportTag.reportTagDesc}"></span>
                 </span>
+                </div>
             </div>
+            <!-- 신고 처리 목록 선택 -->
+            <label for="processSelect" class="form-group-text">신고 처리 목록</label>
+            <select class="form-select" name="processSelect" id="processSelect">
+                <option value="default">---선택---</option>
+                <option value="SUSPEND">중지</option>
+                <option value="ETC">직접처리</option>
+            </select>
+
+            <!-- 처리 및 취소 버튼 -->
+            <button class="btn btn-primary confirm" type="button">처리</button>
+            <button class="btn btn-secondary cancel" type="button">취소</button>
         </div>
-        <!-- 신고 처리 목록 선택 -->
-        <label for="processSelect" class="form-group-text">신고 처리 목록</label>
-        <select class="form-select" name="processSelect" id="processSelect">
-            <option value="default">---선택---</option>
-            <option value="SUSPEND">중지</option>
-            <option value="ETC">직접처리</option>
-        </select>
-
-        <!-- 처리 및 취소 버튼 -->
-        <button class="btn btn-primary confirm" type="button">처리</button>
-        <button class="btn btn-secondary cancel" type="button">취소</button>
     </div>
-
 </div>
 
 </html>

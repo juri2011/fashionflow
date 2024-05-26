@@ -110,10 +110,11 @@
                 <div class="seller-info" th:if="${room.seller} != null">
                     <div class="seller-left">
                         <img style="width: 100px; height:100px;"
-                             th:if="${room.seller.profileImageDTO} == null" src="/img/profile_default.png">
+                             th:if="${room.seller.profileImageDTO} == null || #strings.isEmpty(room.seller.profileImageDTO.imgName)"
+                             src="/img/profile_default.png">
                         <!-- 프로필 이미지가 없을 경우 기본 이미지 표시 -->
                         <img style="width: 100px; height:100px;"
-                             th:if="${room.seller.profileImageDTO} != null"
+                             th:if="${room.seller.profileImageDTO} != null && not #strings.isEmpty(shopMember.profileImageDTO.imgName)"
                              th:src="${room.seller.profileImageDTO.imgUrl}">
                         <!-- 프로필 이미지가 있을 경우 해당 이미지 표시 -->
                     </div>

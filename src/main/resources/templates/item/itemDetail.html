@@ -39,6 +39,12 @@
                 $body.removeEventListener('wheel', preventScroll, { passive: false });
             });
 
+            // 팝업 닫기 버튼 클릭 시
+            $('.closePopupMember').on('click', function(){
+                $('#detailPopupMember').hide();
+                $body.removeEventListener('wheel', preventScroll, { passive: false });
+            });
+
             // 신고 확인 버튼 클릭 시
             $('.reportConfirm').on('click', function(){
                 reportItem();

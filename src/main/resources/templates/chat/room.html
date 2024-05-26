@@ -5,6 +5,7 @@
 <th:block layout:fragment="css">
     <style>
         .container{
+            max-width:1250px;
             min-width: 800px;
         }
 
@@ -42,6 +43,13 @@
         .seller-info>seller-left
         {
             flex-shrink:0;
+        }
+
+        .item-info>.item-right{
+            width: calc(100% - 110px);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .item-price{
@@ -87,8 +95,8 @@
 
                 </div>
                 <div th:unless="${room.item} != null">
-                    <span>존재하지 않는 상품입니다.</span>
                     <img style="width: 100px; height:100px;" src="/img/item_not_found.png">
+                    <span>존재하지 않는 상품입니다.</span>
                 </div>
             </li>
             <li class="list-group-item">
@@ -97,7 +105,7 @@
                 <div class="seller-info" th:if="${room.seller} != null">
                     <div class="seller-left">
                         <img style="width: 100px; height:100px;"
-                             th:if="${room.seller.profileImageDTO} == null" src="/img/profile_default.PNG">
+                             th:if="${room.seller.profileImageDTO} == null" src="/img/profile_default.png">
                         <!-- 프로필 이미지가 없을 경우 기본 이미지 표시 -->
                         <img style="width: 100px; height:100px;"
                              th:if="${room.seller.profileImageDTO} != null"

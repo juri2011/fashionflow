@@ -45,9 +45,10 @@ public class MemberController {
     }
 
     @GetMapping("/login/error")
-    public String loginError(Model model){
+    public String loginError(HttpServletRequest request, Model model){
 
-        model.addAttribute("loginErrorMsg", "아이디 비밀번호를 확인해주세요");
+        String errorMessage = (String) request.getSession().getAttribute("loginErrorMsg");
+        model.addAttribute("loginErrorMsg", errorMessage);
         return "members/memberLoginForm";
     }
 

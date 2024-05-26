@@ -52,6 +52,15 @@ public class ProfileImgService {
             profileImageRepository.save(profileImage);
         }
     }
+
+    public void deleteProfileImage(ProfileImage profileImage) {
+        // 프로필 이미지가 존재하는지 확인
+        if (profileImage != null) {
+            // 프로필 이미지 삭제
+            profileImageRepository.delete(profileImage);
+            // 여기에서 실제 이미지 파일도 삭제하는 코드를 추가할 수 있습니다.
+        }
+    }
 }
 
 

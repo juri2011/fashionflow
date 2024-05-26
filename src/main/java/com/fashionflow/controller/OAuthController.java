@@ -7,7 +7,6 @@ import com.fashionflow.repository.MemberRepository;
 import com.fashionflow.repository.ProfileImageRepository;
 import com.fashionflow.service.MemberService;
 import com.fashionflow.service.OAuthService;
-import com.fashionflow.service.ProfileImgService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -45,7 +44,6 @@ public class OAuthController {
     private final PasswordEncoder passwordEncoder;
     private final Validator validator;
     private final ProfileImageRepository profileImageRepository;
-    private final ProfileImgService profileImgService;
 
 
 
@@ -185,16 +183,7 @@ public class OAuthController {
 
         // 닉네임 중복 검사
         try {
-            boolean deleteImage = (memberFormDTO.getProfileImageFile() != null && memberFormDTO.getProfileImageFile().isEmpty());
-            memberService.updateMember(memberFormDTO, passwordEncoder, deleteImage);
-
-            // 프로필 이미지 삭제
-            Member currentMember = memberService.findMemberByCurrentEmail();
-            ProfileImage profileImage = currentMember.getProfileImage();
-            if (profileImage != null) {
-                profileImgService.deleteProfileImage(profileImage);
-            }
-
+            memberService.updateMember(memberFormDTO, passwordEncoder);
             return "redirect:/";
         } catch (Exception e) {
             // 현재 멤버 정보를 가져와서 다시 모델에 추가
@@ -209,7 +198,6 @@ public class OAuthController {
             return "oauth/oauthEdit"; // 에러가 발생한 페이지로 리디렉션 또는 해당 페이지로 포워딩
         }
     }
-
 
 
 }

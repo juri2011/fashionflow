@@ -23,10 +23,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.security.Principal;
@@ -97,7 +94,7 @@ public class OAuthController {
 
     //OAuth 회원 정보 등록
     @PostMapping("/register")
-    public ModelAndView oauthRegister(MemberFormDTO memberFormDTO, BindingResult bindingResult, HttpServletRequest request){
+    public ModelAndView oauthRegister(@Valid @ModelAttribute("memberFormDTO") MemberFormDTO memberFormDTO, BindingResult bindingResult){
 
         ModelAndView modelAndView = new ModelAndView();
 
@@ -107,12 +104,9 @@ public class OAuthController {
         memberFormDTO.setPwd(randomPwd);
         memberFormDTO.setConfirmPwd(randomPwd);
 
-        //pwd 세팅 이후 유효성검사
-        validator.validate(memberFormDTO, bindingResult);
 
         // 유효성 검사 실패 시 회원가입 페이지로 다시 이동
         if (bindingResult.hasErrors()) {
-            modelAndView.addObject("errors", bindingResult.getAllErrors());
             // 실패한 경우 ModelAndView에 기존에 입력한 정보 추가하여 전달
             modelAndView.addObject("memberFormDTO", memberFormDTO);
             modelAndView.setViewName("oauth/oauthLogin");

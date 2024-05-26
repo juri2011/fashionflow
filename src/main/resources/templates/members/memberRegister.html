@@ -188,7 +188,7 @@
     <div class="container">
 
         <!-- 중복 알림 메시지 출력 -->
-        <p style="display:none" th:if="${error}" class="error" th:text="${error}"></p>
+        <p th:if="${error}" class="error" th:text="${error}"></p>
 
         <form action="/members/register" th:object="${memberFormDTO}" method="post" enctype="multipart/form-data" role="form">
 

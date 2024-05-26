@@ -129,6 +129,14 @@ th {
         border-radius: 50%; /* 원형 이미지로 만들기 */
     }
 
+table tr td{
+    overflow:hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    -webkit-box-orient: vertical;
+    word-break: break-all;
+    max-width: 513px;
+}
 
     </style>
 </head>
@@ -202,7 +210,7 @@ th {
                          th:src="@{/img/default.PNG}"
                          alt="대체 이미지" style="width:150px; height:130px;">
                 </td>
-                <td>
+                <td style="width: 45%;">
                     <!-- 상품명을 클릭하면 상세 페이지로 이동 -->
                     <a th:href="@{'/members/item/' + ${item.id}}" th:text="${item.itemName}"></a>
                 </td>

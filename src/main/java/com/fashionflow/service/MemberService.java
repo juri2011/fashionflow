@@ -1,6 +1,5 @@
 package com.fashionflow.service;
 
-import com.fashionflow.constant.Role;
 import com.fashionflow.dto.*;
 import com.fashionflow.entity.*;
 import com.fashionflow.repository.ItemSellRepository;
@@ -13,7 +12,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -111,10 +109,6 @@ public class MemberService implements UserDetailsService {
             throw new UsernameNotFoundException(email);
         }
 
-        if (member.getRole() == Role.BLACK) {
-            throw new DisabledException("이 계정은 접근이 차단되었습니다.");
-        }
-
         return User.builder()
                 .username(member.getEmail())
                 .password(member.getPwd())
@@ -180,7 +174,7 @@ public class MemberService implements UserDetailsService {
     }
 
     // 회원 정보 업데이트 메서드
-    public void updateMember(MemberFormDTO memberFormDTO, PasswordEncoder passwordEncoder) throws Exception {
+    public void updateMember(MemberFormDTO memberFormDTO, PasswordEncoder passwordEncoder, boolean deleteImage) throws Exception {
 
         // 현재 멤버 정보 가져오기
         Member currentMember = findMemberByCurrentEmail();
@@ -194,22 +188,32 @@ public class MemberService implements UserDetailsService {
             throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
         }
 
-
         // 프로필 이미지 업데이트
-        MultipartFile profileImageFile = memberFormDTO.getProfileImageFile();
-        if (profileImageFile != null && !profileImageFile.isEmpty()) {
-            // 기존 이미지가 있는지 확인
+        if (deleteImage) {
+            // 이미지 삭제
             ProfileImage existingProfileImage = currentMember.getProfileImage();
             if (existingProfileImage != null) {
-                // 기존 이미지 업데이트
-                profileImgService.updateProfileImage(existingProfileImage, profileImageFile);
-            } else {
-                // 새로운 이미지 저장
-                ProfileImage newProfileImage = new ProfileImage();
-                profileImgService.saveProfileImage(newProfileImage, profileImageFile);
-                newProfileImage.setMember(currentMember);
-                currentMember.setProfileImage(newProfileImage); // 연관 관계 설정
-                profileImageRepository.save(newProfileImage);
+                existingProfileImage.setImgName("");
+                existingProfileImage.setImgUrl("");
+                existingProfileImage.setOriImgName("");
+                profileImageRepository.save(existingProfileImage); // 이미지 정보 업데이트
+            }
+        } else {
+            MultipartFile profileImageFile = memberFormDTO.getProfileImageFile();
+            if (profileImageFile != null && !profileImageFile.isEmpty()) {
+                // 기존 이미지가 있는지 확인
+                ProfileImage existingProfileImage = currentMember.getProfileImage();
+                if (existingProfileImage != null) {
+                    // 기존 이미지 업데이트
+                    profileImgService.updateProfileImage(existingProfileImage, profileImageFile);
+                } else {
+                    // 새로운 이미지 저장
+                    ProfileImage newProfileImage = new ProfileImage();
+                    profileImgService.saveProfileImage(newProfileImage, profileImageFile);
+                    newProfileImage.setMember(currentMember);
+                    currentMember.setProfileImage(newProfileImage); // 연관 관계 설정
+                    profileImageRepository.save(newProfileImage);
+                }
             }
         }
 

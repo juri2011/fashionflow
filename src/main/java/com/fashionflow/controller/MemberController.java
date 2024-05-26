@@ -121,6 +121,7 @@ public class MemberController {
         Member currentMember = memberService.findMemberByCurrentEmail();
 
         model.addAttribute("currentMember", currentMember);
+        model.addAttribute("memberFormDTO", new MemberFormDTO());
 
         // 현재 회원의 프로필 이미지 가져오기
         ProfileImage profileImage = profileImageRepository.findByMemberId(currentMember.getId());
@@ -141,6 +142,7 @@ public class MemberController {
         Member currentMember = memberService.findMemberByCurrentEmail();
         // 프로필 이미지 정보를 가져옴
         ProfileImage profileImage = profileImageRepository.findByMemberId(currentMember.getId());
+
 
         // 유효성 검사 실패 시
         if (bindingResult.hasErrors()) {

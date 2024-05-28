@@ -29,9 +29,16 @@ AWS를 이용한 웹 서버 구축
 <br/>
 <br/>
 
+### i. 일정
+
+![image](https://github.com/kty1210/fashionflow/assets/154123644/95ccece8-9d88-44e0-9d73-b5ba967a9304)
 
 
+### ii. 요구사항 명세서
 
+![image](https://github.com/kty1210/fashionflow/assets/154123644/61048b17-0697-490b-a02e-148afba5dabc)
+
+![image](https://github.com/kty1210/fashionflow/assets/154123644/c82d3d2e-8fe5-41b0-b36f-e04431284d65)
 
 
 
@@ -96,8 +103,6 @@ AWS를 이용한 웹 서버 구축
 
 ## :clock3: 클래스 다이어그램
 
-![classdiagram](https://github.com/kty1210/NewSpringProject/assets/154123644/289a844b-cee0-4510-95e5-2d72ac3a6016)
-
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -108,7 +113,7 @@ AWS를 이용한 웹 서버 구축
 
 ## :clock4: 엔티티 관계도
 
-![image](https://github.com/kty1210/NewSpringProject/assets/154123644/dcdfbc1f-8902-4397-9278-f980cf541ee3)
+![fashiondb](https://github.com/kty1210/fashionflow/assets/154123644/23249664-266c-4b6b-bfd2-b028637b9274)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -190,7 +195,7 @@ AWS를 이용한 웹 서버 구축
 
 ## :clock6: 이슈
 
-### 문제
+### i.문제
 
 <br/>
 <br/>
@@ -209,7 +214,7 @@ BLACK 등급의 회원 차단시 기본 로그인 실패 메세지 출력
 <br/>
 
 
-### 원인
+### ii.원인
 
 <br/>
 <br/>
@@ -227,7 +232,7 @@ AuthenticationException를 상속받는 예외가 발생하면, 스프링 시큐
 <br/>
 
 
-### 해결방법
+### iii.해결방법
 
 <br/>
 <br/>

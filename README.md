@@ -9,6 +9,7 @@ Spring Boot 기반 팀프로젝트 과제로 진행한 중고 의류 쇼핑몰 �
 * `Bootstrap` `JQuery`
 
 ## :memo: 요구사항
+* 로그인
 
 ## :open_file_folder: 구조
 

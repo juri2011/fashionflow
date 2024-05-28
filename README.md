@@ -186,7 +186,60 @@ AWS를 이용한 웹 서버 구축
 
 
 
+## :clock6: 이슈
 
+### 문제
+
+<br/>
+<br/>
+
+
+![image](https://github.com/kty1210/fashionflow/assets/154123644/9416b8ae-2248-44f7-b1eb-13176001e981)
+
+<br/>
+
+
+UserDetailsService의 loadUserByUsername메소드를 이용하여 사용자 인증 필터 오버라이딩을 정상적으로했음에도 <br/>
+BLACK 등급의 회원 차단시 기본 로그인 실패 메세지 출력
+
+<br/>
+<br/>
+<br/>
+
+
+### 원인
+
+<br/>
+<br/>
+
+
+![image](https://github.com/kty1210/fashionflow/assets/154123644/d9053305-161a-4ca8-b37d-3e492cab00b7)
+
+<br/>
+
+
+AuthenticationException를 상속받는 예외가 발생하면, 스프링 시큐리티는 이를 InternalAuthenticationServiceException 자동적으로 한번 더 래핑해서 처리
+
+<br/>
+<br/>
+<br/>
+
+
+### 해결방법
+
+<br/>
+<br/>
+
+![image](https://github.com/kty1210/fashionflow/assets/154123644/07830bf9-8ca3-4ac6-9df2-82008740adeb)
+
+<br/>
+
+InternalAuthenticationServiceException의 원인이 되는 예외로 특정시켜 메세지가 출력
+
+<br/>
+<br/>
+<br/>
+<br/>
 
 
 
@@ -199,4 +252,5 @@ AWS를 이용한 웹 서버 구축
 
 긍정적인 측면
 
-*
+* API 사용법 
+* AWS의 EC2를 이용한 서버 구축과 RDS를 이용한 관계형데이터베이스 구축 

@@ -29,28 +29,83 @@ AWS를 이용한 웹 서버 구축
 <br/>
 <br/>
 
-### i. 일정
+## :clock1: 일정
+
+<br/>
+<br/>
 
 ![image](https://github.com/kty1210/fashionflow/assets/154123644/95ccece8-9d88-44e0-9d73-b5ba967a9304)
 
+<br/>
+<br/>
 
-### ii. 요구사항 명세서
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<br/>
+<br/>
+<br/>
+<br/>
+
+## :clock2: 요구사항 명세서
+
+<br/>
+<br/>
 
 ![image](https://github.com/kty1210/fashionflow/assets/154123644/61048b17-0697-490b-a02e-148afba5dabc)
+
+<br/>
+<br/>
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<br/>
+<br/>
+<br/>
+<br/>
+
+
+## :clock3: 시퀀스 다이어그램
+
+<br/>
+<br/>
+
 
 ![image](https://github.com/kty1210/fashionflow/assets/154123644/c82d3d2e-8fe5-41b0-b36f-e04431284d65)
 
 
+<br/>
+<br/>
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<br/>
+<br/>
+<br/>
+<br/>
+
+
+## :clock4: 와이어 프레임
+
+<br/>
+<br/>
+
+![image](https://github.com/kty1210/fashionflow/assets/154123644/6865a75b-43a4-43ef-89fb-c5fb3116197d)
+
+<br/>
+<br/>
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<br/>
+<br/>
 <br/>
 <br/>
 
 <!-- 기술스택 -->
-## :clock1: 주요 기술스택
+## :clock5: 주요 기술스택
 
-
-
-
+<br/>
+<br/>
 
 * <img src="https://img.shields.io/badge/Java-FF0000?style=for-the-badge&logo=Java&logoColor=white">
 * <img src="https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white">
@@ -65,6 +120,10 @@ AWS를 이용한 웹 서버 구축
 * <img src="https://img.shields.io/badge/gitkraken-179287?style=for-the-badge&logo=gitkraken&logoColor=white">
 
 
+
+<br/>
+<br/>
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <br/>
@@ -76,7 +135,9 @@ AWS를 이용한 웹 서버 구축
 
 
 
-## :clock2: 주요 라이브러리
+## :clock6: 주요 라이브러리
+
+<br/>
 <br/>
 
 * Spring Security
@@ -85,11 +146,11 @@ AWS를 이용한 웹 서버 구축
 * OAuth
 * Websocket
 * mail
-* thymeleaf 
+* thymeleaf
+* google chart
 
 <br/>
 <br/>
-
 
 
 
@@ -104,6 +165,15 @@ AWS를 이용한 웹 서버 구축
 ## :clock3: 클래스 다이어그램
 
 
+<br/>
+<br/>
+
+![Heart](https://github.com/kty1210/fashionflow/assets/154123644/06b0e53f-5f01-4faf-bd95-4dd9f97c421b)
+
+
+<br/>
+<br/>
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <br/>
@@ -114,6 +184,10 @@ AWS를 이용한 웹 서버 구축
 ## :clock4: 엔티티 관계도
 
 ![fashiondb](https://github.com/kty1210/fashionflow/assets/154123644/23249664-266c-4b6b-bfd2-b028637b9274)
+
+
+<br/>
+<br/>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -126,63 +200,12 @@ AWS를 이용한 웹 서버 구축
 
 <br/>
 
-<br/> ✦ 메인 페이지 <br/>
-<br/>
-<br/>
-<br/>
-<br/>
+<br/> 
 
-<br/> ✦ 조건 검색 <br/>
-<br/>
-<br/>
-<br/>
-<br/>
-
-<br/> ✦ 페이지네이션 <br/>
-<br/>
-<br/>
-<br/>
-<br/>
- 
-
-<br/> ✦ 업로드 <br/>
+맡은 부분 편집본 
 
 <br/>
 <br/>
-<br/>
-<br/>
-
-
-
-<br/> ✦ 상세 페이지 <br/>
-
-
-<br/>
-<br/>
-<br/>
-<br/>
-
-<br/> ✦ 글 수정 <br/>
-
-<br/>
-<br/>
-<br/>
-<br/>
-
-
-<br/> ✦ 댓글 <br/>
-
-<br/>
-<br/>
-<br/>
-<br/>
-
-
-
-
-<br/>
-<br/>
-
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -242,6 +265,11 @@ AuthenticationException를 상속받는 예외가 발생하면, 스프링 시큐
 <br/>
 
 InternalAuthenticationServiceException의 원인이 되는 예외로 특정시켜 메세지가 출력
+
+<br/>
+<br/>
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <br/>
 <br/>

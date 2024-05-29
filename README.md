@@ -162,7 +162,7 @@ AWS를 이용한 웹 서버 구축
 <br/>
 
 
-## :clock3: 클래스 다이어그램
+## :clock7: 클래스 다이어그램
 
 
 <br/>
@@ -181,7 +181,7 @@ AWS를 이용한 웹 서버 구축
 <br/>
 <br/>
 
-## :clock4: 엔티티 관계도
+## :clock8: 엔티티 관계도
 
 ![fashiondb](https://github.com/kty1210/fashionflow/assets/154123644/23249664-266c-4b6b-bfd2-b028637b9274)
 
@@ -196,14 +196,17 @@ AWS를 이용한 웹 서버 구축
 <br/>
 <br/>
 
-## :clock5: 기능 시연
+## :clock9: 기능 시연
 
 <br/>
 
 <br/> 
 
-맡은 부분 편집본 
+* 담당부분
 
+[![Video Label](http://img.youtube.com/vi/yRVWUnFJsqE/0.jpg)](https://youtu.be/yRVWUnFJsqE)
+
+https://youtu.be/yRVWUnFJsqE?si=EqvX258-7EbXQsi7
 <br/>
 <br/>
 
@@ -216,7 +219,7 @@ AWS를 이용한 웹 서버 구축
 
 
 
-## :clock6: 이슈
+## :clock10: 이슈
 
 ### i.문제
 
@@ -280,12 +283,33 @@ InternalAuthenticationServiceException의 원인이 되는 예외로 특정시�
 
 ## 🛬 마치며...
 
-개선할 점
 
-* 
+<br/>
+<br/>
 
+생각해봐야할 점
+
+<br/>
+
+* 사이트가 볼륨이 커지게 될때 서버 구축시 데이터 처리를 어떻게 해야되는가?
+* Git merge시 공통 부분 처리하게 될때 좀 더 효과적인 merge방법은 어떤것이 있는가?
+
+<br/>
+<br/>
 
 긍정적인 측면
 
+
+<br/>
+
 * API 사용법 
-* AWS의 EC2를 이용한 서버 구축과 RDS를 이용한 관계형데이터베이스 구축 
+* AWS의 EC2를 이용한 서버 구축과 RDS를 이용한 관계형데이터베이스 구축
+* 팀 단위 프로젝트를 통해 코드 이해도 향상과 팀원과의 귀중한 커뮤니케이션 경험
+
+
+
+<br/>
+<br/>
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+

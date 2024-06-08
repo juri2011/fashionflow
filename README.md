@@ -1,4 +1,4 @@
- # FashionFlow
+ # 🕶 FashionFlow ✨ 
 Spring Boot 기반 팀프로젝트 과제로 진행한 중고 의류 쇼핑몰 프로젝트입니다.
 
 ## <a href="http://13.124.136.15:8094/">사이트 바로가기</a>
@@ -25,8 +25,8 @@ Spring Boot 기반 팀프로젝트 과제로 진행한 중고 의류 쇼핑몰 �
  <img src="https://github.com/juri2011/fashionflow/assets/154123667/f78eb3da-8f70-40c7-b6d7-d83014c36d96">
 </p>
 
-## 시연영상
-
+## 🎬 시연영상
+[![Video Label](https://img.youtube.com/vi/HYGpw5Snyi4/0.jpg)](https://youtu.be/HYGpw5Snyi4?si=Lnk8f7xpYX4ySIv9)
 ## 다이어그램
 <details>
  <summary>시퀀스 다이어그램</summary>

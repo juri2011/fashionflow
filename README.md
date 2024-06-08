@@ -27,7 +27,7 @@ Spring Boot 기반 팀프로젝트 과제로 진행한 중고 의류 쇼핑몰 �
 
 ## 🎬 시연영상
 [![Video Label](https://img.youtube.com/vi/HYGpw5Snyi4/0.jpg)](https://youtu.be/HYGpw5Snyi4?si=Lnk8f7xpYX4ySIv9)
-(클릭하면 영상 주소로 이동합니다)
+<p>(클릭하면 영상 주소로 이동합니다)</p>
 
 ## 다이어그램
 <details>
